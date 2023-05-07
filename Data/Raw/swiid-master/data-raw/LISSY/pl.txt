@@ -1,0 +1,601 @@
+From: <postbox@lisdatacenter.org>
+Subject: job 968725 pl
+Date: June 11, 2022 at 7:52:57 PM GMT+2
+To: <fsolt@mac.com>
+
+############################### NOTICE TO USERS ###############################
+                                                                        
+  Use of the data in the LUXEMBOURG INCOME STUDY DATABASE is governed by
+  regulations which do not allow copying or further distribution of the 
+  survey microdata.                                                     
+
+  Anyone violating these regulations will lose all privileges to the    
+  databases and may be subject to prosecution under the law. In addition,
+  any attempt to circumvent the LIS processing system or unauthorized entry
+  into the LIS computing system will result in prosecution.             
+
+  All papers written using the LUXEMBOURG INCOME STUDY DATABASE must be 
+  submitted for entry into the Working Papers Series.                   
+  Please consult our web site for more information at WWW.LISDATACENTER.ORG
+                                                                        
+############################### NOTICE TO USERS ###############################
+
+> options(echo=FALSE, encoding="UTF-8")
+Loading required package: readstata13
+> options(error = expression(q('no')))
+> ## Define functions 
+> gini <- function(df, x) { 
++   df1 <- df[!is.na(df[[x]]), ] 
++   x <- as.vector(df1[[x]]) 
++   weight <- df1$wt 
++    
++   ox <- order(x) 
++   x <- as.vector(x)[ox] 
++   weight <- as.vector(weight)[ox] / sum(weight)  
++   p <- cumsum(weight) 
++   nu <- cumsum(weight * x) 
++   n <- length(nu) 
++   nu <- nu / nu[n] 
++   res <- round((sum(nu[-1] * p[-n]) - sum(nu[-n] * p[-1])), digits = 4) 
++   return(res) 
++ } 
+>  
+> wNtile <- function(var, wgt, split) { 
++   x <- var[order(var)] 
++   y <- wgt[order(var)] 
++   z <- cumsum(y) / sum(y) 
++   cop <- rep(NA, length(split))  
++   for (i in 1:length(cop)) { 
++     cop[i] <- x[Find(function(h) z[h] > split[i], seq_along(z))] 
++   } 
++   return(cop) 
++ } 
+>  
+> topBottom <- function(var, botline, topline) { 
++   tb <- ifelse(var < botline, botline, var) 
++   tb <- ifelse(tb > topline, topline, tb) 
++   return(tb) 
++ } 
+>  
+> setups <- function(df) { 
++   botline <- 0 
++   topline <- exp(log(wNtile(df$dhi, df$hpopwgt, 0.75)) + 3 * (log(wNtile(df$dhi, df$hpopwgt, 0.75)) - log(wNtile(df$dhi, df$hpopwgt, 0.25)))) 
++   df$oecdm <- 1 + .5 * (df$nhhmem - df$nhhmem13 - 1) + .3 * df$nhhmem13 
++   df$ae <- 1 + .7 * (df$nhhmem - df$nhhmem13 - 1) + .5 * df$nhhmem13 
++    
++   df$disp_hh <- topBottom(df$dhi, botline, topline) 
++   df$disp_sqrt <- df$disp_hh / (df$nhhmem ^ 0.5) 
++   df$disp_pc <- df$disp_hh / df$nhhmem 
++   df$disp_oecdm <- df$disp_hh / df$oecdm 
++   df$disp_ae <- df$disp_hh / df$ae 
++    
++   df$gross_hh <- topBottom(df$hitotal, botline, topline) 
++   df$gross_sqrt <- df$gross_hh / (df$nhhmem ^ 0.5) 
++   df$gross_pc <- df$gross_hh / df$nhhmem 
++   df$gross_oecdm <- df$gross_hh / df$oecdm 
++   df$gross_ae <- df$gross_hh / df$ae 
++    
++   df$market_hh <- topBottom(ifelse(!is.na(df$hiprivate), (df$hifactor + df$hiprivate), df$hifactor), botline, topline) 
++   df$market_sqrt <- df$market_hh / (df$nhhmem ^ 0.5) 
++   df$market_pc <- df$market_hh / df$nhhmem 
++   df$market_oecdm <- df$market_hh / df$oecdm 
++   df$market_ae <- df$market_hh / df$ae 
++    
++   df$con_hh <- topBottom(df$hcexp, botline, topline) 
++   df$con_sqrt <- df$con_hh / (df$nhhmem ^ 0.5) 
++   df$con_pc <- df$con_hh / df$nhhmem 
++   df$con_oecdm <- df$con_hh / df$oecdm 
++   df$con_ae <- df$con_hh / df$ae 
++    
++   return(df) 
++ } 
+>  
+> boot_gini_se <- function(data, var, reps=100) { 
++   data <- data[!is.na(data[[var]]), ] 
++   resamples <- lapply(1:reps, function(i) dplyr::sample_n(data, size = nrow(data), replace=TRUE)) 
++   r_stat <- lapply(resamples, function(x) gini(x, var)) 
++   std_err <- round(sqrt(var(unlist(r_stat))), digits = 4) 
++   return(std_err)    
++ } 
+>  
+> # For testing at home: 
+> # read.LIS <- function(data_file, labels, vars) { 
+> #   require(dplyr) 
+> #   data_file <- stringr::str_replace(data_file, "h", "ih.dta") 
+> #   df <- haven::read_dta(data_file)[, vars] 
+> #   if (!labels) { 
+> #     df <- df %>% dplyr::mutate_all(list(as.numeric)) 
+> #   } 
+> #   return(df) 
+> # } 
+>  
+> get_ginis <- function(cc, reps = 100) { 
++   set.seed(324) 
++   ccs <- c("au", "at", "be", "br", "ca", "ci", "cl", "cn", "co", "cz", "dk",  
++            "do", "eg", "ee", "fi", "fr", "de", "ge", "gr", "gt", "hu", "is",  
++            "in", "ie", "il", "it", "jp", "lt", "lu", "mx", "nl", "no", "pa", "py",  
++            "pe", "pl", "ps", "ro", "ru", "rs", "sk", "si", "za", "kr", "es", "se",  
++            "ch", "tw", "uk", "us", "uy", "vn") 
++   cc <- tolower(cc) 
++   if (!cc %in% ccs) { 
++     stop("Please specify a LIS country in iso2c format") 
++   } 
++   last_year_yy <- as.numeric(format(Sys.Date(), "%Y")) - 2001 
++   yy <- as.character(c(c(67, 69, 71, 73:75, 78:99), paste0("0", 0:9), c(10:last_year_yy))) 
++  
++   datasets <- paste0(rep(cc, each = length(yy)), rep(yy, times = length(cc)), "h") 
++   vars <- c("dhi", "hitotal", "hifactor", "hiprivate", "hcexp", "hpopwgt", "nhhmem", "nhhmem13", "grossnet") 
++  
++   v <- c("market_hh", "market_sqrt", "market_pc", "market_oecdm", "market_ae", 
++          "gross_hh", "gross_sqrt", "gross_pc", "gross_oecdm", "gross_ae", 
++          "disp_hh", "disp_sqrt", "disp_pc", "disp_oecdm", "disp_ae", 
++          "con_hh", "con_sqrt", "con_pc", "con_oecdm", "con_ae") 
++    
++   for (ccyy in datasets) { 
++     cat("") 
++     df <- try(read.LIS(ccyy, labels = FALSE, vars = vars), silent = TRUE) 
++     if (!class(df)[1] == "try-error") { 
++       mean_dhi <- mean(df$dhi, na.rm = TRUE) 
++       if (!is.nan(mean_dhi) & !mean_dhi == 0) { 
++         df <- setups(df) 
++         for (var in v) { 
++           if (grepl("hh", var)) { 
++             df$wt <- df$hpopwgt 
++           } else { 
++             df$wt <- df$hpopwgt * df$nhhmem 
++           } 
++           if (!is.na(mean(df[[var]], na.rm = TRUE))) { 
++             cat(paste(ccyy,  
++                       var,  
++                       gini(df, var), 
++                       boot_gini_se(df, var, reps = reps), 
++                       df$grossnet[1], 
++                       sep = ","), sep = "\n") 
++           } 
++         } 
++       } 
++     } 
++   } 
++ } 
+>  
+> # Call 
+> get_ginis("pl") 
+[1] "Loading dataset pl86h..."
+pl86h,market_hh,0.4575,0.0037,200
+pl86h,market_sqrt,0.3656,0.0033,200
+pl86h,market_pc,0.3834,0.0028,200
+pl86h,gross_hh,0.3314,0.0025,200
+pl86h,gross_sqrt,0.2709,0.0022,200
+pl86h,gross_pc,0.2799,0.0019,200
+pl86h,disp_hh,0.3314,0.0027,200
+pl86h,disp_sqrt,0.2709,0.0024,200
+pl86h,disp_pc,0.2799,0.0023,200
+pl86h,con_hh,NaN,NA,200
+pl86h,con_sqrt,NaN,NA,200
+pl86h,con_pc,NaN,NA,200
+[1] "Loading dataset pl92h..."
+pl92h,market_hh,0.4654,0.0052,200
+pl92h,market_sqrt,0.3947,0.0045,200
+pl92h,market_pc,0.4203,0.0042,200
+pl92h,market_oecdm,0.4012,0.0052,200
+pl92h,market_ae,0.4072,0.0045,200
+pl92h,gross_hh,0.3127,0.0035,200
+pl92h,gross_sqrt,0.2622,0.0037,200
+pl92h,gross_pc,0.293,0.0036,200
+pl92h,gross_oecdm,0.267,0.0034,200
+pl92h,gross_ae,0.2735,0.0039,200
+pl92h,disp_hh,0.3127,0.0035,200
+pl92h,disp_sqrt,0.2622,0.0037,200
+pl92h,disp_pc,0.293,0.0036,200
+pl92h,disp_oecdm,0.267,0.0032,200
+pl92h,disp_ae,0.2735,0.0035,200
+pl92h,con_hh,NaN,NA,200
+pl92h,con_sqrt,NaN,NA,200
+pl92h,con_pc,NaN,NA,200
+pl92h,con_oecdm,NaN,NA,200
+pl92h,con_ae,NaN,NA,200
+[1] "Loading dataset pl95h..."
+pl95h,market_hh,0.5269,0.0024,320
+pl95h,market_sqrt,0.476,0.0024,320
+pl95h,market_pc,0.4924,0.0024,320
+pl95h,market_oecdm,0.4803,0.0023,320
+pl95h,market_ae,0.4839,0.0028,320
+pl95h,gross_hh,0.3467,0.0021,320
+pl95h,gross_sqrt,0.3204,0.0024,320
+pl95h,gross_pc,0.358,0.0022,320
+pl95h,gross_oecdm,0.3251,0.0022,320
+pl95h,gross_ae,0.3349,0.0024,320
+pl95h,disp_hh,0.3504,0.0022,320
+pl95h,disp_sqrt,0.3212,0.0026,320
+pl95h,disp_pc,0.356,0.0022,320
+pl95h,disp_oecdm,0.3253,0.0022,320
+pl95h,disp_ae,0.3341,0.0024,320
+pl95h,con_hh,NaN,NA,320
+pl95h,con_sqrt,NaN,NA,320
+pl95h,con_pc,NaN,NA,320
+pl95h,con_oecdm,NaN,NA,320
+pl95h,con_ae,NaN,NA,320
+[1] "Loading dataset pl99h..."
+pl99h,market_hh,0.5404,0.0022,200
+pl99h,market_sqrt,0.4683,0.0024,200
+pl99h,market_pc,0.4919,0.0025,200
+pl99h,market_oecdm,0.4743,0.0022,200
+pl99h,market_ae,0.4803,0.0023,200
+pl99h,gross_hh,0.3204,0.0017,200
+pl99h,gross_sqrt,0.2877,0.0017,200
+pl99h,gross_pc,0.3233,0.0017,200
+pl99h,gross_oecdm,0.2914,0.0016,200
+pl99h,gross_ae,0.3008,0.0016,200
+pl99h,disp_hh,0.3204,0.0016,200
+pl99h,disp_sqrt,0.2877,0.0021,200
+pl99h,disp_pc,0.3233,0.0019,200
+pl99h,disp_oecdm,0.2914,0.002,200
+pl99h,disp_ae,0.3008,0.0015,200
+pl99h,con_hh,0.3176,0.0019,200
+pl99h,con_sqrt,0.2894,0.002,200
+pl99h,con_pc,0.3318,0.0018,200
+pl99h,con_oecdm,0.2969,0.0019,200
+pl99h,con_ae,0.308,0.002,200
+[1] "Loading dataset pl04h..."
+pl04h,market_hh,0.5903,0.0025,200
+pl04h,market_sqrt,0.5188,0.0025,200
+pl04h,market_pc,0.5443,0.0021,200
+pl04h,market_oecdm,0.5265,0.0025,200
+pl04h,market_ae,0.5328,0.0022,200
+pl04h,gross_hh,0.3487,0.002,200
+pl04h,gross_sqrt,0.3166,0.0021,200
+pl04h,gross_pc,0.3562,0.0019,200
+pl04h,gross_oecdm,0.3236,0.0018,200
+pl04h,gross_ae,0.3337,0.0019,200
+pl04h,disp_hh,0.3487,0.002,200
+pl04h,disp_sqrt,0.3166,0.0019,200
+pl04h,disp_pc,0.3562,0.002,200
+pl04h,disp_oecdm,0.3236,0.0019,200
+pl04h,disp_ae,0.3337,0.0019,200
+pl04h,con_hh,0.3434,0.0019,200
+pl04h,con_sqrt,0.3126,0.0018,200
+pl04h,con_pc,0.3585,0.0022,200
+pl04h,con_oecdm,0.3219,0.0019,200
+pl04h,con_ae,0.3338,0.0018,200
+[1] "Loading dataset pl05h..."
+pl05h,market_hh,0.5872,0.0021,200
+pl05h,market_sqrt,0.5148,0.0023,200
+pl05h,market_pc,0.541,0.0023,200
+pl05h,market_oecdm,0.5227,0.0024,200
+pl05h,market_ae,0.5292,0.0023,200
+pl05h,gross_hh,0.3476,0.0017,200
+pl05h,gross_sqrt,0.3141,0.0019,200
+pl05h,gross_pc,0.3538,0.0017,200
+pl05h,gross_oecdm,0.3209,0.0018,200
+pl05h,gross_ae,0.3311,0.0018,200
+pl05h,disp_hh,0.3476,0.0018,200
+pl05h,disp_sqrt,0.3141,0.0017,200
+pl05h,disp_pc,0.3538,0.0019,200
+pl05h,disp_oecdm,0.3209,0.002,200
+pl05h,disp_ae,0.3311,0.0017,200
+pl05h,con_hh,0.339,0.0018,200
+pl05h,con_sqrt,0.3046,0.0018,200
+pl05h,con_pc,0.35,0.0018,200
+pl05h,con_oecdm,0.3137,0.0019,200
+pl05h,con_ae,0.3254,0.0022,200
+[1] "Loading dataset pl06h..."
+pl06h,market_hh,0.5775,0.002,200
+pl06h,market_sqrt,0.5032,0.0021,200
+pl06h,market_pc,0.5294,0.0019,200
+pl06h,market_oecdm,0.5109,0.0022,200
+pl06h,market_ae,0.5174,0.0023,200
+pl06h,gross_hh,0.3491,0.0019,200
+pl06h,gross_sqrt,0.3114,0.002,200
+pl06h,gross_pc,0.3484,0.0017,200
+pl06h,gross_oecdm,0.3173,0.0018,200
+pl06h,gross_ae,0.3266,0.0017,200
+pl06h,disp_hh,0.3491,0.0018,200
+pl06h,disp_sqrt,0.3114,0.0017,200
+pl06h,disp_pc,0.3484,0.0018,200
+pl06h,disp_oecdm,0.3173,0.0018,200
+pl06h,disp_ae,0.3266,0.0018,200
+pl06h,con_hh,0.3392,0.0018,200
+pl06h,con_sqrt,0.3007,0.0019,200
+pl06h,con_pc,0.3428,0.0018,200
+pl06h,con_oecdm,0.3093,0.0019,200
+pl06h,con_ae,0.3198,0.0015,200
+[1] "Loading dataset pl07h..."
+pl07h,market_hh,0.5699,0.0022,200
+pl07h,market_sqrt,0.493,0.0023,200
+pl07h,market_pc,0.519,0.0023,200
+pl07h,market_oecdm,0.5011,0.0021,200
+pl07h,market_ae,0.5074,0.0021,200
+pl07h,gross_hh,0.3575,0.0019,200
+pl07h,gross_sqrt,0.3121,0.0021,200
+pl07h,gross_pc,0.344,0.0019,200
+pl07h,gross_oecdm,0.3171,0.0022,200
+pl07h,gross_ae,0.3247,0.002,200
+pl07h,disp_hh,0.3575,0.002,200
+pl07h,disp_sqrt,0.3121,0.0019,200
+pl07h,disp_pc,0.344,0.0018,200
+pl07h,disp_oecdm,0.3171,0.0024,200
+pl07h,disp_ae,0.3247,0.0021,200
+pl07h,con_hh,0.3481,0.002,200
+pl07h,con_sqrt,0.3042,0.0019,200
+pl07h,con_pc,0.3415,0.0018,200
+pl07h,con_oecdm,0.3124,0.0019,200
+pl07h,con_ae,0.3212,0.002,200
+[1] "Loading dataset pl08h..."
+pl08h,market_hh,0.561,0.0022,200
+pl08h,market_sqrt,0.4799,0.0024,200
+pl08h,market_pc,0.5055,0.0021,200
+pl08h,market_oecdm,0.4875,0.0021,200
+pl08h,market_ae,0.4938,0.0021,200
+pl08h,gross_hh,0.3612,0.0016,200
+pl08h,gross_sqrt,0.3108,0.0016,200
+pl08h,gross_pc,0.3393,0.0016,200
+pl08h,gross_oecdm,0.3151,0.0017,200
+pl08h,gross_ae,0.3217,0.0019,200
+pl08h,disp_hh,0.3612,0.0019,200
+pl08h,disp_sqrt,0.3108,0.0019,200
+pl08h,disp_pc,0.3393,0.0019,200
+pl08h,disp_oecdm,0.3151,0.0019,200
+pl08h,disp_ae,0.3217,0.0017,200
+pl08h,con_hh,0.3547,0.0018,200
+pl08h,con_sqrt,0.3084,0.002,200
+pl08h,con_pc,0.3437,0.0021,200
+pl08h,con_oecdm,0.3159,0.0021,200
+pl08h,con_ae,0.3242,0.0021,200
+[1] "Loading dataset pl09h..."
+pl09h,market_hh,0.5613,0.0021,200
+pl09h,market_sqrt,0.4808,0.0023,200
+pl09h,market_pc,0.5077,0.0021,200
+pl09h,market_oecdm,0.4897,0.0021,200
+pl09h,market_ae,0.4961,0.0019,200
+pl09h,gross_hh,0.358,0.0019,200
+pl09h,gross_sqrt,0.3109,0.0018,200
+pl09h,gross_pc,0.3415,0.0019,200
+pl09h,gross_oecdm,0.3165,0.0019,200
+pl09h,gross_ae,0.3235,0.0017,200
+pl09h,disp_hh,0.358,0.0015,200
+pl09h,disp_sqrt,0.3109,0.0018,200
+pl09h,disp_pc,0.3415,0.0016,200
+pl09h,disp_oecdm,0.3165,0.0018,200
+pl09h,disp_ae,0.3235,0.0017,200
+pl09h,con_hh,0.3496,0.002,200
+pl09h,con_sqrt,0.3038,0.0017,200
+pl09h,con_pc,0.3423,0.0018,200
+pl09h,con_oecdm,0.3128,0.0019,200
+pl09h,con_ae,0.3219,0.0016,200
+[1] "Loading dataset pl10h..."
+pl10h,market_hh,0.5616,0.0019,200
+pl10h,market_sqrt,0.4849,0.0023,200
+pl10h,market_pc,0.5149,0.0022,200
+pl10h,market_oecdm,0.4949,0.0023,200
+pl10h,market_ae,0.5022,0.002,200
+pl10h,gross_hh,0.3568,0.0017,200
+pl10h,gross_sqrt,0.3112,0.002,200
+pl10h,gross_pc,0.3447,0.0017,200
+pl10h,gross_oecdm,0.318,0.0019,200
+pl10h,gross_ae,0.3259,0.0022,200
+pl10h,disp_hh,0.3568,0.0017,200
+pl10h,disp_sqrt,0.3112,0.0019,200
+pl10h,disp_pc,0.3447,0.0018,200
+pl10h,disp_oecdm,0.318,0.0021,200
+pl10h,disp_ae,0.3259,0.002,200
+pl10h,con_hh,0.3445,0.002,200
+pl10h,con_sqrt,0.3012,0.0016,200
+pl10h,con_pc,0.3411,0.0018,200
+pl10h,con_oecdm,0.3108,0.0018,200
+pl10h,con_ae,0.3204,0.0019,200
+[1] "Loading dataset pl11h..."
+pl11h,market_hh,0.5626,0.0021,200
+pl11h,market_sqrt,0.4873,0.0027,200
+pl11h,market_pc,0.5156,0.0023,200
+pl11h,market_oecdm,0.4968,0.0022,200
+pl11h,market_ae,0.5035,0.0023,200
+pl11h,gross_hh,0.3576,0.0017,200
+pl11h,gross_sqrt,0.3133,0.0019,200
+pl11h,gross_pc,0.3455,0.002,200
+pl11h,gross_oecdm,0.3201,0.002,200
+pl11h,gross_ae,0.3274,0.0021,200
+pl11h,disp_hh,0.3576,0.0018,200
+pl11h,disp_sqrt,0.3133,0.0022,200
+pl11h,disp_pc,0.3455,0.0018,200
+pl11h,disp_oecdm,0.3201,0.0023,200
+pl11h,disp_ae,0.3274,0.0018,200
+pl11h,con_hh,0.3396,0.0018,200
+pl11h,con_sqrt,0.2959,0.0019,200
+pl11h,con_pc,0.3363,0.0018,200
+pl11h,con_oecdm,0.3058,0.0021,200
+pl11h,con_ae,0.3153,0.0018,200
+[1] "Loading dataset pl12h..."
+pl12h,market_hh,0.564,0.0023,200
+pl12h,market_sqrt,0.4883,0.0023,200
+pl12h,market_pc,0.5154,0.0026,200
+pl12h,market_oecdm,0.4974,0.0024,200
+pl12h,market_ae,0.5038,0.0023,200
+pl12h,gross_hh,0.3607,0.0017,200
+pl12h,gross_sqrt,0.3173,0.002,200
+pl12h,gross_pc,0.3482,0.002,200
+pl12h,gross_oecdm,0.3235,0.0021,200
+pl12h,gross_ae,0.3305,0.0019,200
+pl12h,disp_hh,0.3607,0.0018,200
+pl12h,disp_sqrt,0.3173,0.0021,200
+pl12h,disp_pc,0.3482,0.0017,200
+pl12h,disp_oecdm,0.3235,0.0022,200
+pl12h,disp_ae,0.3305,0.0019,200
+pl12h,con_hh,0.3362,0.0017,200
+pl12h,con_sqrt,0.2915,0.0019,200
+pl12h,con_pc,0.3315,0.0016,200
+pl12h,con_oecdm,0.3014,0.0017,200
+pl12h,con_ae,0.3106,0.0014,200
+[1] "Loading dataset pl13h..."
+pl13h,market_hh,0.5628,0.0025,200
+pl13h,market_sqrt,0.4886,0.0026,200
+pl13h,market_pc,0.5152,0.0022,200
+pl13h,market_oecdm,0.4978,0.002,200
+pl13h,market_ae,0.5039,0.0023,200
+pl13h,gross_hh,0.3605,0.0017,200
+pl13h,gross_sqrt,0.318,0.0022,200
+pl13h,gross_pc,0.349,0.0019,200
+pl13h,gross_oecdm,0.3244,0.002,200
+pl13h,gross_ae,0.3313,0.0019,200
+pl13h,disp_hh,0.3605,0.0018,200
+pl13h,disp_sqrt,0.318,0.002,200
+pl13h,disp_pc,0.349,0.0017,200
+pl13h,disp_oecdm,0.3244,0.002,200
+pl13h,disp_ae,0.3313,0.0019,200
+pl13h,con_hh,0.334,0.0017,200
+pl13h,con_sqrt,0.2902,0.0016,200
+pl13h,con_pc,0.3317,0.0017,200
+pl13h,con_oecdm,0.3006,0.0019,200
+pl13h,con_ae,0.3102,0.0018,200
+[1] "Loading dataset pl14h..."
+pl14h,market_hh,0.5582,0.002,200
+pl14h,market_sqrt,0.4814,0.0023,200
+pl14h,market_pc,0.506,0.0022,200
+pl14h,market_oecdm,0.4902,0.0022,200
+pl14h,market_ae,0.4956,0.0024,200
+pl14h,gross_hh,0.3575,0.0016,200
+pl14h,gross_sqrt,0.3133,0.0018,200
+pl14h,gross_pc,0.3425,0.0017,200
+pl14h,gross_oecdm,0.3192,0.0018,200
+pl14h,gross_ae,0.3254,0.0021,200
+pl14h,disp_hh,0.3575,0.0016,200
+pl14h,disp_sqrt,0.3133,0.0022,200
+pl14h,disp_pc,0.3425,0.002,200
+pl14h,disp_oecdm,0.3192,0.0021,200
+pl14h,disp_ae,0.3254,0.002,200
+pl14h,con_hh,0.3298,0.0017,200
+pl14h,con_sqrt,0.2859,0.002,200
+pl14h,con_pc,0.327,0.0019,200
+pl14h,con_oecdm,0.2962,0.0017,200
+pl14h,con_ae,0.3056,0.0017,200
+[1] "Loading dataset pl15h..."
+pl15h,market_hh,0.5518,0.0023,200
+pl15h,market_sqrt,0.4737,0.0021,200
+pl15h,market_pc,0.4993,0.0024,200
+pl15h,market_oecdm,0.4818,0.0025,200
+pl15h,market_ae,0.4877,0.0025,200
+pl15h,gross_hh,0.3526,0.0017,200
+pl15h,gross_sqrt,0.3068,0.0023,200
+pl15h,gross_pc,0.3366,0.0018,200
+pl15h,gross_oecdm,0.3118,0.0022,200
+pl15h,gross_ae,0.3184,0.0019,200
+pl15h,disp_hh,0.3526,0.002,200
+pl15h,disp_sqrt,0.3068,0.0022,200
+pl15h,disp_pc,0.3366,0.0021,200
+pl15h,disp_oecdm,0.3118,0.002,200
+pl15h,disp_ae,0.3184,0.0021,200
+pl15h,con_hh,0.3289,0.0017,200
+pl15h,con_sqrt,0.2843,0.0019,200
+pl15h,con_pc,0.325,0.0018,200
+pl15h,con_oecdm,0.2937,0.0021,200
+pl15h,con_ae,0.3031,0.0018,200
+[1] "Loading dataset pl16h..."
+pl16h,market_hh,0.5536,0.002,200
+pl16h,market_sqrt,0.4749,0.0021,200
+pl16h,market_pc,0.4987,0.0022,200
+pl16h,market_oecdm,0.4824,0.002,200
+pl16h,market_ae,0.4878,0.0023,200
+pl16h,gross_hh,0.3491,0.0018,200
+pl16h,gross_sqrt,0.2891,0.0021,200
+pl16h,gross_pc,0.3132,0.0019,200
+pl16h,gross_oecdm,0.2928,0.0021,200
+pl16h,gross_ae,0.2972,0.0017,200
+pl16h,disp_hh,0.3491,0.0018,200
+pl16h,disp_sqrt,0.2891,0.0018,200
+pl16h,disp_pc,0.3132,0.0015,200
+pl16h,disp_oecdm,0.2928,0.0019,200
+pl16h,disp_ae,0.2972,0.0018,200
+pl16h,con_hh,0.3289,0.0017,200
+pl16h,con_sqrt,0.2769,0.0016,200
+pl16h,con_pc,0.314,0.0017,200
+pl16h,con_oecdm,0.2857,0.0019,200
+pl16h,con_ae,0.2937,0.0018,200
+[1] "Loading dataset pl17h..."
+pl17h,market_hh,0.5573,0.0023,200
+pl17h,market_sqrt,0.4771,0.0026,200
+pl17h,market_pc,0.498,0.0023,200
+pl17h,market_oecdm,0.4827,0.0028,200
+pl17h,market_ae,0.4875,0.0025,200
+pl17h,gross_hh,0.3552,0.002,200
+pl17h,gross_sqrt,0.2869,0.002,200
+pl17h,gross_pc,0.3039,0.0019,200
+pl17h,gross_oecdm,0.2876,0.0022,200
+pl17h,gross_ae,0.29,0.0021,200
+pl17h,disp_hh,0.3552,0.002,200
+pl17h,disp_sqrt,0.2869,0.0026,200
+pl17h,disp_pc,0.3039,0.0019,200
+pl17h,disp_oecdm,0.2876,0.0021,200
+pl17h,disp_ae,0.29,0.002,200
+pl17h,con_hh,0.3324,0.0018,200
+pl17h,con_sqrt,0.2767,0.0019,200
+pl17h,con_pc,0.3085,0.0015,200
+pl17h,con_oecdm,0.2836,0.0018,200
+pl17h,con_ae,0.2899,0.0018,200
+[1] "Loading dataset pl18h..."
+pl18h,market_hh,0.5621,0.0023,200
+pl18h,market_sqrt,0.4804,0.0024,200
+pl18h,market_pc,0.5019,0.0024,200
+pl18h,market_oecdm,0.4861,0.0023,200
+pl18h,market_ae,0.4911,0.0023,200
+pl18h,gross_hh,0.3601,0.0021,200
+pl18h,gross_sqrt,0.292,0.0024,200
+pl18h,gross_pc,0.3083,0.0019,200
+pl18h,gross_oecdm,0.2921,0.0022,200
+pl18h,gross_ae,0.2944,0.0019,200
+pl18h,disp_hh,0.3601,0.0017,200
+pl18h,disp_sqrt,0.292,0.0023,200
+pl18h,disp_pc,0.3083,0.0019,200
+pl18h,disp_oecdm,0.2921,0.002,200
+pl18h,disp_ae,0.2944,0.0018,200
+pl18h,con_hh,0.3373,0.0022,200
+pl18h,con_sqrt,0.284,0.0022,200
+pl18h,con_pc,0.3157,0.0022,200
+pl18h,con_oecdm,0.2912,0.0023,200
+pl18h,con_ae,0.2973,0.002,200
+[1] "Loading dataset pl19h..."
+pl19h,market_hh,0.5638,0.0021,200
+pl19h,market_sqrt,0.4819,0.0026,200
+pl19h,market_pc,0.5036,0.0025,200
+pl19h,market_oecdm,0.4877,0.0029,200
+pl19h,market_ae,0.4927,0.0024,200
+pl19h,gross_hh,0.3608,0.002,200
+pl19h,gross_sqrt,0.2923,0.002,200
+pl19h,gross_pc,0.3085,0.0018,200
+pl19h,gross_oecdm,0.2927,0.0022,200
+pl19h,gross_ae,0.2949,0.0022,200
+pl19h,disp_hh,0.3608,0.0019,200
+pl19h,disp_sqrt,0.2923,0.0022,200
+pl19h,disp_pc,0.3085,0.0019,200
+pl19h,disp_oecdm,0.2927,0.0022,200
+pl19h,disp_ae,0.2949,0.0021,200
+pl19h,con_hh,0.3323,0.002,200
+pl19h,con_sqrt,0.2766,0.0023,200
+pl19h,con_pc,0.3088,0.002,200
+pl19h,con_oecdm,0.2839,0.0019,200
+pl19h,con_ae,0.29,0.0021,200
+[1] "Loading dataset pl20h..."
+pl20h,market_hh,0.566,0.0028,200
+pl20h,market_sqrt,0.4852,0.0031,200
+pl20h,market_pc,0.5102,0.0025,200
+pl20h,market_oecdm,0.4914,0.0025,200
+pl20h,market_ae,0.4974,0.0025,200
+pl20h,gross_hh,0.3696,0.0023,200
+pl20h,gross_sqrt,0.3001,0.0026,200
+pl20h,gross_pc,0.3171,0.0023,200
+pl20h,gross_oecdm,0.3009,0.0026,200
+pl20h,gross_ae,0.3032,0.0022,200
+pl20h,disp_hh,0.3696,0.002,200
+pl20h,disp_sqrt,0.3001,0.0027,200
+pl20h,disp_pc,0.3171,0.0023,200
+pl20h,disp_oecdm,0.3009,0.0023,200
+pl20h,disp_ae,0.3032,0.0026,200
+pl20h,con_hh,0.3206,0.0022,200
+pl20h,con_sqrt,0.2668,0.0021,200
+pl20h,con_pc,0.3024,0.002,200
+pl20h,con_oecdm,0.2744,0.0021,200
+pl20h,con_ae,0.2816,0.0019,200
+> 
+> proc.time()
+    user   system  elapsed 
+1042.593   12.119 1305.096 
+
+
