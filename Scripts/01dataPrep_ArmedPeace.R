@@ -370,52 +370,18 @@ iso3cRet_country.name.enCustom <- c( "CSK" = "Czechoslovakia", "SCG" = "Serbia a
 cownT <-  countrycode(rrc, origin = 'iso3c', destination = 'country.name.en', custom_match = iso3cRet_country.name.enCustom)
 
 
-iso3cRet_cowCustom <- c("BUR" = 775,"BYS" = 370, "CSK" = 315, "SCG" = 345, "DDR" = 265, "GER" = 255, "DHY" = 434, "FXX" = 220, "HVO" = 439, "RHO" = 552, "SUN" = 365, "VDR" = 816, "YMD" = 680, "YUG" = 345, "ZAR" = 490)
-
-
-cownT <-  countrycode(rrc, origin = 'iso3c', destination = 'cown', custom_match = iso3cRet_cowCustom)
+# iso3cRet_cowCustom <- c("BUR" = 775,"BYS" = 370, "CSK" = 315, "SCG" = 345, "DDR" = 265, "GER" = 255, "DHY" = 434, "FXX" = 220, "HVO" = 439, "RHO" = 552, "SUN" = 365, "VDR" = 816, "YMD" = 680, "YUG" = 345, "ZAR" = 490)
+# 
+# cownT <-  countrycode(rrc, origin = 'iso3c', destination = 'cown', custom_match = iso3cRet_cowCustom)
 names(cownT)
 length(cownT)
 
 any(is.na(cownT))
-rrc[which(is.na(cownT))]
-## 
+rrc[which(is.na(cownT))] ## not needed in this instance
 
 ineqlong2$country.name.en <- countrycode(rrc, origin = 'iso3c', destination = 'country.name.en', custom_match = iso3cRet_country.name.enCustom)
 
 
-
-# ## below not needed ?
-# 
-# countrycode(rrc, origin = 'iso3c', destination = 'country.name.en',  custom_match = iso3cRet_country.name.enCustom)
-# ## idea: replace non iso3c codes in rrc with Pat's crosswalk.
-# ## e.g. CSK -> 315
-# 
-# countrycode(rrn, origin = 'iso3n', destination = 'cown' )
-# 
-# countrycode(rrcn, origin = 'country.name.en', destination = 'country.name.en' )
-# 
-# 
-# iso3cRet_namesCustom <- c("DDR" = "German Democratic Republic", "DEU" = "Germany",    "GER" = "Germany",     "CSK" = "Czechoslovakia", "SCG" = "Yugoslavia")
-# 
-# iso3cRet_cowCustom
-# 
-# 
-# countrycode(rrc, origin = 'iso3c', destination = 'cown', custom_match = iso3cRet_cowCustom)
-# 
-# iso3cRet_cowCustom
-# 
-# countrycode(rrc, origin = 'iso3c', destination = 'cown')
-# 
-# 
-# utip3cown <- c( "CSK" = "315", "DDR" = "265" , "DEU" = "260" , "GER" = "255" , "SCG" = "345" , "YUG" = "345" )
-# ## try 0 map 3character code to cown
-# 
-# ineqlong$cown <- as.numeric( countrycode(ineqlong$code, origin = 'iso3c', destination = 'cown', custom_match = utip3cown ) )
-# 
-# ineqlong$c.n.en0 <- countrycode(ineqlong$cown, origin = 'cown', destination = 'country.name.en')
-
-names(ineqlong2)
 
 colnames(ineqlong2) <- paste(colnames(ineqlong2), "UTIP", sep = "_")
 
@@ -459,24 +425,25 @@ dim(ccpConBal50)
 dim(ineqlong2)
 dim(mmineqlong50)  
 
-## checking
-names(mmineqlong50)
-smm <- mmineqlong50 %>% select(!contains("UTIP"))
-aa <- anti_join(smm, ccpConBal50)
-dsmm <- distinct(smm)
-dim(dsmm)
-glimpse(smm)
-glimpse(ccpConBal50)
-
-dim(mmineqlong50)
-mmineqlong50 <- distinct(mmineqlong50)
-
-df <- smm
-which(duplicated(df) | duplicated(df, fromLast = TRUE) )
-# Yugoslavia is messing up in the merge, somehow.
-
-
-mmineqlong50[which( (duplicated(df) | duplicated(df, fromLast = TRUE) ) & (mmineqlong50$countryname_UTIP == "Serbia and Montenegro") ),] %>% View()
+## below not needed in this instance, keep for future checking of merges?
+# ## checking
+# names(mmineqlong50)
+# smm <- mmineqlong50 %>% select(!contains("UTIP"))
+# aa <- anti_join(smm, ccpConBal50)
+# dsmm <- distinct(smm)
+# dim(dsmm)
+# glimpse(smm)
+# glimpse(ccpConBal50)
+# 
+# dim(mmineqlong50)
+# mmineqlong50 <- distinct(mmineqlong50)
+# 
+# df <- smm
+# which(duplicated(df) | duplicated(df, fromLast = TRUE) )
+# # Yugoslavia is messing up in the merge, somehow.
+# 
+# 
+# mmineqlong50[which( (duplicated(df) | duplicated(df, fromLast = TRUE) ) & (mmineqlong50$countryname_UTIP == "Serbia and Montenegro") ),] %>% View()
 
 ## a total hack.  Change Serbia and Montenegro to Yugoslavia only for 1994-2001
 
@@ -518,15 +485,15 @@ library(tidyverse)
 library(janitor)
 library(xlsx)
 
-sipri_2020USD <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx", sheetIndex = 5, startRow = 6) ))
+sipri_2020USD <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 5, startRow = 6) 
 
-sipri_currentUSD <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx", sheetIndex = 6, startRow = 6) ))
+sipri_currentUSD <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 6, startRow = 6) 
 
-sipri_GDPshare <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx", sheetIndex = 7, startRow = 6) ))
+sipri_GDPshare <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 7, startRow = 6) 
 
-sipri_perCapita <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx", sheetIndex = 8, startRow = 7) ))
+sipri_perCapita <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 8, startRow = 7) 
 
-sipri_spendingShare <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx", sheetIndex = 9, startRow = 8) ))
+sipri_spendingShare <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 9, startRow = 8) 
 
 ## Clean
 cleann <- function(df) {
@@ -569,10 +536,7 @@ names(cc) <- names(lapply(cc, names) )
 library(purrr)
 
 sipriLongL  <- imap(cc, ~piv(.x,.y) )
-  
-
-
-length(sipriLongL)
+  length(sipriLongL)
 
 sipriLong <- sipriLongL %>% reduce(left_join,  c("Country","year") )
   
@@ -615,12 +579,16 @@ ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 colnames(sipriLongCo) <- paste(colnames(sipriLongCo), "SIPRI", sep = "_")
 
 
-mmSIPRI50 <- left_join(ccpConBal50, sipriLongCo,  by = c("country.name.en" ="Country_SIPRI" , "year" = "year_SIPRI") )
+mmSIPRI50 <- left_join(sipriLongCo, ccpConBal50,   by = c( "Country_SIPRI" = "country.name.en"  , "year_SIPRI" = "year") )
 names(mmSIPRI50)
 
+dim(mmSIPRI50)
+## Slight cleaning: remove sipri_currentUSD_SIPRI = NA
+mmSIPRI50 <- mmSIPRI50 %>% filter(!is.na(sipri_currentUSD_SIPRI))
+dim(mmSIPRI50)
 
 getwd()
-save(mmSIPRI50, file = "mmSIPRI50.RData")
+save(mmSIPRI50, file = paste0(here("Data/Processed", "mmSIPRI50.RData") ))
 
 
 
