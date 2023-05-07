@@ -1,0 +1,25 @@
+% written by: J.Paul Elhorst 2016
+% University of Groningen
+% Department of Economics, Econometrics and Finance
+% 9700AV Groningen
+% the Netherlands
+% j.p.elhorst@rug.nl
+%
+% REFERENCES: 
+% Yesilyurt M.E., Elhorst J.P. (2017), 
+% Impacts of neighboring countries on military expenditures; a dynamic spatial panel approach. 
+% Journal of Peace Research. 
+
+Running the matlab files, so as to get the estimates in Table II and III.
+
+Open Matlab and install all excel and matlab files in the working directory of Matlab.
+
+Open JPR_Table2 in the editor mode to see and to run the file.
+When running the file, the results appear in your Command window.
+These results correspond to the results reported in Table II.
+
+Similarly, open JPR_Table3 in the editor mode to see and to run the file.
+When running the file, the results appear in your Command window.
+These results correspond to the results reported in Table III.
+
+
