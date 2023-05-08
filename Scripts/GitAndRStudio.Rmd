@@ -1,0 +1,51 @@
+---
+title: "Git and RStudio"
+author: "Scott Moser"
+date: "2023-05-08"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## You Will Need:
+
+-R: 
+-RStudio
+-a GitHub account
+-Git on your local computer
+
+
+## Steps
+
+1. Install git on your local computer <https://sites.northwestern.edu/researchcomputing/resources/using-git-and-github-with-r-rstudio/> number 2
+
+	1.make sure R: knows where `git` is located: <https://sites.northwestern.edu/researchcomputing/resources/using-git-and-github-with-r-rstudio/>
+	2. Configure `git` from command line: <https://swcarpentry.github.io/git-novice/02-setup/index.html>  and `git config --system core.longpaths true
+`
+	
+2. Get Personal Authorization Token (PAT) from <https://github.com/settings/tokens>: <https://happygitwithr.com/https-pat.html>
+
+	1. Let `git` know about your PAT <https://happygitwithr.com/https-pat.html>.  In R:
+	```{r}
+	## install.packages("gitcreds")
+	gitcreds::gitcreds_set()
+	```
+	And paste token.
+
+3. Create local RProj based on clone from GitHub (=<https://github.com/smoser11/ArmedPeaceData.git>) <https://rfortherestofus.com/2021/02/how-to-use-git-github-with-r/>   GitHub First section
+
+```{r}
+ 
+```
+	
+	
+	
+	
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+
