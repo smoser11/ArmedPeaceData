@@ -57,5 +57,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Git Resources
 
 - Workflows <https://happygitwithr.com/workflows-intro.html>
+	- Open `Rproj` file.
+	- Pull from repo.
+	- Make edits, etc.
+	- 'Check changes back in'
+		- Staging, Committing, Push/Pull
 - Git commands <https://happygitwithr.com/git-intro.html>
--Staging, Committing, Push/Pull
+
