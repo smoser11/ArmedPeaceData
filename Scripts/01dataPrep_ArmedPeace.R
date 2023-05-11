@@ -536,7 +536,7 @@ names(cc) <- names(lapply(cc, names) )
 library(purrr)
 
 sipriLongL  <- imap(cc, ~piv(.x,.y) )
-  length(sipriLongL)
+length(sipriLongL)
 
 sipriLong <- sipriLongL %>% reduce(left_join,  c("Country","year") )
   
@@ -622,7 +622,8 @@ countrycode(nord$STATE, origin = "cown", destination = "country.name.en")
 # so nord$STATE is ALMOST cown, save cown= 260 (= German Federal Republic = West Germany, CoW tracks West Germany 1955-1990)
 
 
-# as cleaned by ____ Democracy external threat...
+# as cleaned by: Hauenstein, M., Smith, M., & Souva, M. (2021). Democracy, external threat, and military spending. Research and Politics, October-December, 13.
+
 
 library(readstata13)
 dp <- read.dta13(paste0(here("Data/Raw/Democracy external threat and military spending/","DP_Nord_clean.dta") ))
@@ -636,6 +637,8 @@ guess_field(dp$stateabb)
 countrycode(dp$ccode, origin = 'cown', destination = 'country.name.en')
 
 ## so dp$ccode is ALMOST cown, save cown= 260 (= German Federal Republic = West Germany, CoW tracks West Germany 1955-1990)
+
+# TODO: fix ccode = 260
 
 
 getwd()
@@ -653,6 +656,8 @@ ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 colnames(nord) <- paste(colnames(nord), "NORD", sep = "_")
 colnames(nord)
 names(nord)
+
+
 
 mmNORD50 <- left_join(nord, ccpConBal50, by = c("cown" = "STATE_NORD", "year"="YEAR_NORD") )
 names(mmNORD50)
@@ -689,6 +694,7 @@ countrycode(forcasting$STATE, origin = "cown", destination = "country.name.en")
 
 # so forcasting$STATE - error with 260
 
+# TODO: fix STATE 
 
 
 ## make ccp50 = standardized, balanced and consecutive
@@ -823,6 +829,9 @@ swiid_summary <- swiid_summary %>%
                             origin = "country.name",
                             destination = "cown"))
 
+
+# TODO: inspect these countries and fix.
+
 colnames(swiid_summary) 
 # add suffix to vars
 ## Add suffix
@@ -835,6 +844,8 @@ load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
+
+## TODO: fix the below
 
 mmSWIIDcow <- left_join(ccpConBal50, swiid_summary, by = c("cown" = "cown_SWIID", "year"="year_SWIID") )
 names(mmSWIIDcow)
