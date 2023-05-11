@@ -675,7 +675,6 @@ save(mmNORD50, file = paste0(here("Data/Processed/", "mmNORD50.RData") ))
 rm(list=ls())
 getwd()
 
-setwd("C:/Users/ldzsm2/OneDrive - The University of Nottingham/research/terryPat/data_ArmedPeace")
 
 
 library(readstata13)
@@ -684,11 +683,11 @@ forcasting <- read.dta13(paste0(here("Data/Raw/", "Forecasting Military Expendit
 names(forcasting)
 
 
-guess_field(forcasting$STATE)
+guess_field(forcasting$STATE) 
 
 countrycode(forcasting$STATE, origin = "cown", destination = "country.name.en")
 
-# so forcasting$STATE is exactly cown
+# so forcasting$STATE - error with 260
 
 
 
@@ -809,6 +808,8 @@ swiid_summary <- read.csv("https://raw.githubusercontent.com/fsolt/swiid/master/
 names(swiid_summary)
 guess_field(swiid_summary$country)
 
+countrycode(swiid_summary$country, origin = "country.name.en", destination = "country.name.en")
+
 ## is country X year a unique key in SWIID?
 dim(swiid_summary)
 dim(unique(swiid_summary[c("year", "country")]))  ##yes
@@ -835,11 +836,11 @@ load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
-mmSWIIDcow <- left_join(swiid_summary,ccpConBal50, by = c("cown" = "cown_SWIID", "year"="year_SWIID") )
+mmSWIIDcow <- left_join(ccpConBal50, swiid_summary, by = c("cown" = "cown_SWIID", "year"="year_SWIID") )
 names(mmSWIIDcow)
 distinct(mmSWIIDcow)
 
-mmSWIID50 <- left_join(swiid_summary,ccpConBal50, by = c("country.name.en" = "country_SWIID", "year"="year_SWIID") )
+mmSWIID50 <- left_join(ccpConBal50, swiid_summary, by = c("country.name.en" = "country_SWIID", "year"="year_SWIID") )
 names(mmSWIID50)
 distinct(mmSWIID50)
 
@@ -881,14 +882,7 @@ swiid_summary %>% panelview(gini_disp ~ 1,
                             axis.lab="both", type = "miss")
 
 
-SWIID.ccode <- swiid # 100 imputed datasets from SWIID in wide format a list of 100 imputed datasets
-str(swiid[1])
-swiid1 <- swiid[[1]]
-names(swiid[[1]])
-# gini_net: Estimate of Gini index of inequality in equivalized (square root scale) household disposable (post-tax, post-transfer) income, using Luxembourg Income Study data as the standard.
-# gini_market: Estimate of Gini index of inequality in equivalized (square root scale) household market (pre-tax, pre-transfer) income, using Luxembourg Income Study data as the standard.
-# abs_red: Estimated absolute redistribution, the number of Gini-index points market-income inequality is reduced due to taxes and transfers: the dierence between the gini_market and gini_net.
-# rel_red: Estimated relative redistribution, the percentage reduction in market-income inequality due to taxes and transfers: the dierence between the gini_market and gini_net, divided by gini_market, multiplied by 100.
+
 
 
 # correlates of war naming, historic:  https://www.paulhensel.org/icownames.html
