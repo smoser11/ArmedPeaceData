@@ -479,7 +479,7 @@ rm(list=ls())
 
 getwd()
 
-
+library(here)
 library(stringr)
 library(tidyverse)
 library(janitor)
@@ -545,7 +545,7 @@ sipriLong <- sipriLongL %>% reduce(left_join,  c("Country","year") )
 ## merge SIPRI(s) into the 'master' codelist_panel
 #### BUT: to do this we have to know the SIPRI codes countries!
 ## guess-field from countrycode
-
+library(countrycode)
 names(sipriLong)
 guess_field(sipriLong$Country)
 
