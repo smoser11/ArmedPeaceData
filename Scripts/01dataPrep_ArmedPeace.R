@@ -604,10 +604,16 @@ getwd()
 
 
 ## from original:
-
+library(here)
 library(xlsx)
+library(countrycode)
 
 nord <- read.xlsx(paste0(here("Data/Raw/",  "The Effects of the International Security Environment on National Military Expenditures/S0020818312000173sup001.xlsx" )), sheetIndex = 1)
+
+### Changed 260 to 255 from 1990-2000
+library(xlsx)
+nord <- read.xlsx(paste0(here("Data/Processed/", "Nord3.xlsx")), sheetIndex = 1)
+
 
 nnm <- names(nord)
 nnm[5] <- "LMILEX1"
@@ -617,28 +623,11 @@ names(nord) <- nnm
 
 guess_field(nord$STATE)
 
-countrycode(nord$STATE, origin = "cown", destination = "country.name.en")
-
-# so nord$STATE is ALMOST cown, save cown= 260 (= German Federal Republic = West Germany, CoW tracks West Germany 1955-1990)
+countrycode(nord$STATE, origin = "cown", destination = "cown")
 
 
 # as cleaned by: Hauenstein, M., Smith, M., & Souva, M. (2021). Democracy, external threat, and military spending. Research and Politics, October-December, 13.
 
-
-library(readstata13)
-dp <- read.dta13(paste0(here("Data/Raw/Democracy external threat and military spending/","DP_Nord_clean.dta") ))
-names(dp)
-guess_field(dp$ccode)
-
-guess_field(dp$stateabbA)
-
-guess_field(dp$stateabb)
-
-countrycode(dp$ccode, origin = 'cown', destination = 'country.name.en')
-
-## so dp$ccode is ALMOST cown, save cown= 260 (= German Federal Republic = West Germany, CoW tracks West Germany 1955-1990)
-
-# TODO: fix ccode = 260
 
 
 getwd()
@@ -657,10 +646,12 @@ colnames(nord) <- paste(colnames(nord), "NORD", sep = "_")
 colnames(nord)
 names(nord)
 
+library(tidyverse)
 
-
-mmNORD50 <- left_join(nord, ccpConBal50, by = c("cown" = "STATE_NORD", "year"="YEAR_NORD") )
+mmNORD50 <- left_join(nord, ccpConBal50, by = c("STATE_NORD" = "cown", "YEAR_NORD"="year") )
 names(mmNORD50)
+names(nord)
+names(ccpConBal50)
 
 library(janitor)
 library(haven)
@@ -692,14 +683,24 @@ guess_field(forcasting$STATE)
 
 countrycode(forcasting$STATE, origin = "cown", destination = "country.name.en")
 
-# so forcasting$STATE - error with 260
+# so forcasting$STATE - 1990 - 260 should be 255
 
 # TODO: fix STATE 
+## Export to excel
+library(xlsx)
+write.xlsx(forcasting, "Data/Processed/forcasting.xlsx")
+## Manually changed 1990 260 to 255
+forcasting <- read.xlsx(paste0(here("Data/Processed/", "forcasting2.xlsx")), sheetIndex = 1)
+
+
+guess_field(forcasting$STATE) 
+
+countrycode(forcasting$STATE, origin = "cown", destination = "cown")
 
 
 ## make ccp50 = standardized, balanced and consecutive
 
-load(file ="codelist_panel2.RData")
+load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
@@ -711,7 +712,7 @@ colnames(forcasting) <- paste(colnames(forcasting), "BB", sep = "_")
 colnames(forcasting)
 names(forcasting)
 
-mmFORCASTING50 <- left_join(ccpConBal50, forcasting, by = c("cown" = "STATE_BB", "year"="YEAR_BB") )
+mmFORCASTING50 <- left_join(forcasting, ccpConBal50, by = c("STATE_BB" = "cown", "YEAR_BB"="year") )
 names(mmFORCASTING50)
 
 library(janitor)
@@ -727,7 +728,7 @@ save(mmFORCASTING50, file = paste0(here("Data/Raw/", "mmFORCASTING50.RData") ))
 #################################################################
 # Pat McDonald's 'alliances' (US/ Russia) data
 ##################################################################
-
+rm(list=ls())
 getwd()
 
 
@@ -747,11 +748,29 @@ guess_field(rus$ccode)
 
 countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
 
+# TODO: fix 260 
+## Export to excel
+library(xlsx)
+write.xlsx(usa, "Data/Processed/usa.xlsx")
+## Manually changed 260 in 1990 to 255
+usa <- read.xlsx(paste0(here("Data/Processed/", "usa2.xlsx")), sheetIndex = 1)
+
+
+guess_field(usa$ccode) 
+
+countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
+
+
+
 sort(unique(usa$ccode)) %in% unique(codelist_panel$cown)
 names(usa)
 ## so rus$ccode and usa$ccode are both cown
 
 PJM <- full_join(usa, rus, by = c("year", "ccode"))
+PJManti <- anti_join(usa, rus, by = c("year", "ccode"))
+PJM3 <- anti_join(rus, usa, by = c("year", "ccode"))
+
+
 library(plm)
 pp <- pdata.frame(PJM, index = c('ccode', 'year'))
 pdim(pp)
@@ -763,13 +782,17 @@ colnames(PJM)
 names(PJM)
 
 ## make ccp50 = standardized, balanced and consecutive
-load(file ="codelist_panel2.RData")
+load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
-mmPJM50 <- left_join(PJM, ccpConBal50, by = c("cown" = "ccode_PJM", "year"="year_PJM") )
+mmPJM50 <- left_join(PJM, ccpConBal50, by = c("ccode_PJM" = "cown", "year_PJM"="year") )
 names(mmPJM50)
+
+mmPJM50 %>%
+	filter(is.na(country.name.en)) %>%
+	View()
 
 mmPJM50 <- mmPJM50 %>%  mutate_at(vars(USally_PJM,Rusdefense_PJM), ~replace_na(., 0))
 
@@ -793,7 +816,7 @@ save(mmPJM50, file = paste0(here("Data/Processed/", "mmPJM50.RData") ))
 ## SWIID data -- see 'R_swiid.pdf'
 ##################################################################
 ##################################################################
-
+rm(list=ls())
 getwd()
 
 
@@ -816,6 +839,9 @@ guess_field(swiid_summary$country)
 
 countrycode(swiid_summary$country, origin = "country.name.en", destination = "country.name.en")
 
+### FIX Micronesia ??
+### Micronesia is confusing me can I just remove it??
+
 ## is country X year a unique key in SWIID?
 dim(swiid_summary)
 dim(unique(swiid_summary[c("year", "country")]))  ##yes
@@ -830,7 +856,15 @@ swiid_summary <- swiid_summary %>%
                             destination = "cown"))
 
 
-# TODO: inspect these countries and fix.
+# TODO: inspect these countries and fix. - all don't have cown 
+## Anguilla - Sovereign state = UK
+## Greenland - part of Denmark
+## Hong Kong - China
+## Micronesia - ???
+## Palestinian Territories - occupied by Israel since 1967
+## Puerto Rico - Unincorporated territory of the US
+## Serbia - officially Republic of Serbia ?? - formally Yugoslavia
+## Turks and Caicos Islands - British overseas territory = UK
 
 colnames(swiid_summary) 
 # add suffix to vars
