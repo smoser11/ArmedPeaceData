@@ -685,7 +685,7 @@ countrycode(forcasting$STATE, origin = "cown", destination = "country.name.en")
 
 # so forcasting$STATE - 1990 - 260 should be 255
 
-# TODO: fix STATE 
+# TODO: fix STATE #(SM)I think we did this?
 ## Export to excel
 library(xlsx)
 write.xlsx(forcasting, "Data/Processed/forcasting.xlsx")
@@ -751,7 +751,7 @@ guess_field(rus$ccode)
 
 countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
 
-# TODO: fix 260 
+# fix 260 
 ## Export to excel
 library(xlsx)
 write.xlsx(usa, "Data/Processed/usa.xlsx")
