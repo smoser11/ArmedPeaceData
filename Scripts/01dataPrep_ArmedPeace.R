@@ -731,7 +731,9 @@ save(mmFORCASTING50, file = paste0(here("Data/Raw/", "mmFORCASTING50.RData") ))
 rm(list=ls())
 getwd()
 
-
+library(countrycode)
+library(here)
+library(tidyverse)
 library(readstata13)
 rus <- read.dta13(paste0(here("Data/Raw/hierarchydata","Russiaally4_1 Aug22.dta") ))
 names(rus)
@@ -739,8 +741,9 @@ names(rus)
 usa <- read.dta13(paste0(here("Data/Raw/hierarchydata", "USally4_1 Aug22.dta") ))
 names(usa)
 usa$ccode <- usa$ccode2
-library(tidyverse)
-library(countrycode)
+
+unique(rus$Rusdefense)
+unique(usa$USally)
 
 glimpse(usa)
 guess_field(usa$ccode)
@@ -752,13 +755,15 @@ countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
 ## Export to excel
 library(xlsx)
 write.xlsx(usa, "Data/Processed/usa.xlsx")
-## Manually changed 260 in 1990 to 255
+## Manually changed 260 in 1990 to 255  and removed Germany for 1954, as it has no cown code)
 usa <- read.xlsx(paste0(here("Data/Processed/", "usa2.xlsx")), sheetIndex = 1)
-
+usa <- usa %>% arrange(ccode, year)
 
 guess_field(usa$ccode) 
 
 countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
+countrycode(usa$ccode, origin = "cown", destination = "cown")
+countrycode(usa$ccode, origin = "cown", destination = c("cown", "country.name.en") )
 
 
 
@@ -767,13 +772,48 @@ names(usa)
 ## so rus$ccode and usa$ccode are both cown
 
 PJM <- full_join(usa, rus, by = c("year", "ccode"))
+
+unique(PJM$USally)
+unique(PJM$Rusdefense)
+
+PJM$USally[is.na(PJM$USally)] <- 0
+PJM$Rusdefense[is.na(PJM$Rusdefense)] <- 0
+
+names(PJM)
+guess_field(PJM$ccode) 
+
 PJManti <- anti_join(usa, rus, by = c("year", "ccode"))
 PJM3 <- anti_join(rus, usa, by = c("year", "ccode"))
+
+countrycode(PJM$ccode, origin = "cown", destination = "country.name.en")
+countrycode(PJM$ccode, origin = "cown", destination = "cown")
+countrycode(PJM$ccode, origin = "cown", destination = c("cown", "country.name.en") )
+
 
 
 library(plm)
 pp <- pdata.frame(PJM, index = c('ccode', 'year'))
-pdim(pp)
+table(index(pp), useNA = "ifany")
+
+## is ccode X year a unique key in ?
+dim(PJM)
+dim(unique(PJM[c("year", "ccode")]))  ##no
+
+# find duplicates?
+PJM <- PJM %>% arrange(ccode, year)
+names(PJM)
+ppp <- PJM %>% select(ccode, year)
+which(duplicated(ppp))
+
+which(duplicated(usa))  # so the duplication comes after the full_merge b/t `usa` and `rus` somehow...
+
+# SUPER HACK: remove 2107 from PJM
+
+PJM <- PJM[-2107,]
+library(plm)
+pp <- pdata.frame(PJM, index = c('ccode', 'year'))
+table(index(pp), useNA = "ifany")
+
 
 # add suffix to vars
 ## Add suffix
@@ -795,11 +835,6 @@ mmPJM50 %>%
 	View()
 
 mmPJM50 <- mmPJM50 %>%  mutate_at(vars(USally_PJM,Rusdefense_PJM), ~replace_na(., 0))
-
-# mmPJM50 <- mmPJM50 %>% mutate(USally_PJM = replace_na(USally_PJM,0))
-# 
-# mmPJM50 <- mmPJM50 %>% mutate(Rusdefense_PJM = replace_na(Rusdefense_PJM,0))
-
 
 library(janitor)
 library(haven)
