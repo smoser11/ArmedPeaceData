@@ -1,7 +1,7 @@
 ---
 title: "Data documentation, Armed Peace Project"
-author: "Scott Moser"
-date: "15-Feburay-2023"
+author: "Arabella Cue and Scott Moser"
+date: "Today"
 citation_package: biblatex
 biblatex: true
 biblio-style: "apalike"
@@ -33,12 +33,12 @@ header-includes:
 
 ---
 
-```{r setup, include=FALSE}
-library(knitr)
-knitr::opts_chunk$set(echo = TRUE)
-#opts_knit$set(root.dir=normalizePath('~'))
-opts_knit$set(root.dir="C:/Users/ldzsm2/OneDrive - The University of Nottingham/research/terryPat/")
-```
+# ```{r setup, include=FALSE}
+# library(knitr)
+# knitr::opts_chunk$set(echo = TRUE)
+# #opts_knit$set(root.dir=normalizePath('~'))
+# opts_knit$set(root.dir=paste0(here("Data/Processed/", "forcasting2.xlsx")  "C:/Users/ldzsm2/OneDrive - The University of Nottingham/research/terryPat/")
+# ```
 
 
 # Constuction of the Data-set
@@ -122,8 +122,8 @@ library(plm)
 
 First, since the main variables of interest begin in 1950 (at the earliest, 1963 really), we first limit the standard panel to run from 1950-2020.  I'll use the consecutive and balanced version, but either are fine.
 
-```{r warning=FALSE, message=FALSE}
-load(file =".\\data_ArmedPeace\\codelist_panel2.RData")
+```{r warning=FALSE, message=FALSE, eval = FALSE}
+load(file =".\data_ArmedPeaceData\codelist_panel2.RData")
 
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 pcc50 <- pdata.frame(ccpConBal50, index = c("country.name.en", "year"))
