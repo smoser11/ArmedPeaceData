@@ -720,7 +720,7 @@ library(haven)
 write_dta(clean_names(mmFORCASTING50), path = paste0(here("Data/Processed/", "mmFORCASTING50.dta") ))
 
 getwd()
-save(mmFORCASTING50, file = paste0(here("Data/Raw/", "mmFORCASTING50.RData") ))
+save(mmFORCASTING50, file = paste0(here("Data/Processed/", "mmFORCASTING50.RData") ))
 
 
 
@@ -756,11 +756,11 @@ countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
 library(xlsx)
 write.xlsx(usa, "Data/Processed/usa.xlsx")
 ## Manually changed 260 in 1990 to 255  and removed Germany for 1954, as it has no cown code)
+library(xlsx)
 usa <- read.xlsx(paste0(here("Data/Processed/", "usa2.xlsx")), sheetIndex = 1)
 usa <- usa %>% arrange(ccode, year)
 
 guess_field(usa$ccode) 
-
 countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
 countrycode(usa$ccode, origin = "cown", destination = "cown")
 countrycode(usa$ccode, origin = "cown", destination = c("cown", "country.name.en") )
