@@ -112,7 +112,8 @@ These two panel are saved in `codelist_panel2.RData`.  This `RData` file also co
 
 ## Data Sources and Merging to the Standard Panel
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 library(tidyverse)
 library(ISOcodes)
 library(countrycode)
@@ -122,7 +123,8 @@ library(plm)
 
 First, since the main variables of interest begin in 1950 (at the earliest, 1963 really), we first limit the standard panel to run from 1950-2020.  I'll use the consecutive and balanced version, but either are fine.
 
-```{r warning=FALSE, message=FALSE, eval = FALSE}
+
+```r
 load(file =".\data_ArmedPeaceData\codelist_panel2.RData")
 
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
