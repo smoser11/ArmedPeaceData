@@ -27,7 +27,7 @@ library(tidyverse)
 ##################################################################
 
 rm(list=ls())
-###### countrycode and codelist_panel 
+###### countrycode and codelist_panel
 library(tidyverse)
 library(janitor)
 library(countrycode)
@@ -91,7 +91,6 @@ names(pwt10)
 mmPWT50 <- left_join(pwt10, ccpConBal50, by = c( "isocode_PWT" = "iso3c", "year_PWT"="year") )
 names(mmPWT50)
 
-gt <- mmPWT50 %>% filter(country_PWT == "Germany") %>% select(year_PWT, country_PWT,  country.name.en, cown, cowc, isocode_PWT)
 
 library(janitor)
 library(haven)
@@ -142,20 +141,20 @@ cc <- cow_states %>% select( !contains("month") & !contains("day"))
 
 names(cc)
 
-cclong <- cc %>% 
-  pivot_longer( c(startDate, endDate), names_to = "event", values_to = "date") 
+cclong <- cc %>%
+  pivot_longer( c(startDate, endDate), names_to = "event", values_to = "date")
 
-# cclong <- cc %>% 
-#   pivot_longer( c(styear, endyear), names_to = "event", values_to = "year") 
+# cclong <- cc %>%
+#   pivot_longer( c(styear, endyear), names_to = "event", values_to = "year")
 
 ccfill <- cclong %>%
-  mutate(date = as.Date(as.character(date), format = "%Y")) %>% 
+  mutate(date = as.Date(as.character(date), format = "%Y")) %>%
   group_by(ccode, statenme) %>%
   complete(stateabb , date = seq.Date(min(date), max(date), by = "year"))
 
 names(cclong)
 
-ccfill$version <-2016  
+ccfill$version <-2016
 
 ccfill <- ccfill %>% select(1:4,7)
 
@@ -191,22 +190,22 @@ ccM <- cow_majors %>% select( !contains("month") & !contains("day"))
 
 names(ccM)
 
-cclongM <- ccM %>% 
-  pivot_longer( c(startDate, endDate), names_to = "event", values_to = "date") 
+cclongM <- ccM %>%
+  pivot_longer( c(startDate, endDate), names_to = "event", values_to = "date")
 
-# cclong <- cc %>% 
-#   pivot_longer( c(styear, endyear), names_to = "event", values_to = "year") 
+# cclong <- cc %>%
+#   pivot_longer( c(styear, endyear), names_to = "event", values_to = "year")
 
 cclongM$majPow <- 1
 
 ccfillM <- cclongM %>%
-  mutate(date = as.Date(as.character(date), format = "%Y")) %>% 
+  mutate(date = as.Date(as.character(date), format = "%Y")) %>%
   group_by(ccode, styear) %>%
   complete(majPow , date = seq.Date(min(date), max(date), by = "year"))
 
 names(cclongM)
 
-ccfillM$version <-2016  
+ccfillM$version <-2016
 
 ccfillM <- ccfillM %>% ungroup() %>% select(1,3,4,6)
 
@@ -354,7 +353,7 @@ rrc <- ineqlong2$code
 library(countrycode)
 rrcn <- ineqlong2$countryname
 
-guess_field(rrn)  
+guess_field(rrn)
 guess_field(ineqlong2$code) # iso3c promising
 guess_field(ineqlong2$countryname)
 
@@ -372,7 +371,7 @@ cownT <-  countrycode(rrc, origin = 'iso3c', destination = 'country.name.en', cu
 
 
 # iso3cRet_cowCustom <- c("BUR" = 775,"BYS" = 370, "CSK" = 315, "SCG" = 345, "DDR" = 265, "GER" = 255, "DHY" = 434, "FXX" = 220, "HVO" = 439, "RHO" = 552, "SUN" = 365, "VDR" = 816, "YMD" = 680, "YUG" = 345, "ZAR" = 490)
-# 
+#
 # cownT <-  countrycode(rrc, origin = 'iso3c', destination = 'cown', custom_match = iso3cRet_cowCustom)
 names(cownT)
 length(cownT)
@@ -422,13 +421,9 @@ names(ineqlong2)
 mmineqlong50 <- left_join(ineqlong2, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year") )
 names(mmineqlong50)
 
-
-gt <- mmineqlong50 %>% filter(country.name.en_UTIP == "Germany") %>% select(year_UTIP, country_UTIP, countryname_UTIP, country.name.en_UTIP, cown, cowc)
-
-
 dim(ccpConBal50)
 dim(ineqlong2)
-dim(mmineqlong50)  
+dim(mmineqlong50)
 
 ## below not needed in this instance, keep for future checking of merges?
 # ## checking
@@ -439,15 +434,15 @@ dim(mmineqlong50)
 # dim(dsmm)
 # glimpse(smm)
 # glimpse(ccpConBal50)
-# 
+#
 # dim(mmineqlong50)
 # mmineqlong50 <- distinct(mmineqlong50)
-# 
+#
 # df <- smm
 # which(duplicated(df) | duplicated(df, fromLast = TRUE) )
 # # Yugoslavia is messing up in the merge, somehow.
-# 
-# 
+#
+#
 # mmineqlong50[which( (duplicated(df) | duplicated(df, fromLast = TRUE) ) & (mmineqlong50$countryname_UTIP == "Serbia and Montenegro") ),] %>% View()
 
 ## a total hack.  Change Serbia and Montenegro to Yugoslavia only for 1994-2001
@@ -490,15 +485,15 @@ library(tidyverse)
 library(janitor)
 library(xlsx)
 
-sipri_2020USD <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 5, startRow = 6) 
+sipri_2020USD <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 5, startRow = 6)
 
-sipri_currentUSD <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 6, startRow = 6) 
+sipri_currentUSD <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 6, startRow = 6)
 
-sipri_GDPshare <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 7, startRow = 6) 
+sipri_GDPshare <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 7, startRow = 6)
 
-sipri_perCapita <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 8, startRow = 7) 
+sipri_perCapita <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 8, startRow = 7)
 
-sipri_spendingShare <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 9, startRow = 8) 
+sipri_spendingShare <- read.xlsx(paste0(here("Data/Raw/SIPRI","SIPRI-Milex-data-1949-2021.xlsx")), sheetIndex = 9, startRow = 8)
 
 ## Clean
 cleann <- function(df) {
@@ -519,7 +514,7 @@ cc <-lapply(lst, cleann)
 ## pivot form wide to long
 
 deparse(substitute(sipri_2020USD))
-# 
+#
 piv <- function(df, vt){
       cat(vt)
       df <- pivot_longer(df, cols = starts_with("X"),
@@ -544,8 +539,8 @@ sipriLongL  <- imap(cc, ~piv(.x,.y) )
 length(sipriLongL)
 
 sipriLong <- sipriLongL %>% reduce(left_join,  c("Country","year") )
-  
-  
+
+
 
 ## merge SIPRI(s) into the 'master' codelist_panel
 #### BUT: to do this we have to know the SIPRI codes countries!
@@ -569,7 +564,7 @@ sipriLongCo$year <- as.numeric(sipriLongCo$year)
 guess_field(sipriLongCo$Country)  #####!!!!!!!!!! Country = country.name.en
 
 ###############################
-## 
+##
 
 glimpse(sipriLongCo)
 
@@ -684,7 +679,7 @@ forcasting <- read.dta13(paste0(here("Data/Raw/", "Forecasting Military Expendit
 names(forcasting)
 
 
-guess_field(forcasting$STATE) 
+guess_field(forcasting$STATE)
 
 countrycode(forcasting$STATE, origin = "cown", destination = "country.name.en")
 
@@ -698,7 +693,7 @@ write.xlsx(forcasting, "Data/Processed/forcasting.xlsx")
 forcasting <- read.xlsx(paste0(here("Data/Processed/", "forcasting2.xlsx")), sheetIndex = 1)
 
 
-guess_field(forcasting$STATE) 
+guess_field(forcasting$STATE)
 
 countrycode(forcasting$STATE, origin = "cown", destination = "cown")
 
@@ -756,7 +751,7 @@ guess_field(rus$ccode)
 
 countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
 
-# fix 260 
+# fix 260
 ## Export to excel
 library(xlsx)
 write.xlsx(usa, "Data/Processed/usa.xlsx")
@@ -765,7 +760,7 @@ library(xlsx)
 usa <- read.xlsx(paste0(here("Data/Processed/", "usa2.xlsx")), sheetIndex = 1)
 usa <- usa %>% arrange(ccode, year)
 
-guess_field(usa$ccode) 
+guess_field(usa$ccode)
 countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
 countrycode(usa$ccode, origin = "cown", destination = "cown")
 countrycode(usa$ccode, origin = "cown", destination = c("cown", "country.name.en") )
@@ -785,7 +780,7 @@ PJM$USally[is.na(PJM$USally)] <- 0
 PJM$Rusdefense[is.na(PJM$Rusdefense)] <- 0
 
 names(PJM)
-guess_field(PJM$ccode) 
+guess_field(PJM$ccode)
 
 PJManti <- anti_join(usa, rus, by = c("year", "ccode"))
 PJM3 <- anti_join(rus, usa, by = c("year", "ccode"))
@@ -879,8 +874,6 @@ guess_field(swiid_summary$country)
 
 countrycode(swiid_summary$country, origin = "country.name.en", destination = "country.name.en")
 
-### FIX Micronesia ??
-### Micronesia is confusing me can I just remove it??
 
 ## is country X year a unique key in SWIID?
 dim(swiid_summary)
@@ -894,19 +887,26 @@ swiid_summary <- swiid_summary %>%
   mutate(cown = countrycode(country,
                             origin = "country.name",
                             destination = "cown"))
+library(tidyverse)
 
-
-# TODO: inspect these countries and fix. - all don't have cown 
-## Anguilla - Sovereign state = UK
+# TODO: inspect these countries and fix. - all don't have cown
+## Anguilla - Sovereign state = UK - drop it
 ## Greenland - part of Denmark
-## Hong Kong - China
+## Hong Kong - China - change name
 ## Micronesia - ???
-## Palestinian Territories - occupied by Israel since 1967
-## Puerto Rico - Unincorporated territory of the US
+## Palestinian Territories - occupied by Israel since 1967 - iso code
+## Puerto Rico - Unincorporated territory of the US - drop it, not in codelist
 ## Serbia - officially Republic of Serbia ?? - formally Yugoslavia
-## Turks and Caicos Islands - British overseas territory = UK
+## Turks and Caicos Islands - British overseas territory = UK - drop this
 
-colnames(swiid_summary) 
+#### Remove micronesia manually
+### Changed Serbia to Yugoslavia for the years 1997-2005
+swiid_summary <- read.csv(paste0(here("Data/Processed/", "swiid_summary2.csv")))
+
+countrycode(swiid_summary$country, origin = "country.name.en", destination = "country.name.en")
+## Some values were not matched unambiguously?? - Blank? Micronesia fixed?
+
+colnames(swiid_summary)
 # add suffix to vars
 ## Add suffix
 colnames(swiid_summary) <- paste(colnames(swiid_summary), "SWIID", sep = "_")
@@ -914,20 +914,25 @@ colnames(swiid_summary)
 names(swiid_summary)
 
 ## make ccp50 = standardized, balanced and consecutive
+library(here)
 load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
 ## TODO: fix the below
+## join by country.name.en
 
-mmSWIIDcow <- left_join(ccpConBal50, swiid_summary, by = c("cown" = "cown_SWIID", "year"="year_SWIID") )
-names(mmSWIIDcow)
-distinct(mmSWIIDcow)
+mmSWIIDcc <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID"="year") )
+names(mmSWIIDcc)
+distinct(mmSWIIDcc)
 
 mmSWIID50 <- left_join(ccpConBal50, swiid_summary, by = c("country.name.en" = "country_SWIID", "year"="year_SWIID") )
 names(mmSWIID50)
 distinct(mmSWIID50)
+
+### Attempt to debug
+### Get rid as not using cown
 
 anti_join(mmSWIID50, mmSWIIDcow) %>% dim()  # there are 4666 rows in mmSWIID *not* in swiidCow
 
@@ -962,8 +967,8 @@ runs <- swiid_summary %>% group_by(country) %>% filter(min(year) <= 1970)
 unique(runs$country)
 
 
-swiid_summary %>% panelview(gini_disp ~ 1, 
-                            index = c("country","year"), 
+swiid_summary %>% panelview(gini_disp ~ 1,
+                            index = c("country","year"),
                             axis.lab="both", type = "miss")
 
 
@@ -974,17 +979,9 @@ swiid_summary %>% panelview(gini_disp ~ 1,
 ## note: COW doesn't have terretories (e.g. Anguilla, Cayman Islands, Hong Kong, Puerto Rico, Turks and Caicos)
 ## note:  Serbia, Serbia and Montenegro get the Yougoslavia ccode, 345  see  https://www.paulhensel.org/icownames.html
 
-swiid1_lac[str_detect(swiid1_lac$country, "^Serb"),'cown'] <- 345 
+swiid1_lac[str_detect(swiid1_lac$country, "^Serb"),'cown'] <- 345
 
 
-
-
-
-
-
-
-
-
-
-
-
+### Democracy external threat (initials of authors)
+### JPR what goes up replication
+## M Ensar
