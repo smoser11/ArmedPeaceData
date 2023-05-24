@@ -91,6 +91,8 @@ names(pwt10)
 mmPWT50 <- left_join(pwt10, ccpConBal50, by = c( "isocode_PWT" = "iso3c", "year_PWT"="year") )
 names(mmPWT50)
 
+gt <- mmPWT50 %>% filter(country_PWT == "Germany") %>% select(year_PWT, country_PWT,  country.name.en, cown, cowc, isocode_PWT)
+
 
 library(janitor)
 library(haven)
@@ -421,6 +423,9 @@ names(ineqlong2)
 mmineqlong50 <- left_join(ineqlong2, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year") )
 names(mmineqlong50)
 
+gt <- mmineqlong50 %>% filter(country.name.en_UTIP == "Germany") %>% select(year_UTIP, country_UTIP, countryname_UTIP, country.name.en_UTIP, cown, cowc)
+
+
 dim(ccpConBal50)
 dim(ineqlong2)
 dim(mmineqlong50)
@@ -457,6 +462,7 @@ ineqlong3$country.name.en_UTIP <- recode(ineqlong3$country.name.en_UTIP, "'Serbi
 
 mmUTIP50 <- left_join(ineqlong3, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year") )
 names(mmUTIP50)
+
 
 save(mmUTIP50, file = paste0(here("Data/Processed","mmUTIP50.RData") ))
 
