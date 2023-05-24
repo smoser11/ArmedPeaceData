@@ -874,8 +874,6 @@ guess_field(swiid_summary$country)
 
 countrycode(swiid_summary$country, origin = "country.name.en", destination = "country.name.en")
 
-### FIX Micronesia ??
-### Micronesia is confusing me can I just remove it??
 
 ## is country X year a unique key in SWIID?
 dim(swiid_summary)
@@ -889,17 +887,24 @@ swiid_summary <- swiid_summary %>%
   mutate(cown = countrycode(country,
                             origin = "country.name",
                             destination = "cown"))
-
+library(tidyverse)
 
 # TODO: inspect these countries and fix. - all don't have cown 
-## Anguilla - Sovereign state = UK
+## Anguilla - Sovereign state = UK - drop it
 ## Greenland - part of Denmark
-## Hong Kong - China
+## Hong Kong - China - change name
 ## Micronesia - ???
-## Palestinian Territories - occupied by Israel since 1967
-## Puerto Rico - Unincorporated territory of the US
+## Palestinian Territories - occupied by Israel since 1967 - iso code
+## Puerto Rico - Unincorporated territory of the US - drop it, not in codelist
 ## Serbia - officially Republic of Serbia ?? - formally Yugoslavia
-## Turks and Caicos Islands - British overseas territory = UK
+## Turks and Caicos Islands - British overseas territory = UK - drop this
+
+#### Remove micronesia manually
+### Changed Serbia to Yugoslavia for the years 1997-2005
+swiid_summary <- read.csv(paste0(here("Data/Processed/", "swiid_summary2.csv")))
+
+countrycode(swiid_summary$country, origin = "country.name.en", destination = "country.name.en")
+## Some values were not matched unambiguously?? - Blank? Micronesia fixed?
 
 colnames(swiid_summary) 
 # add suffix to vars
@@ -909,20 +914,25 @@ colnames(swiid_summary)
 names(swiid_summary)
 
 ## make ccp50 = standardized, balanced and consecutive
+library(here)
 load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
 ## TODO: fix the below
+## join by country.name.en
 
-mmSWIIDcow <- left_join(ccpConBal50, swiid_summary, by = c("cown" = "cown_SWIID", "year"="year_SWIID") )
-names(mmSWIIDcow)
-distinct(mmSWIIDcow)
+mmSWIIDcc <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID"="year") )
+names(mmSWIIDcc)
+distinct(mmSWIIDcc)
 
 mmSWIID50 <- left_join(ccpConBal50, swiid_summary, by = c("country.name.en" = "country_SWIID", "year"="year_SWIID") )
 names(mmSWIID50)
 distinct(mmSWIID50)
+
+### Attempt to debug
+### Get rid as not using cown
 
 anti_join(mmSWIID50, mmSWIIDcow) %>% dim()  # there are 4666 rows in mmSWIID *not* in swiidCow
 
@@ -972,7 +982,9 @@ swiid_summary %>% panelview(gini_disp ~ 1,
 swiid1_lac[str_detect(swiid1_lac$country, "^Serb"),'cown'] <- 345 
 
 
-
+### Democracy external threat (initials of authors)
+### JPR what goes up replication
+## M Ensar
 
 
 
