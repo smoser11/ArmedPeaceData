@@ -3,3 +3,5 @@
 *.Rhistory
 *.Rproj
 *.Rproj.user
+.Rproj.user
+ArmedPeaceData.Rproj
