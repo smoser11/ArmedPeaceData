@@ -289,9 +289,9 @@ Edits: Manually changed 260 to 255 for the years 1990-2000.
 
 <>
 
-Coverage:
+Coverage: 1949- 2015
 
-Vars:
+Vars: "athreat", "UDel_temp_popweight", "UDel_precip_popweight", "smilex", "uncertain", "sgov", "rivalry", "smilex1", "smilincr", "milex", "milex1", .....
 
 Merge key: Merged with cown and year.
 
@@ -305,9 +305,9 @@ Edits: Fixed 260 and dropped 340, 296, 397, 711, 971, 972, 973.
 
 <>
 
-Coverage:
+Coverage: 
 
-Vars:
+Vars: 
 
 Merge key: Merged with country.name.en and year.
 
@@ -319,9 +319,9 @@ Dropped observations in merge? No.
 
 <>
 
-Coverage:
+Coverage: 1993- 2007?
 
-Vars:
+Vars: "Inration", "InGDP", "Inpop", "inttot", "civtot", "polity2", "militaryexpenditure..", "realgdp", "population", "continent", "missing", "citizensmissing"
 
 Merge key: Merged with country.name.en and year.
 
