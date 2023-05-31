@@ -214,9 +214,9 @@ Coverage: 165 countries between 1950 and 2000.
 
 Vars: Influence of countries' security environments on military spending
 
-Merge key:
+Merge key: Merged with cown and year.
 
-Dropped observations in merge?
+Dropped observations in merge? No. 
 
 Edits: Changed 260 to 255 from 1990-2000.
 
@@ -229,9 +229,9 @@ Coverage: 141 countries between 1952 and 2000.
 
 Vars: Frequently cited determinants of military spending and how they help to predict future expenditure
 
-Merge key:
+Merge key: Merged with cown and year.
 
-Dropped observations in merge?
+Dropped observations in merge? No. 
 
 EDits: Manually changed 1990 260 to 255. 
 
@@ -245,9 +245,9 @@ Coverage:
 
 Vars:
 
-Merge key:
+Merge key: Merged with cown and year.
 
-Dropped observations in merge?
+Dropped observations in merge? Yes: Removed 2107 from PJM.
 
 Edits: Manually changed 260 in 1990 to 255  and removed Germany for 1954, as it has no cown code). Remove 2107 from PJM.
 
@@ -277,9 +277,9 @@ Coverage:
 
 Vars:
 
-Merge key:
+Merge key: Merged with cown and year?
 
-Dropped observations in merge?
+Dropped observations in merge? No. 
 
 Edits: Manually changed 260 to 255 for the years 1990-2000.
 
@@ -293,11 +293,11 @@ Coverage:
 
 Vars:
 
-Merge key:
+Merge key: Merged with cown and year.
 
-Dropped observations in merge?
+Dropped observations in merge? Yes.
 
-Edits: TODO: fix 260, 340, 296, 397, 711, 971, 972, 973
+Edits: Fixed 260 and dropped 340, 296, 397, 711, 971, 972, 973. 
 
 
 
@@ -309,9 +309,9 @@ Coverage:
 
 Vars:
 
-Merge key:
+Merge key: Merged with country.name.en and year.
 
-Dropped observations in merge?
+Dropped observations in merge? No.
 
 
 
@@ -323,9 +323,9 @@ Coverage:
 
 Vars:
 
-Merge key:
+Merge key: Merged with country.name.en and year.
 
-Dropped observations in merge?
+Dropped observations in merge? No. 
 
 
 ## Master Merge
