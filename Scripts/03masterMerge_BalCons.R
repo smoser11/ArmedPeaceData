@@ -39,34 +39,41 @@ rm(list=ls())
 
 ## make ccp50 = standardized, balanced and consecutive
 
-load(file ="codelist_panel2.RData")
+load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
 library(stringr)
 
-str_starts(dir(), "mm")
-ds <- dir()[str_detect(dir(), "^mm.*RData$")]
+getwd()
+load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
+
+str_starts(dir(paste0(here("Data/Processed/") )), "mm")
+
+ds <- dir(paste0(here("Data/Processed/") ))[str_detect(dir(paste0(here("Data/Processed/") )), "^mm.*RData$")]
 ds
 tokens <- str_replace_all(ds, '.RData', '')
 
 i <- 1
 dat <- list()
+dat[[1]] <- ccpConBal50
 for (i in seq_along(ds)) {  # 
-  load(ds[i])
+  load(paste0(here("Data/Processed/"),'/',ds[i]) )
   tokens[i]
-  eval(parse(text=paste0("dat[[tokens[i] ]] <- ", tokens[i])))
+  eval(parse(text=paste0("dat[[(i+1 )]] <- ", tokens[i])))
 }
 
 str(dat)
 getwd()
-save(dat, file = "datMerge.RData")
+save(dat, file = paste0(here("Data/Processed/"),"/datMerge.RData") )
 
 #pan <- dat
 
 cou <- sapply(dat, function(x) x$country.name.en.regex) %>% unlist %>% unique
 cou
+names(dat[[1]])
+
 yea <- sapply(dat, function(x) x$year) %>% unlist %>% unique
 yea
 yea <- min(yea):max(yea)
@@ -80,6 +87,7 @@ names(ccpConBal50)
   
 mmALL50 <- dat %>%  purrr::reduce(left_join, by = c(names(ccpConBal50)))
 
+names(dat[[2]])
 getwd()
 library(haven)
 library(janitor)
