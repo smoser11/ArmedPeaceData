@@ -1032,6 +1032,8 @@ names(HSS)
 mmHSS50 <- left_join(HSS, ccpConBal50, by = c("ccode_HSS" = "cown", "year_HSS" = "year"), keep=TRUE )
 names(mmHSS50)
 
+mmHSS50 <- mmHSS50 %>% select(!"NA._HSS"  )
+	
 library(janitor)
 library(haven)
 write_dta(clean_names(mmHSS50), path = paste0(here("Data/Processed/", "mmHSS50.dta") ))
@@ -1057,7 +1059,7 @@ countrycode(ZFS$STATE, origin = "cown", destination = "country.name.en")
 
 # so ZFS 260, 340, 396, 711, 971, 972, 973 were matched unambiguously
 
-# TODO: fix 260, 340, 296, 397, 711, 971, 972, 973
+# fix 260, 340, 296, 397, 711, 971, 972, 973
 ## Export to excel
 library(xlsx)
 write.xlsx(ZFS, "Data/Processed/ZFS.xlsx")
@@ -1088,6 +1090,8 @@ names(ZFS)
 
 mmZFS50 <- left_join(ZFS, ccpConBal50, by = c("STATE_ZFS" = "cown", "YEAR_ZFS" = "year"), keep=TRUE )
 names(mmZFS50)
+
+mmZFS50 <- mmZFS50 %>% select(!"NA._ZFS"  )
 
 library(janitor)
 library(haven)
