@@ -145,6 +145,8 @@ Merge key:  `c("cown" = "ccode_COW", "year"="year_COW")`
 
 Dropped observations in merge? Yes.
 
+Edits: Manually changed mmf 1990 265 German Democratic Republic to 255 Germany.
+
 
 
 ### University of Texas Inequality Project (UTIP)
@@ -167,6 +169,8 @@ ineqlong$cown <- countrycode(ineqlong$code, origin = 'iso3c', destination = 'cow
 
 So the key is `cown` X `year`.
 Dropped observations in merge? HKG, MAC, PRI, PSE, SCG
+
+Edits: Manually changed german federal republic to germany for 1990. Changed Serbia and Montenegro to Yugoslavia only for 1994-2001
 
 
 
@@ -192,16 +196,112 @@ Dropped observations in merge? No.
 
 <>
 
-Coverage:
+Coverage: 191 countries between 1949 and 2022.
 
-Vars:
+Vars: Military spending of countries
 
 Merge key:  `by = c("country.name.en" ="Country" , "year" = "year") `
 
 
 Dropped observations in merge? Region values (Africa, etc.)
 
-###
+
+### NORD
+
+<>
+
+Coverage: 165 countries between 1950 and 2000.
+
+Vars: Influence of countries' security environments on military spending
+
+Merge key:
+
+Dropped observations in merge?
+
+Edits: Changed 260 to 255 from 1990-2000.
+
+
+### FORECASTING
+
+<>
+
+Coverage: 141 countries between 1952 and 2000. 
+
+Vars: Frequently cited determinants of military spending and how they help to predict future expenditure
+
+Merge key:
+
+Dropped observations in merge?
+
+EDits: Manually changed 1990 260 to 255. 
+
+
+
+### P. MACDONALD 'alliances'
+
+<>
+
+Coverage:
+
+Vars:
+
+Merge key:
+
+Dropped observations in merge?
+
+Edits: Manually changed 260 in 1990 to 255  and removed Germany for 1954, as it has no cown code). Remove 2107 from PJM.
+
+
+
+### SWIID
+
+<>
+
+Coverage: 198 countries (?) between 1960 and present.
+
+Vars: Income inequality
+
+Merge key: c("country.name.en" = "country_SWIID", "year" = "year_SWIID") / c("country_SWIID" = "country.name.en" 
+
+Dropped observations in merge? Yes.
+
+Edits: Removed Micronesia manually. Changed Serbia to Yugoslavia for the years 1997-2005. Dropped Anguilla, Greenland, Puerto Rico, Turks & Caicos because there is no data for it in codelist panel. Changed Hong Kong to Hong Kong SAR China. Added isocode3c in SWIID for Palestinian Territories?
+
+
+
+### HSS
+
+<>
+
+Coverage:
+
+Vars:
+
+Merge key:
+
+Dropped observations in merge?
+
+Edits: Manually changed 260 to 255 for the years 1990-2000.
+
+
+
+### ZFS
+
+<>
+
+Coverage:
+
+Vars:
+
+Merge key:
+
+Dropped observations in merge?
+
+Edits: TODO: fix 260, 340, 296, 397, 711, 971, 972, 973
+
+
+
+### YE_COW
 
 <>
 
@@ -214,21 +314,8 @@ Merge key:
 Dropped observations in merge?
 
 
-###
 
-<>
-
-Coverage:
-
-Vars:
-
-Merge key:
-
-Dropped observations in merge?
-
-
-
-###
+### YE_WB
 
 <>
 
