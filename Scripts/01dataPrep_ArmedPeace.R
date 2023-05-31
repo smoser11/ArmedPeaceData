@@ -292,7 +292,7 @@ colnames(mmf50) <- paste(colnames(mmf50), "COW", sep = "_")
 colnames(mmf50)
 
 
-mmCOW50 <- left_join(mmf50, ccpConBal50,  by = c( "ccode_COW" = "cown", "year_COW" = "year") )
+mmCOW50 <- left_join(mmf50, ccpConBal50,  by = c( "ccode_COW" = "cown", "year_COW" = "year"),keep=TRUE )
 names(mmCOW50)
 
 ## double check merge
@@ -996,7 +996,7 @@ swiid1_lac[str_detect(swiid1_lac$country, "^Serb"),'cown'] <- 345
 ########## Democracy External Threat and Military Spending (Hauenstein et al. 2021) https://journals-sagepub-com.nottingham.idm.oclc.org/doi/pdf/10.1177/20531680211049660 ######## "dp_Nord_clean.dta" ###### (HSS) ###
 rm(list=ls())
 getwd()
-
+library(here)
 library(readstata13)
 
 HSS <- read.dta13(paste0(here("Data/Raw/Democracy external threat and military spending/", "DP_Nord_clean.dta") ))
@@ -1030,11 +1030,11 @@ ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
 # add suffix to vars
 ## Add suffix
-colnames(HSS) <- paste(colnames(HSS), "ZFS", sep = "_")
+colnames(HSS) <- paste(colnames(HSS), "HSS", sep = "_")
 colnames(HSS)
 names(HSS)
 
-mmHSS50 <- left_join(HSS, ccpConBal50, by = c("ccode_HSS" = "ccode", "ccode_HSS" = "year") )
+mmHSS50 <- left_join(HSS, ccpConBal50, by = c("ccode_HSS" = "cown", "year_HSS" = "year") )
 names(mmHSS50)
 
 library(janitor)
