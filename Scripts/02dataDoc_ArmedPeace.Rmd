@@ -270,6 +270,9 @@ Edits: Removed Micronesia manually. Changed Serbia to Yugoslavia for the years 1
 
 
 ### HSS
+ Democracy External Threat and Military Spending (Hauenstein et al. 2021)  @haue21-democracy
+ 
+ https://journals-sagepub-com.nottingham.idm.oclc.org/doi/pdf/10.1177/20531680211049660 ######## "dp_Nord_clean.dta" ###### (HSS) ###
 
 <>
 
@@ -287,7 +290,11 @@ Edits: Manually changed 260 to 255 for the years 1990-2000.
 
 ### ZFS
 
-<>
+@hall15-what
+
+JPR - What Goes UP - Replication (Zielinski et al. 2017) ###### "replication.dta" ###### 
+<https://www-jstor-org.nottingham.idm.oclc.org/stable/48590474>
+
 
 Coverage: 1949- 2015
 
@@ -328,40 +335,6 @@ Merge key: Merged with country.name.en and year.
 Dropped observations in merge? No. 
 
 
-## Master Merge
-
-
-
-
-
-
-# Variables
-
-From `archModels-ave_2017july30-TS.do`:
-
-```
-gen milexpRate = milex/L.milex
-gen milper1 = L.milper
-gen milperD1 = D.milper
-gen lmilper = log(milper)
-gen lmilper1 = L.lmilper
-gen milperRate = milper/milper1
-gen lmilperRate = log(milper/milper1)
-gen lmilperD1 = D.lmilper
-```
-
-
-`lnmilex`
-`lexport82per  gini_net  warparticip polity2 lnrgdpe USdef Russiadef`
-
-```
-ylist lmilper /* lnmilex milperRate */
-global xlist lexport82per  gini_net  warparticip polity2 lnrgdpe USdef Russiadef  /* lnmilex1 lnexport82 */
-```
-
-`ArPeacemasterDec2016.dta`
-`ArPeacemasterDec2016ave.dta`
-
 
 ## Replication Data 
 
@@ -373,6 +346,17 @@ From:
 
 @bisc21-military
 
+
+
+
+# Master Merge
+
+
+
+
+
+
+# Variables
 
 
 ---
