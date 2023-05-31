@@ -1045,7 +1045,7 @@ save(mmHSS50, file = paste0(here("Data/Processed/", "mmHSS50.RData") ))
 ##### JPR - What Goes UP - Replication (Zielinski et al. 2017) https://www-jstor-org.nottingham.idm.oclc.org/stable/48590474 ###### "replication.dta" ###### (ZFS)
 rm(list=ls())
 getwd()
-
+library(here)
 library(readstata13)
 
 ZFS <- read.dta13(paste0(here("Data/Raw/JPR - What Goes Up - Replication/", "replication.dta") ))
@@ -1075,7 +1075,7 @@ countrycode(ZFS$STATE, origin = "cown", destination = "cown")
 ## make ccp50 = standardized, balanced and consecutive
 
 load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
-
+library(tidyverse)
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
@@ -1106,6 +1106,7 @@ getwd()
 ##### 1. "datasetcow2015.xlsx"
 library(xlsx)
 library(here)
+library(countrycode)
 
 YE_COW <- read.xlsx(paste0(here("Data/Raw/M Ensar Yesilyurt & J Paul Elhorst/", "datasetcow2015.xlsx")), sheetIndex = 1)
 	
