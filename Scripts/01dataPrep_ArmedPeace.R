@@ -89,7 +89,7 @@ colnames(pwt10) <- paste(colnames(pwt10), "PWT", sep = "_")
 colnames(pwt10)
 names(pwt10)
 
-mmPWT50 <- left_join(pwt10, ccpConBal50, by = c( "isocode_PWT" = "iso3c", "year_PWT"="year") )
+mmPWT50 <- left_join(pwt10, ccpConBal50, by = c( "isocode_PWT" = "iso3c", "year_PWT"="year"), keep=TRUE )
 names(mmPWT50)
 
 gt <- mmPWT50 %>% filter(country_PWT == "Germany") %>% select(year_PWT, country_PWT,  country.name.en, cown, cowc, isocode_PWT)
@@ -221,7 +221,7 @@ cccfillM <- cccfillM %>% arrange(ccode, year)  %>% select(-date)
 ## merge and replace NA in majPow with zeros (= not in ccfillM => not a major power in that countnryX year)
 names(cccfill)
 names(cccfillM)
-mmf <- left_join(cccfill, cccfillM, by= c("ccode", "year") )
+mmf <- left_join(cccfill, cccfillM, by= c("ccode", "year"), keep=TRUE )
 
 mmf <- mmf %>%  mutate_at(vars(majPow), ~replace_na(., 0))
 
@@ -244,6 +244,7 @@ length(unique(cow_statesMajor16long$ccode))
 ## Manually changed mmf 1990 265 German Democratic Republic to 255 Germany
 library(xlsx)
 write.csv(mmf, "Data/Processed/mmf.csv")
+library(readxl)
 mmf <- read_xlsx(paste0(here("Data/Processed", "mmf2.xlsx") ), sheet = 1)
 
 
@@ -398,6 +399,7 @@ colnames(ineqlong2) <- paste(colnames(ineqlong2), "UTIP", sep = "_")
 
 ### Manually changed german federal republic to germany for 1990
 write.xlsx(ineqlong2, "Data/Processed/ineqlong2.xlsx")
+
 ineqlong2 <- read.xlsx(paste0(here("Data/Processed/", "ineqlong2.xlsx")), sheetIndex = 1)
 
 
@@ -432,7 +434,7 @@ glimpse(ccpConBal50)
 
 
 names(ineqlong2)
-mmineqlong50 <- left_join(ineqlong2, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year") )
+mmineqlong50 <- left_join(ineqlong2, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year"), keep=TRUE )
 names(mmineqlong50)
 
 gt <- mmineqlong50 %>% filter(country.name.en_UTIP == "Germany") %>% select(year_UTIP, country_UTIP, countryname_UTIP, country.name.en_UTIP, cown, cowc)
@@ -472,7 +474,7 @@ recode(ineqlong3$country.name.en_UTIP, "'Serbia and Montenegro' = 'Yugoslavia'")
 
 ineqlong3$country.name.en_UTIP <- recode(ineqlong3$country.name.en_UTIP, "'Serbia and Montenegro' = 'Yugoslavia'")
 
-mmUTIP50 <- left_join(ineqlong3, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year") )
+mmUTIP50 <- left_join(ineqlong3, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year"), keep=TRUE )
 names(mmUTIP50)
 
 
@@ -597,7 +599,7 @@ ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 colnames(sipriLongCo) <- paste(colnames(sipriLongCo), "SIPRI", sep = "_")
 
 
-mmSIPRI50 <- left_join(sipriLongCo, ccpConBal50,   by = c( "Country_SIPRI" = "country.name.en"  , "year_SIPRI" = "year") )
+mmSIPRI50 <- left_join(sipriLongCo, ccpConBal50,   by = c( "Country_SIPRI" = "country.name.en"  , "year_SIPRI" = "year"), keep=TRUE )
 names(mmSIPRI50)
 
 dim(mmSIPRI50)
@@ -666,7 +668,7 @@ names(nord)
 
 library(tidyverse)
 
-mmNORD50 <- left_join(nord, ccpConBal50, by = c("STATE_NORD" = "cown", "YEAR_NORD"="year") )
+mmNORD50 <- left_join(nord, ccpConBal50, by = c("STATE_NORD" = "cown", "YEAR_NORD"="year"), keep=TRUE )
 names(mmNORD50)
 names(nord)
 names(ccpConBal50)
@@ -707,6 +709,7 @@ countrycode(forcasting$STATE, origin = "cown", destination = "country.name.en")
 ## Export to excel
 library(xlsx)
 write.xlsx(forcasting, "Data/Processed/forcasting.xlsx")
+
 ## Manually changed 1990 260 to 255
 forcasting <- read.xlsx(paste0(here("Data/Processed/", "forcasting2.xlsx")), sheetIndex = 1)
 
@@ -730,7 +733,7 @@ colnames(forcasting) <- paste(colnames(forcasting), "BB", sep = "_")
 colnames(forcasting)
 names(forcasting)
 
-mmFORCASTING50 <- left_join(forcasting, ccpConBal50, by = c("STATE_BB" = "cown", "YEAR_BB"="year") )
+mmFORCASTING50 <- left_join(forcasting, ccpConBal50, by = c("STATE_BB" = "cown", "YEAR_BB"="year"), keep=TRUE )
 names(mmFORCASTING50)
 
 library(janitor)
@@ -773,6 +776,7 @@ countrycode(usa$ccode, origin = "cown", destination = "country.name.en")
 ## Export to excel
 library(xlsx)
 write.xlsx(usa, "Data/Processed/usa.xlsx")
+
 ## Manually changed 260 in 1990 to 255  and removed Germany for 1954, as it has no cown code)
 library(xlsx)
 usa <- read.xlsx(paste0(here("Data/Processed/", "usa2.xlsx")), sheetIndex = 1)
@@ -813,6 +817,7 @@ library(plm)
 pp <- pdata.frame(PJM, index = c('ccode', 'year'))
 table(index(pp), useNA = "ifany")
 
+names(PJM)
 ## is ccode X year a unique key in ?
 dim(PJM)
 dim(unique(PJM[c("year", "ccode")]))  ##no
@@ -845,7 +850,7 @@ load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
-mmPJM50 <- left_join(PJM, ccpConBal50, by = c("ccode_PJM" = "cown", "year_PJM"="year") )
+mmPJM50 <- left_join(PJM, ccpConBal50, by = c("ccode_PJM" = "cown", "year_PJM"="year"), keep=TRUE )
 names(mmPJM50)
 
 mmPJM50 %>%
@@ -936,22 +941,22 @@ load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
-## TODO: fix the below
+
 ## join by country.name.en
 
-mmSWIIDcc <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID" = "year") )
+mmSWIIDcc <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID" = "year"), keep=TRUE )
 names(mmSWIIDcc)
 distinct(mmSWIIDcc)
 
 #### check for faults 
 mmSWIIDanti <- anti_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID" = "year") )
 
-mmSWIID50 <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID"="year") )
+mmSWIID50 <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID"="year"), keep=TRUE )
 names(mmSWIID50)
 distinct(mmSWIID50)
 
 ## Join with ISO3c for Palestinian Territories
-mmSWIIDiso <- left_join(swiid_summary, ccpConBal50, by = c("iso3c_SWIID" = "iso3c", "year_SWIID" = "year"))
+mmSWIIDiso <- left_join(swiid_summary, ccpConBal50, by = c("iso3c_SWIID" = "iso3c", "year_SWIID" = "year"), keep=TRUE)
 names(mmSWIIDiso)
 distinct(mmSWIIDiso)
 
@@ -968,13 +973,6 @@ save(mmSWIID50, file = paste0(here("Data/Processed/", "mmSWIID50.RData") ))
 
 
 
-######################
-load(url("https://github.com/fsolt/swiid/blob/master/data/swiid9_3.rda?raw=true") )
-names(swiid_summary)
-
-runs <- swiid_summary %>% group_by(country) %>% filter(min(year) <= 1970)
-unique(runs$country)
-
 library(panelView)
 swiid_summary %>% panelview(gini_disp ~ 1,
                             index = c("country","year"),
@@ -988,9 +986,6 @@ swiid_summary %>% panelview(gini_disp ~ 1,
 ## note: COW doesn't have territories (e.g. Anguilla, Cayman Islands, Hong Kong, Puerto Rico, Turks and Caicos)
 ## note:  Serbia, Serbia and Montenegro get the Yougoslavia ccode, 345  see  https://www.paulhensel.org/icownames.html
 
-
-## What is this??
-swiid1_lac[str_detect(swiid1_lac$country, "^Serb"),'cown'] <- 345
 
 
 ########## Democracy External Threat and Military Spending (Hauenstein et al. 2021) https://journals-sagepub-com.nottingham.idm.oclc.org/doi/pdf/10.1177/20531680211049660 ######## "dp_Nord_clean.dta" ###### (HSS) ###
@@ -1034,7 +1029,7 @@ colnames(HSS) <- paste(colnames(HSS), "HSS", sep = "_")
 colnames(HSS)
 names(HSS)
 
-mmHSS50 <- left_join(HSS, ccpConBal50, by = c("ccode_HSS" = "cown", "year_HSS" = "year") )
+mmHSS50 <- left_join(HSS, ccpConBal50, by = c("ccode_HSS" = "cown", "year_HSS" = "year"), keep=TRUE )
 names(mmHSS50)
 
 library(janitor)
@@ -1068,6 +1063,7 @@ library(xlsx)
 write.xlsx(ZFS, "Data/Processed/ZFS.xlsx")
 
 ## Manually changed 260 to 255 for 1990 to 2015, dropped 340, 396, 397, 711, 971, 972, 973
+gc()
 ZFS <- read.xlsx(paste0(here("Data/Processed/", "ZFS2.xlsx")), sheetIndex = 1)
 
 
@@ -1090,7 +1086,7 @@ colnames(ZFS) <- paste(colnames(ZFS), "ZFS", sep = "_")
 colnames(ZFS)
 names(ZFS)
 
-mmZFS50 <- left_join(ZFS, ccpConBal50, by = c("STATE_ZFS" = "cown", "YEAR_ZFS" = "year") )
+mmZFS50 <- left_join(ZFS, ccpConBal50, by = c("STATE_ZFS" = "cown", "YEAR_ZFS" = "year"), keep=TRUE )
 names(mmZFS50)
 
 library(janitor)
@@ -1143,7 +1139,7 @@ colnames(YE_COW) <- paste(colnames(YE_COW), "YE_COW", sep = "_")
 colnames(YE_COW)
 names(YE_COW)
 
-mmYE_COW50 <- left_join(YE_COW, ccpConBal50, by = c("X._YE_COW" = "country.name.en", "Year_YE_COW" = "year") )
+mmYE_COW50 <- left_join(YE_COW, ccpConBal50, by = c("X._YE_COW" = "country.name.en", "Year_YE_COW" = "year"), keep=TRUE )
 names(mmYE_COW50)
 
 library(janitor)
@@ -1160,7 +1156,7 @@ colnames(YE_WB) <- paste(colnames(YE_WB), "YE_WB", sep = "_")
 colnames(YE_WB)
 names(YE_WB)
 
-mmYE_WB50 <- left_join(YE_WB, ccpConBal50, by = c("Country.Name_YE_WB" = "country.name.en", "Year_YE_WB" = "year") )
+mmYE_WB50 <- left_join(YE_WB, ccpConBal50, by = c("Country.Name_YE_WB" = "country.name.en", "Year_YE_WB" = "year"), keep=TRUE )
 names(mmYE_WB50)
 
 library(janitor)
