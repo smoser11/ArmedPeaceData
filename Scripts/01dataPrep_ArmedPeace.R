@@ -40,6 +40,7 @@ data("pwt10.0")
 pwt10 <- pwt10.0
 
 summary(pwt10$year)
+
 ##################################################################
 
 
@@ -110,7 +111,7 @@ save(mmPWT50, file = paste0(here("Data/Processed","mmPWT50.RData") ))
 # COW State Membership data:
 ## https://correlatesofwar.org/data-sets/state-system-membership/
 ##################################################################
-
+rm(list =ls())
 getwd()
 
 cow_states <- read.csv(paste0(here("Data/Raw/COW/StateSystemMembership", "states2016.csv") ))
@@ -240,6 +241,14 @@ write.csv(cow_statesMajor16long, file = paste0(here("Data/Processed/", "COW_stat
 
 length(unique(cow_statesMajor16long$ccode))
 
+## Manually changed mmf 1990 265 German Democratic Republic to 255 Germany
+library(xlsx)
+write.csv(mmf, "Data/Processed/mmf.csv")
+mmf <- read_xlsx(paste0(here("Data/Processed", "mmf2.xlsx") ), sheet = 1)
+
+
+
+
 ##################################################################
 ######## Merge with codelist_panel
 
@@ -306,7 +315,7 @@ save(mmCOW50, file =paste0(here("Data/Processed/", "mmCOW50.RData") ))
 # UT Inequality Project [UT Poverty Institution] (Thiel and Gini, 151 cos. 1963-2015)
 ## https://utip.gov.utexas.edu/
 ##################################################################
-
+rm(list =ls())
 library(readxl)
 ehii <- read_xlsx(paste0(here("Data/Raw/UTIP", "/UtipUnidoEhiiV2017_v.1.xlsx") ), sheet = 1)
 ## pivot to long format
@@ -387,6 +396,9 @@ ineqlong2$country.name.en <- countrycode(rrc, origin = 'iso3c', destination = 'c
 
 colnames(ineqlong2) <- paste(colnames(ineqlong2), "UTIP", sep = "_")
 
+### Manually changed german federal republic to germany for 1990
+write.xlsx(ineqlong2, "Data/Processed/ineqlong2.xlsx")
+ineqlong2 <- read.xlsx(paste0(here("Data/Processed/", "ineqlong2.xlsx")), sheetIndex = 1)
 
 
 
@@ -879,7 +891,9 @@ names(swiid_summary)
 guess_field(swiid_summary$country)
 
 countrycode(swiid_summary$country, origin = "country.name.en", destination = "country.name.en")
+countrycode(swiid_summary$country_SWIID, origin = "country.name.en", destination = "country.name.en")
 
+sort(unique(swiid_summary$country_SWIID))
 
 ## is country X year a unique key in SWIID?
 dim(swiid_summary)
@@ -895,22 +909,18 @@ swiid_summary <- swiid_summary %>%
                             destination = "cown"))
 library(tidyverse)
 
-# TODO: inspect these countries and fix. - all don't have cown
-## Anguilla - Sovereign state = UK - drop it
-## Greenland - part of Denmark
-## Hong Kong - China - change name
-## Micronesia - ???
-## Palestinian Territories - occupied by Israel since 1967 - iso code
-## Puerto Rico - Unincorporated territory of the US - drop it, not in codelist
-## Serbia - officially Republic of Serbia ?? - formally Yugoslavia
-## Turks and Caicos Islands - British overseas territory = UK - drop this
+# TODO: inspect these countries and fix. 
 
-#### Remove micronesia manually
-### Changed Serbia to Yugoslavia for the years 1997-2005
+##### Changes made in excel SWIID:
+## Remove micronesia manually
+## Changed Serbia to Yugoslavia for the years 1997-2005
+## Dropped Anguilla, Greenland, Puerto Rico, Turks & Caicos because there is no data for it in codelist panel
+## Changed Hong Kong to Hong Kong SAR China
+## Added isocode3c in SWIID for Palestinian Territories?
 swiid_summary <- read.csv(paste0(here("Data/Processed/", "swiid_summary2.csv")))
 
 countrycode(swiid_summary$country, origin = "country.name.en", destination = "country.name.en")
-## Some values were not matched unambiguously?? - Blank? Micronesia fixed?
+
 
 colnames(swiid_summary)
 # add suffix to vars
@@ -929,28 +939,21 @@ ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 ## TODO: fix the below
 ## join by country.name.en
 
-mmSWIIDcc <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID"="year") )
+mmSWIIDcc <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID" = "year") )
 names(mmSWIIDcc)
 distinct(mmSWIIDcc)
 
-mmSWIID50 <- left_join(ccpConBal50, swiid_summary, by = c("country.name.en" = "country_SWIID", "year"="year_SWIID") )
+#### check for faults 
+mmSWIIDanti <- anti_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID" = "year") )
+
+mmSWIID50 <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID"="year") )
 names(mmSWIID50)
 distinct(mmSWIID50)
 
-### Attempt to debug
-### Get rid as not using cown
-
-anti_join(mmSWIID50, mmSWIIDcow) %>% dim()  # there are 4666 rows in mmSWIID *not* in swiidCow
-
-anti_join(mmSWIIDcow, mmSWIID50) %>% dim()  # there are 12027 rows in mmSWIIDcow *not* in SWIID
-
-aa_c <- anti_join(mmSWIID50, mmSWIIDcow)  # there are 4666 rows in mmSWIID *not* in swiidCow
-
-aa <- anti_join(mmSWIIDcow, mmSWIID50)   # there are 12027 rows in mmSWIIDcow *not* in SWIID
-
-stt <- as.data.frame(table(mmSWIIDcow$country_SWIID, mmSWIIDcow$cown))
-##conclusion: using cown to merge doesn't work for SWIID.  using country names instead.
-
+## Join with ISO3c for Palestinian Territories
+mmSWIIDiso <- left_join(swiid_summary, ccpConBal50, by = c("iso3c_SWIID" = "iso3c", "year_SWIID" = "year"))
+names(mmSWIIDiso)
+distinct(mmSWIIDiso)
 
 
 
@@ -972,7 +975,7 @@ names(swiid_summary)
 runs <- swiid_summary %>% group_by(country) %>% filter(min(year) <= 1970)
 unique(runs$country)
 
-
+library(panelView)
 swiid_summary %>% panelview(gini_disp ~ 1,
                             index = c("country","year"),
                             axis.lab="both", type = "miss")
@@ -982,12 +985,190 @@ swiid_summary %>% panelview(gini_disp ~ 1,
 
 
 # correlates of war naming, historic:  https://www.paulhensel.org/icownames.html
-## note: COW doesn't have terretories (e.g. Anguilla, Cayman Islands, Hong Kong, Puerto Rico, Turks and Caicos)
+## note: COW doesn't have territories (e.g. Anguilla, Cayman Islands, Hong Kong, Puerto Rico, Turks and Caicos)
 ## note:  Serbia, Serbia and Montenegro get the Yougoslavia ccode, 345  see  https://www.paulhensel.org/icownames.html
 
+
+## What is this??
 swiid1_lac[str_detect(swiid1_lac$country, "^Serb"),'cown'] <- 345
 
 
-### Democracy external threat (initials of authors)
-### JPR what goes up replication
-## M Ensar
+########## Democracy External Threat and Military Spending (Hauenstein et al. 2021) https://journals-sagepub-com.nottingham.idm.oclc.org/doi/pdf/10.1177/20531680211049660 ######## "dp_Nord_clean.dta" ###### (HSS) ###
+rm(list=ls())
+getwd()
+
+library(readstata13)
+
+HSS <- read.dta13(paste0(here("Data/Raw/Democracy external threat and military spending/", "DP_Nord_clean.dta") ))
+
+### Problem with guess_field
+guess_field(HSS$ccode)
+
+countrycode(HSS$ccode, origin = "cown", destination = "country.name.en")
+## 260 problem
+
+## Export to excel
+library(xlsx)
+write.xlsx(HSS, "Data/Processed/HSS.xlsx")
+
+## Manually change 260 to 255 for 1990-2000
+HSS <- read.xlsx(paste0(here("Data/Processed/", "HSS2.xlsx")), sheetIndex = 1)
+
+
+guess_field(HSS$ccode)
+
+countrycode(HSS$ccode, origin = "cown", destination = "country.name.en")
+
+
+## make ccp50 = standardized, balanced and consecutive
+
+load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
+
+ccp50 <- codelist_panel2 %>% filter(year>= 1950)
+ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
+
+
+# add suffix to vars
+## Add suffix
+colnames(HSS) <- paste(colnames(HSS), "ZFS", sep = "_")
+colnames(HSS)
+names(HSS)
+
+mmHSS50 <- left_join(HSS, ccpConBal50, by = c("ccode_HSS" = "ccode", "ccode_HSS" = "year") )
+names(mmHSS50)
+
+library(janitor)
+library(haven)
+write_dta(clean_names(mmHSS50), path = paste0(here("Data/Processed/", "mmHSS50.dta") ))
+
+getwd()
+save(mmHSS50, file = paste0(here("Data/Processed/", "mmHSS50.RData") ))
+
+
+
+
+##### JPR - What Goes UP - Replication (Zielinski et al. 2017) https://www-jstor-org.nottingham.idm.oclc.org/stable/48590474 ###### "replication.dta" ###### (ZFS)
+rm(list=ls())
+getwd()
+
+library(readstata13)
+
+ZFS <- read.dta13(paste0(here("Data/Raw/JPR - What Goes Up - Replication/", "replication.dta") ))
+
+
+guess_field(ZFS$STATE)
+
+countrycode(ZFS$STATE, origin = "cown", destination = "country.name.en")
+
+# so ZFS 260, 340, 396, 711, 971, 972, 973 were matched unambiguously
+
+# TODO: fix 260, 340, 296, 397, 711, 971, 972, 973
+## Export to excel
+library(xlsx)
+write.xlsx(ZFS, "Data/Processed/ZFS.xlsx")
+
+## Manually changed 260 to 255 for 1990 to 2015, dropped 340, 396, 397, 711, 971, 972, 973
+ZFS <- read.xlsx(paste0(here("Data/Processed/", "ZFS2.xlsx")), sheetIndex = 1)
+
+
+guess_field(ZFS$STATE)
+
+countrycode(ZFS$STATE, origin = "cown", destination = "cown")
+
+
+## make ccp50 = standardized, balanced and consecutive
+
+load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
+
+ccp50 <- codelist_panel2 %>% filter(year>= 1950)
+ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
+
+
+# add suffix to vars
+## Add suffix
+colnames(ZFS) <- paste(colnames(ZFS), "ZFS", sep = "_")
+colnames(ZFS)
+names(ZFS)
+
+mmZFS50 <- left_join(ZFS, ccpConBal50, by = c("STATE_ZFS" = "cown", "YEAR_ZFS" = "year") )
+names(mmZFS50)
+
+library(janitor)
+library(haven)
+write_dta(clean_names(mmZFS50), path = paste0(here("Data/Processed/", "mmZFS50.dta") ))
+
+getwd()
+save(mmZFS50, file = paste0(here("Data/Processed/", "mmZFS50.RData") ))
+
+
+
+
+######## Impacts of neighbouring countries on military expenditures (M Ensar Yesilyurt & Paul Elhorst. 2017) https://journals-sagepub-com.nottingham.idm.oclc.org/doi/pdf/10.1177/0022343317707569 ##### "datasetcow2015.xlsx" and "datasetwb2015.xlsx" #### ("YE_COW" and "YE_WB" )
+rm(list=ls())
+getwd()
+
+##### 1. "datasetcow2015.xlsx"
+library(xlsx)
+library(here)
+
+YE_COW <- read.xlsx(paste0(here("Data/Raw/M Ensar Yesilyurt & J Paul Elhorst/", "datasetcow2015.xlsx")), sheetIndex = 1)
+	
+guess_field(YE_COW$X.)
+
+countrycode(YE_COW$X., origin = "country.name.en", destination = "country.name.en")
+
+
+
+#### 2. "datasetwb2015.xlsx"
+library(xlsx)
+
+YE_WB <- read.xlsx(paste0(here("Data/Raw/M Ensar Yesilyurt & J Paul Elhorst/", "datasetwb2015.xlsx")), sheetIndex = 1)
+
+guess_field(YE_WB$Country.Name)
+
+countrycode(YE_WB$Country.Name, origin = "country.name.en", destination = "country.name.en")
+
+
+## make ccp50 = standardized, balanced and consecutive
+
+load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
+
+ccp50 <- codelist_panel2 %>% filter(year>= 1950)
+ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
+
+
+# add suffix to vars (1)
+## Add suffix
+colnames(YE_COW) <- paste(colnames(YE_COW), "YE_COW", sep = "_")
+colnames(YE_COW)
+names(YE_COW)
+
+mmYE_COW50 <- left_join(YE_COW, ccpConBal50, by = c("X._YE_COW" = "country.name.en", "Year_YE_COW" = "year") )
+names(mmYE_COW50)
+
+library(janitor)
+library(haven)
+write_dta(clean_names(mmYE_COW50), path = paste0(here("Data/Processed/", "mmYE_COW50.dta") ))
+
+getwd()
+save(mmYE_COW50, file = paste0(here("Data/Processed/", "mmYE_COW50.RData") ))
+
+
+# add suffix to vars (2)
+## Add suffix
+colnames(YE_WB) <- paste(colnames(YE_WB), "YE_WB", sep = "_")
+colnames(YE_WB)
+names(YE_WB)
+
+mmYE_WB50 <- left_join(YE_WB, ccpConBal50, by = c("Country.Name_YE_WB" = "country.name.en", "Year_YE_WB" = "year") )
+names(mmYE_WB50)
+
+library(janitor)
+library(haven)
+write_dta(clean_names(mmYE_WB50), path = paste0(here("Data/Processed/", "mmYE_WB50.dta") ))
+
+getwd()
+save(mmYE_WB50, file = paste0(here("Data/Processed/", "mmYE_WB50.RData") ))
+
+
+
