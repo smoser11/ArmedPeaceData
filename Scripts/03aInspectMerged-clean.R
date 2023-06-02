@@ -22,15 +22,15 @@ pd <- mmALL50
 
 missmap(pd, csvar = "country", tsvar = "year")
 
+names(mmmALL50)
+mmmCLEAN50 <- mmmALL50 %>% select(-"NA." )
+mmmCLEAN50 <- mmmCLEAN50 %>% select(-"NA._PJM"    )
+mmmCLEAN50 <- mmmCLEAN50 %>% select(-  c( "NA._BB","...1_COW"  ) )
+names(mmmCLEAN50)
 
-mmCLEAN50 <- mmALL50 %>% select(-"NA." )
-mmCLEAN50 <- mmCLEAN50 %>% select(-"NA._PJM"    )
-mmCLEAN50 <- mmCLEAN50 %>% select(-  c("NA._HSS" ,"...1_COW"  ) )
-names(mmCLEAN50)
+sort(unique(mmmCLEAN50$country))
 
-sort(unique(mmCLEAN50$country))
-
-pd <- mmCLEAN50
+pd <- mmmCLEAN50
 missmap(pd, csvar = "country.name.en", tsvar = "year")
 
 ss <- pd %>% group_by(country.name.en) %>%
@@ -40,11 +40,11 @@ toDrop <- ss$country[which(ss$country_name_HSS >= 0.5)]
 
 c("Andorra", "Antigua & Barbuda", "Armenia","")
 
-mmCLEAN50 <- mmCLEAN50 %>% filter(!(country %in% toDrop) )
-missmap(mmCLEAN50, csvar = "country", tsvar = "year")
+mmmCLEAN50 <- mmmCLEAN50 %>% filter(!(country %in% toDrop) )
+missmap(mmmCLEAN50, csvar = "country", tsvar = "year")
 
-mmCLEAN50 <- mmCLEAN50 %>% select(!contains("_YE_"))
-names(mmCLEAN50)
+mmmCLEAN50 <- mmmCLEAN50 %>% select(!contains("_YE_"))
+names(mmmCLEAN50)
 
 
 ######################################################
@@ -62,12 +62,12 @@ library(Amelia)
 library(sampleSelection)
 library(here)
 
-load(file =  paste0(here("Data/Processed/", "mmALL50.RData") ))
+load(file =  paste0(here("Data/Processed/", "mmmALL50.RData") ))
 
-mmALL50$country <- mmALL50$country.name.en
-mmALL50 <- mmALL50 %>% select(-country.name.en)
-glimpse(mmALL50)
-pd <- mmALL50
+mmmALL50$country <- mmmALL50$country.name.en
+mmmALL50 <- mmmALL50 %>% select(-country.name.en)
+glimpse(mmmALL50)
+pd <- mmmALL50
 
 
 missmap(pd, csvar = "country", tsvar = "year")
@@ -81,7 +81,7 @@ n
 pd2 <- pd[n > 15, ]  #only keep if we have 15 years of this variable
 names(pd2)
 unique(pd2$country)
-unique(mmALL50$country.name.en)
+unique(mmmALL50$country.name.en)
 
 pd2$country <- droplevels(pd2$country)
 unique(pd2$country)
@@ -117,15 +117,15 @@ missmap(pd3, csvar = "country", tsvar = "year")
 
 
 
-mmALL50 %>% group_by(country) %>% summarise(cs = colSums(is.na(.)))
+mmmALL50 %>% group_by(country) %>% summarise(cs = colSums(is.na(.)))
 
 library(mice)
-md.pattern(mmALL50)
+md.pattern(mmmALL50)
 
-sort(unique(mmALL50$country))
+sort(unique(mmmALL50$country))
 
 
-names(mmALL50)
+names(mmmALL50)
 
 
 

@@ -63,7 +63,7 @@ for (i in seq_along(ds)) {  #
   tokens[i]
   eval(parse(text=paste0("dat[[(i+1 )]] <- ", tokens[i])))
 }
-
+names(dat[[2]])
 str(dat)
 getwd()
 save(dat, file = paste0(here("Data/Processed/"),"/datMerge.RData") )
@@ -83,23 +83,23 @@ save(dat, file = paste0(here("Data/Processed/"),"/datMerge.RData") )
 # names(ccpConBal50)
 # #pan <- c(list(rec), dat) %>%
   
-mmALL50 <- dat %>%  purrr::reduce(left_join, by = c(names(ccpConBal50)))
+mmmALL50 <- dat %>%  purrr::reduce(left_join, by = c(names(ccpConBal50)))
 names(dat[[2]])
 
 # mmALL50cy <- dat %>%  purrr::reduce(left_join, by = c("year","country.name.en" ) )
 
-names(mmALL50)
+names(mmmALL50)
 
 
 
 getwd()
 library(haven)
 library(janitor)
-write_dta(clean_names(mmALL50), path =  paste0(here("Data/Processed/", "mmALL50.dta") ))
+write_dta(clean_names(mmmALL50), path =  paste0(here("Data/Processed/", "mmmALL50.dta") ))
 
-save(mmALL50, file =  paste0(here("Data/Processed/", "mmALL50.RData")))
+save(mmmALL50, file =  paste0(here("Data/Processed/", "mmmALL50.RData")))
 
-write_csv(mmALL50, file =  paste0(here("Data/Processed/", "mmALL50.csv") ))
+write_csv(mmmALL50, file =  paste0(here("Data/Processed/", "mmmALL50.csv") ))
 
 
 

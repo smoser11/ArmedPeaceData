@@ -1137,19 +1137,19 @@ load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
-
+library(janitor)
 # add suffix to vars (1)
 ## Add suffix
-colnames(YE_COW) <- paste(colnames(YE_COW), "YE_COW", sep = "_")
+colnames(YE_COW) <- paste(make_clean_names(colnames(YE_COW)), "YE_COW", sep = "_")
 colnames(YE_COW)
 names(YE_COW)
 
-mmYE_COW50 <- left_join(YE_COW, ccpConBal50, by = c("X._YE_COW" = "country.name.en", "Year_YE_COW" = "year"), keep=TRUE )
+mmYE_COW50 <- left_join(YE_COW, ccpConBal50, by = c("x_YE_COW" = "country.name.en", "year_YE_COW" = "year"), keep=TRUE )
 names(mmYE_COW50)
 
 library(janitor)
 library(haven)
-write_dta(clean_names(mmYE_COW50), path = paste0(here("Data/Processed/", "mmYE_COW50.dta") ))
+write_dta(mmYE_COW50, path = paste0(here("Data/Processed/", "mmYE_COW50.dta") ))
 
 getwd()
 save(mmYE_COW50, file = paste0(here("Data/Processed/", "mmYE_COW50.RData") ))
@@ -1157,16 +1157,16 @@ save(mmYE_COW50, file = paste0(here("Data/Processed/", "mmYE_COW50.RData") ))
 
 # add suffix to vars (2)
 ## Add suffix
-colnames(YE_WB) <- paste(colnames(YE_WB), "YE_WB", sep = "_")
+colnames(YE_WB) <- paste(make_clean_names(colnames(YE_WB)), "YE_WB", sep = "_")
 colnames(YE_WB)
 names(YE_WB)
 
-mmYE_WB50 <- left_join(YE_WB, ccpConBal50, by = c("Country.Name_YE_WB" = "country.name.en", "Year_YE_WB" = "year"), keep=TRUE )
+mmYE_WB50 <- left_join(YE_WB, ccpConBal50, by = c("country_name_YE_WB" = "country.name.en", "year_YE_WB" = "year"), keep=TRUE )
 names(mmYE_WB50)
 
 library(janitor)
 library(haven)
-write_dta(clean_names(mmYE_WB50), path = paste0(here("Data/Processed/", "mmYE_WB50.dta") ))
+write_dta(mmYE_WB50, path = paste0(here("Data/Processed/", "mmYE_WB50.dta") ))
 
 getwd()
 save(mmYE_WB50, file = paste0(here("Data/Processed/", "mmYE_WB50.RData") ))

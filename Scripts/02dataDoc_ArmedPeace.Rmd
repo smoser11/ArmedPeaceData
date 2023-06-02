@@ -316,6 +316,8 @@ Coverage:
 
 Vars: 
 
+Names cleaned with `clean_names()` from `janitor`.
+
 Merge key: Merged with country.name.en and year.
 
 Dropped observations in merge? No.
@@ -327,6 +329,8 @@ Dropped observations in merge? No.
 <>
 
 Coverage: 1993- 2007?
+
+Names cleaned with `clean_names()` from `janitor`.
 
 Vars: "Inration", "InGDP", "Inpop", "inttot", "civtot", "polity2", "militaryexpenditure..", "realgdp", "population", "continent", "missing", "citizensmissing"
 
