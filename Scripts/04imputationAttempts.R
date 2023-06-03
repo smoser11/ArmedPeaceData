@@ -40,16 +40,15 @@ tokens <- str_replace_all(ds, '.RData', '')
 load(file =paste0(here("Data/Processed/", "mmCOW50.RData") ))
 sort(unique(mmCOW50$country.name.en))
 
-load(file =paste0(here("Data/Processed/", "mmALL50.RData") ))
-sort(unique(mmHSS50$country.name.en))
-sort(unique(mmZFS50$country.name.en))
+load(file =paste0(here("Data/Processed/", "mmmALL50.RData") ))
+names(mmmALL50)
 
 library(sampleSelection)
 
-mmALL50$country <- mmALL50$country.name.en
-mmALL50 <- mmALL50 %>% select(-country.name.en)
-glimpse(mmALL50)
-pd <- mmALL50 %>% select(contains("HSS"), country, year)
+mmmALL50$country <- mmmALL50$country.name.en
+mmmALL50 <- mmmALL50 %>% select(-country.name.en)
+glimpse(mmmALL50)
+pd <- mmmALL50 %>% select(contains("HSS"), country, year)
 ### compare:
 missmap(pd, csvar = "ccode_HSS", tsvar = "year_HSS")
 
@@ -60,29 +59,143 @@ missmap(mmZFS50, csvar = "STATE_ZFS", tsvar = "YEAR_ZFS")
 ss <- pd %>% group_by(country) %>%
 	summarise_all(~sum(is.na(.))/n())
 
+########################
+rm(list=ls())
 
+### PJM + UTIP + ZFS
 
 load(file =paste0(here("Data/Processed/", "mmZFS50.RData") ))
+sort(names(mmZFS50))
+names(mmZFS50)
+mmZFS50 <- mmZFS50 %>% filter(year>= 1950)
 
+load(file =paste0(here("Data/Processed/", "mmPJM50.RData") ))
+names(mmPJM50)
+mmPJM50 <- mmPJM50 %>% filter(year>= 1950)
+names(mmPJM50)
+mmPJM50 %>% select(contains("PJM")) %>% is.na() %>% any() #no problem at this point...(?)
+
+load(file =paste0(here("Data/Processed/", "mmUTIP50.RData") ))
+mmUTIP50 <- mmUTIP50 %>% filter(year>= 1950)
 
 load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 
+ccp50 <- codelist_panel2 %>% filter(year>= 1950)
+ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
+names(ccpConBal50)
 
-##########
+sort(unique(mmZFS50$country.name.en))
+sort(unique(mmPJM50$country.name.en))
+
+names(mmZFS50)
+dat <- list(mmZFS50,mmPJM50,mmUTIP50)
+names(dat[[3]])
+impZFS1 <- dat %>%  purrr::reduce(left_join, by = c(names(ccpConBal50)))
+names(impZFS1)
+head(impZFS1)
+
+pd <- impZFS1
+missmap(pd, csvar = "country.name.en", tsvar = "year")
+
+which(is.na(impZFS1$Rusdefense_PJM))
+
+
+
+## Drop _variables_ with too few observations
+
+### Now we define a function that can calculate the longest run of non-NA values in a vector
+### https://stackoverflow.com/questions/24600716/drop-variable-in-panel-data-in-r-conditional-based-on-a-defined-number-of-consec
+consecnonNA <- function(x) {
+	rr<-rle(is.na(x))
+	max(rr$lengths[rr$values==FALSE])
+}
+
+atleast <- function(i) {function(x) x>=i}
+hasatleast8 <- names(Filter(atleast(15), sapply(pd2, consecnonNA)))
+sort(hasatleast8 )
+
+pd3 <- pd2[,hasatleast8]
+
+n <- ave(pd3$LMILEX_BB, pd3$country, FUN=function(x)sum(!is.na(x)))
+n
+
+pd3$country <- droplevels(pd3$country)
+unique(pd3$country)
+
+sort(names(pd3) )
+missmap(pd3, csvar = "country", tsvar = "year")
+
+
+
+mmmALL50 %>% group_by(country) %>% summarise(cs = colSums(is.na(.)))
+
+library(mice)
+md.pattern(mmmALL50)
+
+
+
+## Drop countries
+
+ss <- pd %>% group_by(country.name.en) %>%
+	summarise_all(~sum(is.na(.))/n())
+
+toDrop <- ss$country[which(ss$country_name_HSS >= 0.5)]
+
+impZFS1 <- impZFS1 %>% filter(!(country %in% toDrop) )
+missmap(mmmCLEAN50, csvar = "country", tsvar = "year")
+
+mmmCLEAN50 <- mmmCLEAN50 %>% select(!contains("_YE_"))
+names(mmmCLEAN50)
+
+
+
+
+
+save(impZFS1,file =paste0(here("Data/Processed/", "impZFS1.RData") ))
+
+
+### PJM + UTIP + HSS
+
+load(file =paste0(here("Data/Processed/", "mmHSS50.RData") ))
+mmHSS50 <- mmHSS50 %>% filter(year>= 1950)
+load(file =paste0(here("Data/Processed/", "mmPJM50.RData") ))
+mmPJM50 <- mmPJM50 %>% filter(year>= 1950)
+load(file =paste0(here("Data/Processed/", "mmUTIP50.RData") ))
+mmUTIP50 <- mmUTIP50 %>% filter(year>= 1950)
+load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
+ccp50 <- codelist_panel2 %>% filter(year>= 1950)
+ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
+
+names(mmZFS50)
+dat <- list(mmHSS50,mmPJM50,mmUTIP50)
+names(dat[[3]])
+impHSS1 <- dat %>%  purrr::reduce(left_join, by = c(names(ccpConBal50)))
+names(impHSS1)
+head(impHSS1)
+
+save(impHSS1,file =paste0(here("Data/Processed/", "impHSS1.RData") ))
+
+sort(unique(mmHSS50$country.name.en))
+sort(unique(mmZFS50$country.name.en))
+
+#####################################################################################
 
 ## imputation attempts
 
 
-
-load(file =paste0(here("Data/Processed/", "mmALL50.RData") ))
-names(mmALL50)
-getwd()
 library(haven)
 library(janitor)
 library(tidyverse)
 library(Amelia)
 library(sampleSelection)
 
+### 
+
+save(impHSS1,file =paste0(here("Data/Processed/Imputations", "impHSS1.RData") ))
+
+
+names(mmALL50)
+getwd()
 mmALL50$country <- mmALL50$country.name.en
 mmALL50 <- mmALL50 %>% select(-country.name.en)
 glimpse(mmALL50)
