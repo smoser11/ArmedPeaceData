@@ -73,7 +73,6 @@ load(file =paste0(here("Data/Processed/", "mmPJM50.RData") ))
 names(mmPJM50)
 mmPJM50 <- mmPJM50 %>% filter(year>= 1950)
 names(mmPJM50)
-mmPJM50 %>% select(contains("PJM")) %>% is.na() %>% any() #no problem at this point...(?)
 
 load(file =paste0(here("Data/Processed/", "mmUTIP50.RData") ))
 mmUTIP50 <- mmUTIP50 %>% filter(year>= 1950)
@@ -98,6 +97,9 @@ pd <- impZFS1
 missmap(pd, csvar = "country.name.en", tsvar = "year")
 
 which(is.na(impZFS1$Rusdefense_PJM))
+
+
+save(impZFS1,file =paste0(here("Data/Processed/", "impZFS1.RData") ))
 
 
 
@@ -151,8 +153,6 @@ names(mmmCLEAN50)
 
 
 
-save(impZFS1,file =paste0(here("Data/Processed/", "impZFS1.RData") ))
-
 
 ### PJM + UTIP + HSS
 
@@ -191,7 +191,7 @@ library(sampleSelection)
 
 ### 
 
-save(impHSS1,file =paste0(here("Data/Processed/Imputations", "impHSS1.RData") ))
+load(file =paste0(here("Data/Processed/Imputations", "impHSS1.RData") ))
 
 
 names(mmALL50)
@@ -229,36 +229,6 @@ unique(mmALL50$country.name.en)
 pd2$country <- droplevels(pd2$country)
 unique(pd2$country)
 pd2 <- pd2 %>% select(-country.name.en)
-
-## Drop _variables_ with too few observations
-
-### Now we define a function that can calculate the longest run of non-NA values in a vector
-### https://stackoverflow.com/questions/24600716/drop-variable-in-panel-data-in-r-conditional-based-on-a-defined-number-of-consec
-consecnonNA <- function(x) {
-	rr<-rle(is.na(x))
-	max(rr$lengths[rr$values==FALSE])
-}
-
-atleast <- function(i) {function(x) x>=i}
-hasatleast8 <- names(Filter(atleast(15), sapply(pd2, consecnonNA)))
-sort(hasatleast8 )
-
-pd3 <- pd2[,hasatleast8]
-
-n <- ave(pd3$LMILEX_BB, pd3$country, FUN=function(x)sum(!is.na(x)))
-n
-# pd3 <- pd3[n > 30, ]  #only keep if we have 15 years of this variable
-# names(pd3)
-# unique(pd3$country)
-# unique(mmALL50$country.name.en)
-
-pd3$country <- droplevels(pd3$country)
-unique(pd3$country)
-
-sort(names(pd3) )
-missmap(pd3, csvar = "country", tsvar = "year")
-
-
 
 mmALL50 %>% group_by(country_PWT) %>% summarise(cs = colSums(is.na(.))) %>% print(n=200)
 
@@ -312,24 +282,33 @@ describe(mmALL50$gini_UTIP)
 
 describe(mmALL50$gini_UTIP)
 
+ccnames <- c(paste(sQuote(names(ccpConBal50)), collapse = "," ))
 
-## subset for imputation
-pd4 <- mmALL50 %>% select(-contains("PWT"), -contains("SWIID"))
-names(mmALL50)
-names(pd4)
+names_paste_quotesf <- function(my_data) {
+	paste0("\"",
+		   paste0(names(my_data), collapse = "', '"),
+		   "'") %>% cat
+}
+ccnames <- c(names_paste_quotesf(ccpConBal50) )
+ccnames
+
+cccnames <- c("iso3n", "cown", "un", "gwn", "fao" ,"gaul" ,"imf" ,"iso4217n", "un.region.code", "un.regionintermediate.code" ,"un.regionsub.code" ,"unpd", "vdem" ,"country.name.de", "country.name.de.regex", "country.name.en.regex", "country.name.fr", "country.name.fr.regex", "country.name.it", "country.name.it.regex", "iso3c", "cowc", "wb", "ar5", "cctld", "continent", "currency", "dhs", "ecb", "eu28", "eurocontrol_pru", "eurocontrol_statfor", "eurostat", "fips", "genc2c", "genc3c", "genc3n", "gwc", "icao.region", "ioc", "iso2c", "iso4217c", "p4c", "p5c", "p5n","region", "region23", "unhcr", "unicode.symbol", "wb_api2c", "wb_api3c")
+
+c(cccnames, "asdf")
+names(impHSS1)
+
+impHSS1 %>% select(! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ) %>% names()
 
 
-names(pd4)
 # add ridge priors (5%)
-a.out.time1950_noPWTnoSWIID <- amelia(pd4, ts = "year", cs = "country", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(pd4), idvars = c("iso3n", "cown", "un", "gwn", "fao" ,"gaul" ,"imf" ,"iso4217n", "un.region.code", "un.regionintermediate.code" ,"un.regionsub.code" ,"unpd", "vdem" ,"country.name.de", "country.name.de.regex", "country.name.en.regex", "country.name.fr", "country.name.fr.regex", "country.name.it", "country.name.it.regex", "iso3c", "cowc", "wb", "ar5", "cctld", "continent", "currency", "dhs", "ecb", "eu28", "eurocontrol_pru", "eurocontrol_statfor", "eurostat", "fips", "genc2c", "genc3c", "genc3n", "gwc", "icao.region", "ioc", "iso2c", "iso4217c", "p4c", "p5c", "region", "region23", "unhcr", "unicode.symbol", "wb_api2c", "wb_api3c", "NAMENEW_BB", "obs_NORD", "NAMENEW_NORD", "ccode2_PJM", "version_COW", "statenme_COW", "stateabb_COW", "wvs", "code_UTIP", "country_UTIP", "countryname_UTIP", "cown_UTIP"   ))  # "cown_SWIID"
-save.image( file = "aOutTime1950_noPWTnoSWIID_empi05-polytime3.RData")
+a.out.time1950_HSS1-empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( cccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi05-polytime3.RData")))
 
 
 
 # add ridge priors (1% -> less 'shrinkage')
-a.out.time1950_noPWTnoSWIID <- amelia(pd4, ts = "year", cs = "country", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .01 * nrow(pd4), idvars = c("iso3n", "cown", "un", "gwn", "fao" ,"gaul" ,"imf" ,"iso4217n", "un.region.code", "un.regionintermediate.code" ,"un.regionsub.code" ,"unpd", "vdem" ,"country.name.de", "country.name.de.regex", "country.name.en.regex", "country.name.fr", "country.name.fr.regex", "country.name.it", "country.name.it.regex", "iso3c", "cowc", "wb", "ar5", "cctld", "continent", "currency", "dhs", "ecb", "eu28", "eurocontrol_pru", "eurocontrol_statfor", "eurostat", "fips", "genc2c", "genc3c", "genc3n", "gwc", "icao.region", "ioc", "iso2c", "iso4217c", "p4c", "p5c", "region", "region23", "unhcr", "unicode.symbol", "wb_api2c", "wb_api3c", "NAMENEW_BB", "obs_NORD", "NAMENEW_NORD", "ccode2_PJM", "version_COW", "statenme_COW", "stateabb_COW", "wvs", "code_UTIP", "country_UTIP", "countryname_UTIP", "cown_UTIP"   ))  # "cown_SWIID"
-save.image( file = "aOutTime1950_noPWTnoSWIID_empi01-polytime3.RData")
-
+a.out.time1950_HSS1-emp01 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .01 * nrow(impHSS1), idvars = c( cccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi01-polytime3.RData")))
 
 
 
