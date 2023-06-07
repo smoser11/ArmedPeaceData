@@ -100,11 +100,6 @@ mmmALL50 <- mmmALL50 %>% select(-  c( "NA._BB","...1_COW", "x_YE_COW"  ) )
 
 mmmALL50 %>% select(contains("PJM")) %>% View()
 
-## hack to add 'double zeros' to Pat's PJM data - TODO!
-mmmALL50 <- mmmALL50 %>%  mutate_at(vars(USally_PJM,Rusdefense_PJM), ~replace_na(., 0))
-
-
-mmmALL50 %>% select(contains("PJM")) %>% is.na() %>% any()
 
 
 

@@ -837,24 +837,22 @@ colnames(PJM) <- paste(colnames(PJM), "PJM", sep = "_")
 colnames(PJM)
 names(PJM)
 
+PJM <- PJM %>% filter(year_PJM>= 1950)
+
 ## make ccp50 = standardized, balanced and consecutive
 load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
-mmPJM50 <- left_join(PJM, ccpConBal50, by = c("ccode_PJM" = "cown", "year_PJM"="year"), keep=TRUE )
+mmPJM50 <- right_join(PJM, ccpConBal50, by = c("ccode_PJM" = "cown", "year_PJM"="year"), keep=TRUE )
 names(mmPJM50)
 
-mmPJM50 <- mmPJM50 %>% filter(year>= 1950)
 
 mmPJM50$USally_PJM[is.na(mmPJM50$USally_PJM)] <- 0
 mmPJM50$Rusdefense_PJM[is.na(mmPJM50$Rusdefense_PJM)] <- 0
 
-names(PJM)
-guess_field(PJM$ccode)
-
-PJManti <- anti_join(usa, rus, by = c("year", "ccode"))
+mmPJM50 %>% select(USally_PJM, Rusdefense_PJM) %>% is.na() %>% any()
 
 
 names(PJM)
@@ -863,11 +861,14 @@ library(plm)
 pp <- pdata.frame(PJM, index = c('ccode', 'year'))
 table(index(pp), useNA = "ifany")
 
-any(is.na(mmPJM50))
 mmPJM50 %>%
 	filter(is.na(country.name.en)) %>%
 	View()
 
+mmPJM50$year_PJM <- mmPJM50$year
+plot(mmPJM50$ccode_PJM,mmPJM50$cown
+)
+mmPJM50$ccode_PJM <- mmPJM50$cown
 
 library(janitor)
 library(haven)
