@@ -193,26 +193,9 @@ library(sampleSelection)
 
 load(file =paste0(here("Data/Processed/Imputations", "impHSS1.RData") ))
 
-
-names(mmALL50)
 getwd()
-mmALL50$country <- mmALL50$country.name.en
-mmALL50 <- mmALL50 %>% select(-country.name.en)
-glimpse(mmALL50)
-pd <- mmALL50
-
 #install.packages("Amelia")
 
-missmap(pd, csvar = "country", tsvar = "year")
-
-ss <- pd %>% group_by(country) %>%
-	summarise_all(~sum(is.na(.))/n())
-
-sort(unique(pd$country) )
-names(ss)
-sss <- ss %>% filter(country_PWT >0.5) %>% select(country, contains("PWT"), contains("BB"), everything() ) 
-
-sss %>% View()
 
 # PWT only starts in 1970
 
@@ -276,33 +259,87 @@ majPow_COW
 
 ## and set k X 3 matrix for `bounds` argument in `amelia()`
 
+
 library(psych)
-
-describe(mmALL50$gini_UTIP)
-
-describe(mmALL50$gini_UTIP)
 
 ccnames <- c(paste(sQuote(names(ccpConBal50)), collapse = "," ))
 
 names_paste_quotesf <- function(my_data) {
-	paste0("\"",
-		   paste0(names(my_data), collapse = "', '"),
-		   "'") %>% cat
+	paste0('"',
+		   paste0(names(my_data), collapse = '" , "'),
+		   '"') %>% cat
 }
-ccnames <- c(names_paste_quotesf(ccpConBal50) )
-ccnames
+ccnames <- names_paste_quotesf(ccpConBal50) 
+
+ccnames <- c("country.name.de" , "country.name.de.regex" , "country.name.en.regex" , "country.name.fr" , "country.name.fr.regex" , "country.name.it" , "country.name.it.regex" , "iso3n" , "iso3c" , "cown" , "cowc" , "un" , "wb" , "gwn" , "ar5" , "cctld" , "continent" , "currency" , "dhs" , "ecb" , "eu28" , "eurocontrol_pru" , "eurocontrol_statfor" , "eurostat" , "fao" , "fips" , "gaul" , "genc2c" , "genc3c" , "genc3n" , "gwc" , "icao.region" , "imf" , "ioc" , "iso2c" , "iso4217c" , "iso4217n" , "p4c" , "p4n" , "p5c" , "p5n" , "region" , "region23" , "un.region.code" , "un.regionintermediate.code" , "un.regionsub.code" , "unhcr" , "unicode.symbol" , "unpd" , "vdem" , "wb_api2c" , "wb_api3c" , "wvs")
+
+
 
 cccnames <- c("iso3n", "cown", "un", "gwn", "fao" ,"gaul" ,"imf" ,"iso4217n", "un.region.code", "un.regionintermediate.code" ,"un.regionsub.code" ,"unpd", "vdem" ,"country.name.de", "country.name.de.regex", "country.name.en.regex", "country.name.fr", "country.name.fr.regex", "country.name.it", "country.name.it.regex", "iso3c", "cowc", "wb", "ar5", "cctld", "continent", "currency", "dhs", "ecb", "eu28", "eurocontrol_pru", "eurocontrol_statfor", "eurostat", "fips", "genc2c", "genc3c", "genc3n", "gwc", "icao.region", "ioc", "iso2c", "iso4217c", "p4c", "p5c", "p5n","region", "region23", "unhcr", "unicode.symbol", "wb_api2c", "wb_api3c")
 
-c(cccnames, "asdf")
+c(ccnames, "asdf")
 names(impHSS1)
 
 impHSS1 %>% select(! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ) %>% names()
 
+seed<-111111111
+set.seed(seed)
+library(Amelia)
+
+library(parallel)
+detectCores()
+
+library(doParallel)
+library(foreach)
+cl <- makeCluster(2)
+registerDoParallel(cl)
+
+impFun <- function(x) {
+	set.seed( (seed+x))
+	library(Amelia)
+	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+}
+
+tt <- foreach(i=1:3) %dopar% impFun(i)
+
+
+
+
+
+# ------------
+
+
+seed<-111111111
+set.seed(seed)
+library(Amelia)
+
+library(parallel)
+detectCores()
+
+library(doParallel)
+library(foreach)
+cl <- makeCluster(5)
+registerDoParallel(cl)
+
 
 # add ridge priors (5%)
-a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( cccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+
 save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi05-polytime3.RData")))
+
+
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+
 
 
 
