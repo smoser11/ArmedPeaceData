@@ -286,6 +286,11 @@ seed<-111111111
 set.seed(seed)
 library(Amelia)
 
+
+##### BENCHMARKING
+
+## 1.
+
 library(parallel)
 detectCores()
 
@@ -300,9 +305,26 @@ impFun <- function(x) {
 	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
 }
 
+# Start the clock!
+ptm <- proc.time()
+
+# Loop through the vector, adding one
 tt <- foreach(i=1:3) %dopar% impFun(i)
 
+# Stop the clock
+time1<- proc.time() - ptm
 
+
+# 2
+set.seed(seed*2)
+# Start the clock!
+ptm2 <- proc.time()
+
+# Loop through the vector, adding one
+a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=2, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+
+# Stop the clock
+time2<- proc.time() - ptm2
 
 
 
@@ -323,7 +345,7 @@ registerDoParallel(cl)
 
 
 # add ridge priors (5%)
-a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
 
 save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi05-polytime3.RData")))
 
@@ -343,9 +365,9 @@ save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_
 
 
 
-# add ridge priors (1% -> less 'shrinkage')
-a.out.time1950_HSS1-emp01 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .01 * nrow(impHSS1), idvars = c( cccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
-save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi01-polytime3.RData")))
+# add ridge priors (2% -> less 'shrinkage')
+a.out.time1950_HSS1_emp03 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .03 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi03_polytime3.RData")))
 
 
 
