@@ -197,23 +197,6 @@ getwd()
 #install.packages("Amelia")
 
 
-# PWT only starts in 1970
-
-names(mmALL50)
-
-pd <- pd %>% filter(year>1969)
-n <- ave(pd$LMILEX_BB, pd$country, FUN=function(x)sum(!is.na(x)))
-n
-pd2 <- pd[n > 15, ]  #only keep if we have 15 years of this variable
-names(pd2)
-unique(pd2$country)
-unique(mmALL50$country.name.en)
-
-pd2$country <- droplevels(pd2$country)
-unique(pd2$country)
-pd2 <- pd2 %>% select(-country.name.en)
-
-mmALL50 %>% group_by(country_PWT) %>% summarise(cs = colSums(is.na(.))) %>% print(n=200)
 
 library(mice)
 md.pattern(mmALL50)
@@ -273,7 +256,7 @@ ccnames <- names_paste_quotesf(ccpConBal50)
 
 ccnames <- c("country.name.de" , "country.name.de.regex" , "country.name.en.regex" , "country.name.fr" , "country.name.fr.regex" , "country.name.it" , "country.name.it.regex" , "iso3n" , "iso3c" , "cown" , "cowc" , "un" , "wb" , "gwn" , "ar5" , "cctld" , "continent" , "currency" , "dhs" , "ecb" , "eu28" , "eurocontrol_pru" , "eurocontrol_statfor" , "eurostat" , "fao" , "fips" , "gaul" , "genc2c" , "genc3c" , "genc3n" , "gwc" , "icao.region" , "imf" , "ioc" , "iso2c" , "iso4217c" , "iso4217n" , "p4c" , "p4n" , "p5c" , "p5n" , "region" , "region23" , "un.region.code" , "un.regionintermediate.code" , "un.regionsub.code" , "unhcr" , "unicode.symbol" , "unpd" , "vdem" , "wb_api2c" , "wb_api3c" , "wvs")
 
-
+ccnames
 
 cccnames <- c("iso3n", "cown", "un", "gwn", "fao" ,"gaul" ,"imf" ,"iso4217n", "un.region.code", "un.regionintermediate.code" ,"un.regionsub.code" ,"unpd", "vdem" ,"country.name.de", "country.name.de.regex", "country.name.en.regex", "country.name.fr", "country.name.fr.regex", "country.name.it", "country.name.it.regex", "iso3c", "cowc", "wb", "ar5", "cctld", "continent", "currency", "dhs", "ecb", "eu28", "eurocontrol_pru", "eurocontrol_statfor", "eurostat", "fips", "genc2c", "genc3c", "genc3n", "gwc", "icao.region", "ioc", "iso2c", "iso4217c", "p4c", "p5c", "p5n","region", "region23", "unhcr", "unicode.symbol", "wb_api2c", "wb_api3c")
 
@@ -296,7 +279,7 @@ detectCores()
 
 library(doParallel)
 library(foreach)
-cl <- makeCluster(2)
+cl <- makeCluster(5)
 registerDoParallel(cl)
 
 impFun <- function(x) {
@@ -309,7 +292,7 @@ impFun <- function(x) {
 ptm <- proc.time()
 
 # Loop through the vector, adding one
-tt <- foreach(i=1:3) %dopar% impFun(i)
+tt <- foreach(i=1:2) %dopar% impFun(i)
 
 # Stop the clock
 time1<- proc.time() - ptm
@@ -321,12 +304,13 @@ set.seed(seed*2)
 ptm2 <- proc.time()
 
 # Loop through the vector, adding one
-a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 4, polytime = 3, intercs = TRUE, p2s = 2, m=2, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=2, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
 
 # Stop the clock
 time2<- proc.time() - ptm2
 
-
+time1
+time2
 
 # ------------
 
