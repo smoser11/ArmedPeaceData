@@ -291,6 +291,7 @@ impFun <- function(x) {
 # Start the clock!
 ptm <- proc.time()
 
+
 # Loop through the vector, adding one
 tt <- foreach(i=1:2) %dopar% impFun(i)
 
@@ -303,7 +304,7 @@ set.seed(seed*2)
 # Start the clock!
 ptm2 <- proc.time()
 
-# Loop through the vector, adding one
+# Use amelia multi-core
 a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=2, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
 
 # Stop the clock
@@ -346,22 +347,106 @@ save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_
 #
 
 
+# impFun <- function(x) {
+# 	set.seed( (seed+x))
+# 	library(Amelia)
+# 	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+# }
 
 
+seed<-111111111
+set.seed(seed)
+library(Amelia)
+
+library(parallel)
+detectCores()
+
+library(doParallel)
+library(foreach)
+cl <- makeCluster(5)
+registerDoParallel(cl)
+
+
+a.out.time1950_HSS1_emp03 <- list()
 
 # add ridge priors (2% -> less 'shrinkage')
-a.out.time1950_HSS1_emp03 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .03 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+impFun_empi03 <- function(x) {
+	set.seed( (seed+x))
+	library(Amelia)
+	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+}
+# Loop through the vector, adding one
+a.out.time1950_HSS1_emp03 <- foreach(i=1:5) %dopar% impFun(i)
+
 save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi03_polytime3.RData")))
 
+str(a.out.time1950_HSS1_emp03[[1]]$imputations$imp1)
+
+missmap(a.out.time1950_HSS1_emp03[[1]]$imputations$imp1, csvar = "country.name.en", tsvar = "year")
 
 
 # https://medium.com/coinmonks/dealing-with-missing-data-using-r-3ae428da2d17
 
 
 
-pd5 <- mmALL50 %>% select(-contains("PWT") )
-names(mmALL50)
-names(pd5)
+#################################################################################
+######   ZFS data
+
+rm(list=ls())
+gc()
+
+library(haven)
+library(janitor)
+library(tidyverse)
+library(Amelia)
+library(sampleSelection)
+library(here)
+
+### 
+
+load(file =paste0(here("Data/Processed/Imputations", "impZFS1.RData") ))
+
+getwd()
+#install.packages("Amelia")
+
+
+
+library(mice)
+md.pattern(mmALL50)
+
+# https://cran.r-project.org/web/packages/naniar/vignettes/naniar-visualisation.html
+# install.packages(c("UpSetR ", "naniar")
+library(naniar)
+# https://naniar.njtierney.com/articles/getting-started-w-naniar.html
+
+
+
+ccnames <- c(paste(sQuote(names(ccpConBal50)), collapse = "," ))
+
+names_paste_quotesf <- function(my_data) {
+	paste0('"',
+		   paste0(names(my_data), collapse = '" , "'),
+		   '"') %>% cat
+}
+ccnames <- names_paste_quotesf(ccpConBal50) 
+
+ccnames <- c("country.name.de" , "country.name.de.regex" , "country.name.en.regex" , "country.name.fr" , "country.name.fr.regex" , "country.name.it" , "country.name.it.regex" , "iso3n" , "iso3c" , "cown" , "cowc" , "un" , "wb" , "gwn" , "ar5" , "cctld" , "continent" , "currency" , "dhs" , "ecb" , "eu28" , "eurocontrol_pru" , "eurocontrol_statfor" , "eurostat" , "fao" , "fips" , "gaul" , "genc2c" , "genc3c" , "genc3n" , "gwc" , "icao.region" , "imf" , "ioc" , "iso2c" , "iso4217c" , "iso4217n" , "p4c" , "p4n" , "p5c" , "p5n" , "region" , "region23" , "un.region.code" , "un.regionintermediate.code" , "un.regionsub.code" , "unhcr" , "unicode.symbol" , "unpd" , "vdem" , "wb_api2c" , "wb_api3c" , "wvs")
+
+ccnames
+
+cccnames <- c("iso3n", "cown", "un", "gwn", "fao" ,"gaul" ,"imf" ,"iso4217n", "un.region.code", "un.regionintermediate.code" ,"un.regionsub.code" ,"unpd", "vdem" ,"country.name.de", "country.name.de.regex", "country.name.en.regex", "country.name.fr", "country.name.fr.regex", "country.name.it", "country.name.it.regex", "iso3c", "cowc", "wb", "ar5", "cctld", "continent", "currency", "dhs", "ecb", "eu28", "eurocontrol_pru", "eurocontrol_statfor", "eurostat", "fips", "genc2c", "genc3c", "genc3n", "gwc", "icao.region", "ioc", "iso2c", "iso4217c", "p4c", "p5c", "p5n","region", "region23", "unhcr", "unicode.symbol", "wb_api2c", "wb_api3c")
+
+c(ccnames, "asdf")
+names(impHSS1)
+
+impHSS1 %>% select(! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ) %>% names()
+
+seed<-111111111
+set.seed(seed)
+library(Amelia)
+
+
+
 
 # add ridge priors (5% -> less 'shrinkage')
 a.out.time1950_all_polytime1 <- amelia(mmALL50, ts = "year", cs = "country", parallel = "multicore", ncpus = 4, polytime =1, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(mmALL50), idvars = c("iso3n", "cown", "un", "gwn", "fao" ,"gaul" ,"imf" ,"iso4217n", "un.region.code", "un.regionintermediate.code" ,"un.regionsub.code" ,"unpd", "vdem" ,"country.name.de", "country.name.de.regex", "country.name.en.regex", "country.name.fr", "country.name.fr.regex", "country.name.it", "country.name.it.regex", "iso3c", "cowc", "wb", "ar5", "cctld", "continent", "currency", "dhs", "ecb", "eu28", "eurocontrol_pru", "eurocontrol_statfor", "eurostat", "fips", "genc2c", "genc3c", "genc3n", "gwc", "icao.region", "ioc", "iso2c", "iso4217c", "p4c", "p5c", "region", "region23", "unhcr", "unicode.symbol", "wb_api2c", "wb_api3c", "NAMENEW_BB", "obs_NORD", "NAMENEW_NORD", "ccode2_PJM", "version_COW", "statenme_COW", "stateabb_COW", "wvs", "code_UTIP", "country_UTIP", "countryname_UTIP", "cown_UTIP" , "cown_SWIID", "country_PWT" , "currency_PWT",
