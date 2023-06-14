@@ -1,6 +1,4 @@
 # Imputation attempts
-## Look at ImputationAttempt_20230220.R
-
 
 rm(list = ls())
 gc()
@@ -206,8 +204,8 @@ getwd()
 
 
 
-library(mice)
-md.pattern(mmALL50)
+# library(mice)
+# md.pattern(mmALL50)
 
 # https://cran.r-project.org/web/packages/naniar/vignettes/naniar-visualisation.html
 # install.packages(c("UpSetR ", "naniar")
@@ -393,6 +391,7 @@ missmap(a.out.time1950_HSS1_emp03[[1]]$imputations$imp1, csvar = "country.name.e
 #############################################
 ### Even less shrinkage
 
+gc()
 seed<-11111112
 set.seed(seed)
 library(Amelia)
