@@ -478,7 +478,7 @@ cccnames <- c("iso3n", "cown", "un", "gwn", "fao" ,"gaul" ,"imf" ,"iso4217n", "u
 c(ccnames, "asdf")
 names(impZFS1)
 
-impZFS1 %>% select(! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ) %>% names()
+impZFS1 %>% select(! c(year_PJM,ccode_PJM,code_UTIP, year_UTIP, country.name.en_UTIP  ) )  %>% names()
 
 seed<-111111111
 set.seed(seed)
@@ -492,20 +492,39 @@ library(foreach)
 cl <- makeCluster(5)
 registerDoParallel(cl)
 
-a.out.time1950_ZFS1_emp03 <- list()
 
-# 
-# amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+
+impFun_empi05 <- function(x) {
+	set.seed( (seed+x))
+	library(Amelia)
+	amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
+		   ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
+}
+
+# Loop through the vector, adding one
+a.out.time1950_ZFS1_empi05 <- foreach(i=1:5) %dopar% impFun_empi05(i)
+save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi05_polytime3.RData")))
+
+
+
+## Less shrinkage
+a.out.time1950_ZFS1_emp03 <- list()
+names(impZFS1)
+
+amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
+ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
+
 
 # add ridge priors (2% -> less 'shrinkage')
 impFun_empi03 <- function(x) {
 	set.seed( (seed+x))
 	library(Amelia)
-	amelia( impZFS1, ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+	amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
+		   ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
 }
 # Loop through the vector, adding one
-a.out.time1950_HSS1_emp03 <- foreach(i=1:5) %dopar% impFun_empi03(i)
-save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi03_polytime3.RData")))
+a.out.time1950_ZFS1_emp03 <- foreach(i=1:5) %dopar% impFun_empi03(i)
+save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi03_polytime3.RData")))
 
 str(a.out.time1950_HSS1_emp03[[1]]$imputations$imp1)
 
@@ -533,17 +552,21 @@ cl <- makeCluster(5)
 registerDoParallel(cl)
 
 
-a.out.time1950_HSS1_emp01 <- list()
+a.out.time1950_ZFS1_emp01 <- list()
 
 # add ridge priors (1% -> less 'shrinkage')
+
 impFun_empi01 <- function(x) {
-	set.seed( (seed*x))
+	set.seed( (seed+x))
 	library(Amelia)
-	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .01 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+	amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
+		   ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .01 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
 }
 # Loop through the vector, adding one
-a.out.time1950_HSS1_empi01 <- foreach(i=1:5) %dopar% impFun_empi01(i)
-save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi01_polytime3.RData")))
+a.out.time1950_ZFS1_emp01 <- foreach(i=1:5) %dopar% impFun_empi01(i)
+save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi01_polytime3.RData")))
+
+
 
 
 
