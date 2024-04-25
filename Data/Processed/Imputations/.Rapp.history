@@ -1,0 +1,3 @@
+load("/Users/sm38679/Documents/GitHub/ArmedPeaceData/Data/Processed/Imputations/aOutTime1950_HSS1_empi03_polytime3.RData")
+ls()
+a.out.time1950_HSS1_emp03

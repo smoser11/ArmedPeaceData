@@ -1,0 +1,588 @@
+Data.
+├── Processed
+│   ├── CCdatOrig.RData
+│   ├── COW_statesMajor16long.RData
+│   ├── COW_statesMajor16long.csv
+│   ├── HSS.xlsx
+│   ├── HSS2.xlsx
+│   ├── Imputations
+│   │   ├── aOutTime1950_HSS1_empi01_polytime3.RData
+│   │   ├── aOutTime1950_HSS1_empi03_polytime3.RData
+│   │   ├── aOutTime1950_HSS1_empi05-polytime3.RData
+│   │   ├── aOutTime1950_ZFS1_empi01_polytime3.RData
+│   │   ├── aOutTime1950_ZFS1_empi03_polytime3.RData
+│   │   └── aOutTime1950_ZFS1_empi05_polytime3.RData
+│   ├── ZFS.xlsx
+│   ├── ZFS2.xlsx
+│   ├── codelist_panel1950.dta
+│   ├── codelist_panel2.RData
+│   ├── codelist_panel2.dta
+│   ├── codelist_panel2_ConBal.dta
+│   ├── country_name_en.csv
+│   ├── datMerge.RData
+│   ├── datOrig.RData
+│   ├── forcasting.xlsx
+│   ├── forcasting2.xlsx
+│   ├── impHSS1.RData
+│   ├── impZFS1.RData
+│   ├── ineqlong2.xlsx
+│   ├── mmCOW50.RData
+│   ├── mmCOW50.dta
+│   ├── mmFORCASTING50.RData
+│   ├── mmFORCASTING50.dta
+│   ├── mmHSS50.RData
+│   ├── mmHSS50.dta
+│   ├── mmNORD50.RData
+│   ├── mmNORD50.dta
+│   ├── mmPJM50.RData
+│   ├── mmPJM50.dta
+│   ├── mmPWT50.RData
+│   ├── mmPWT50.dta
+│   ├── mmSIPRI50.Rdata
+│   ├── mmSWIID50.RData
+│   ├── mmSWIID50.dta
+│   ├── mmUTIP50.RData
+│   ├── mmUTIP50.dta
+│   ├── mmYE_COW50.RData
+│   ├── mmYE_WB50.RData
+│   ├── mmZFS50.RData
+│   ├── mmZFS50.dta
+│   ├── mmf.csv
+│   ├── mmf2.xlsx
+│   ├── mmmALL50.RData
+│   ├── mmmALL50.csv
+│   ├── nord3.xlsx
+│   ├── rus.xlsx
+│   ├── rus2.xlsx
+│   ├── swiid_summary2.csv
+│   ├── usa.xlsx
+│   ├── usa2.xlsx
+│   ├── usa3.xlsx
+│   └── ~$HSS2.xlsx
+├── Raw
+│   ├── Ali - 2007 - Military Expenditures and Inequality.pdf
+│   ├── COW
+│   │   ├── COW-country-codes.csv
+│   │   ├── Intra-State-Wars-v5.1
+│   │   │   ├── Codebook for Intra-state v5.1 2.9.20.pdf
+│   │   │   ├── Description of Intra-state v5.1.pdf.pdf
+│   │   │   ├── INTRA-STATE WARS v5.1 CSV.csv
+│   │   │   ├── INTRA-STATE WARS v5.1.dta
+│   │   │   ├── INTRA-STATE_State_participant v5.1.dta
+│   │   │   └── INTRA-STATE_State_participants v5.1 CSV.csv
+│   │   ├── NMC_5_0
+│   │   │   ├── NMC_5_0.csv
+│   │   │   └── NMC_5_0.dta
+│   │   ├── NMC_5_0-wsupplementary
+│   │   │   ├── NMC_5_0-wsupplementary.csv
+│   │   │   └── NMC_5_0-wsupplementary.dta
+│   │   ├── NMC_Documentation_v5_0.pdf
+│   │   └── StateSystemMembership
+│   │       ├── State-System-Membership-Codebook-V2016.pdf
+│   │       ├── majors2016.csv
+│   │       ├── states2016.csv
+│   │       └── system2016.csv
+│   ├── Cappella Zielinski et al - 2017 - What goes up, must come down.pdf
+│   ├── Democracy external threat and military spending
+│   │   ├── DP_Nord_clean.dta
+│   │   ├── HSS Do file for democracy threat and military spending R&P.do
+│   │   ├── HSS R&P data for democracy threat and military spending.dta
+│   │   └── Hauenstein et al - 2021 - Democracy, external threat, and military spending.pdf
+│   ├── Forecasting Military Expenditure
+│   │   ├── Bohmelt and Bove - 2014 - Forecasting military expenditure.pdf
+│   │   ├── Dofile.do
+│   │   ├── Final Data 2.dta
+│   │   ├── Final Data.dta
+│   │   ├── Final Data_ccy.dta
+│   │   └── OoSGraph_2.dta
+│   ├── JPR - What Goes Up - Replication
+│   │   ├── Cappella Zielinski et al - 2017 - What goes up, must come down.pdf
+│   │   ├── readme.txt
+│   │   ├── replication.do
+│   │   └── replication.dta
+│   ├── Lin and Ali - 2009 - Military Spending and Inequality.pdf
+│   ├── M Ensar Yesilyurt & J Paul Elhorst
+│   │   ├── Additional Matlab Files.zip
+│   │   ├── BC1_144.xlsx
+│   │   ├── JPR_Table2.m
+│   │   ├── JPR_Table3.m
+│   │   ├── Online appendix Country list.docx
+│   │   ├── Output.txt
+│   │   ├── Running Matlab files.txt
+│   │   ├── Wenemy.xlsx
+│   │   ├── Yesilyurt and Elhorst - 2017 - Impacts of neighboring countries on military expenditure.pdf
+│   │   ├── datasetcow2015.xlsx
+│   │   └── datasetwb2015.xlsx
+│   ├── Military Expenditures and Income Inequality Evidence from a Panel of Transition Countries
+│   │   └── DATASET_ SCOTT MOSER.xlsx
+│   ├── SIPRI
+│   │   └── SIPRI-Milex-data-1949-2021.xlsx
+│   ├── The Effects of the International Security Environment on National Military Expenditures
+│   │   ├── Data_equation_2_NOR_102011r.xlsx
+│   │   ├── S0020818312000173sup001.pdf
+│   │   ├── S0020818312000173sup001.xlsx
+│   │   └── gen_phat_061312.do
+│   ├── Tongur et al - 2015 - Military expenditures and political regimes.pdf
+│   ├── UTIP
+│   │   ├── UTIP_UNIDO.ppt
+│   │   ├── UtipUnidoEhiiV2017_v.1.xlsx
+│   │   └── utipunidov2017.xlsx
+│   ├── countrycode-main
+│   │   ├── DESCRIPTION
+│   │   ├── LICENSE
+│   │   ├── NAMESPACE
+│   │   ├── NEWS.md
+│   │   ├── R
+│   │   │   ├── cldr_examples.R
+│   │   │   ├── codelist.R
+│   │   │   ├── codelist_panel.R
+│   │   │   ├── countrycode-package.R
+│   │   │   ├── countrycode.R
+│   │   │   ├── countryname.R
+│   │   │   ├── countryname_dict.R
+│   │   │   └── guess_field.R
+│   │   ├── README.md
+│   │   ├── _Rbuildignore
+│   │   ├── _github
+│   │   │   ├── _gitignore
+│   │   │   └── workflows
+│   │   │       ├── check-standard.yaml
+│   │   │       └── lint.yaml
+│   │   ├── _gitignore
+│   │   ├── _here
+│   │   ├── _pkgdown.yml
+│   │   ├── appveyor.yml
+│   │   ├── countrycode.Rproj
+│   │   ├── cran-comments.md
+│   │   ├── data
+│   │   │   ├── cldr_examples.rda
+│   │   │   ├── codelist.rda
+│   │   │   ├── codelist_panel.rda
+│   │   │   ├── countryname_dict.rda
+│   │   │   ├── custom_dictionaries
+│   │   │   │   ├── ch_cantons.csv
+│   │   │   │   ├── globalburdenofdisease.csv
+│   │   │   │   └── us_states.csv
+│   │   │   └── extra
+│   │   │       ├── countryhood.csv
+│   │   │       └── flag_table.png
+│   │   ├── dictionary
+│   │   │   ├── Dockerfile
+│   │   │   ├── build.R
+│   │   │   ├── build_iso3c-ret.R
+│   │   │   ├── build_iso3c-ret20220906.R
+│   │   │   ├── build_iso3c-ret20220907.R
+│   │   │   ├── build_iso3c-ret20220908.R
+│   │   │   ├── build_v2-LUIN73108.R
+│   │   │   ├── build_v2.R
+│   │   │   ├── build_v3.R
+│   │   │   ├── codelist_panel_without_cldr.csv
+│   │   │   ├── codelist_without_cldr.csv
+│   │   │   ├── data_aviation.csv
+│   │   │   ├── data_backup.rds
+│   │   │   ├── data_cctld.csv
+│   │   │   ├── data_cldr.csv
+│   │   │   ├── data_cow.csv
+│   │   │   ├── data_dhs.csv
+│   │   │   ├── data_ecb.csv
+│   │   │   ├── data_eurostat.csv
+│   │   │   ├── data_fao.csv
+│   │   │   ├── data_fips.csv
+│   │   │   ├── data_fips.xls
+│   │   │   ├── data_genc.csv
+│   │   │   ├── data_gw.csv
+│   │   │   ├── data_icao.csv
+│   │   │   ├── data_imf.csv
+│   │   │   ├── data_ioc.csv
+│   │   │   ├── data_iso.csv
+│   │   │   ├── data_iso4217.csv
+│   │   │   ├── data_iso_ret.csv
+│   │   │   ├── data_iso_ret2.csv
+│   │   │   ├── data_polity4.csv
+│   │   │   ├── data_polity5.csv
+│   │   │   ├── data_raw
+│   │   │   │   ├── data_small_countries.csv
+│   │   │   │   └── data_vdem_v12_march2022.rds
+│   │   │   ├── data_regex.csv
+│   │   │   ├── data_regions.csv
+│   │   │   ├── data_small_countries.csv
+│   │   │   ├── data_un.csv
+│   │   │   ├── data_un_names.csv
+│   │   │   ├── data_unhcr.csv
+│   │   │   ├── data_unicode_symbol.csv
+│   │   │   ├── data_unpd.csv
+│   │   │   ├── data_vdem.csv
+│   │   │   ├── data_world_bank.csv
+│   │   │   ├── data_world_bank_api.csv
+│   │   │   ├── data_world_bank_region.csv
+│   │   │   ├── data_wvs.csv
+│   │   │   ├── get_cctld.R
+│   │   │   ├── get_cldr.R
+│   │   │   ├── get_countryname_dict.R
+│   │   │   ├── get_cow.R
+│   │   │   ├── get_dhs.R
+│   │   │   ├── get_ecb.R
+│   │   │   ├── get_eurostat.R
+│   │   │   ├── get_fao.R
+│   │   │   ├── get_fips.R
+│   │   │   ├── get_genc.R
+│   │   │   ├── get_gw.R
+│   │   │   ├── get_ioc.R
+│   │   │   ├── get_iso.R
+│   │   │   ├── get_iso4217.R
+│   │   │   ├── get_polity4.R
+│   │   │   ├── get_polity5.R
+│   │   │   ├── get_small_countries.R
+│   │   │   ├── get_un.R
+│   │   │   ├── get_un_names.R
+│   │   │   ├── get_unhcr.R
+│   │   │   ├── get_unicode_symbol.R
+│   │   │   ├── get_vdem.R
+│   │   │   ├── get_world_bank.R
+│   │   │   ├── get_world_bank_api.R
+│   │   │   ├── get_world_bank_region.R
+│   │   │   ├── get_wvs.R
+│   │   │   ├── utilities.R
+│   │   │   └── utilities_v2.R
+│   │   ├── inst
+│   │   │   └── CITATION
+│   │   ├── joss
+│   │   │   ├── paper.bib
+│   │   │   └── paper.md
+│   │   ├── man
+│   │   │   ├── cldr_examples.Rd
+│   │   │   ├── codelist.Rd
+│   │   │   ├── codelist_panel.Rd
+│   │   │   ├── countrycode-package.Rd
+│   │   │   ├── countrycode.Rd
+│   │   │   ├── countryname.Rd
+│   │   │   ├── countryname_dict.Rd
+│   │   │   └── guess_field.Rd
+│   │   └── tests
+│   │       ├── test-all.R
+│   │       └── testthat
+│   │           ├── data-known-name-variations.R
+│   │           ├── test-basic.R
+│   │           ├── test-codelist.R
+│   │           ├── test-corner-cases.R
+│   │           ├── test-countryname.R
+│   │           ├── test-custom-dictionary.R
+│   │           ├── test-destination-only.R
+│   │           ├── test-destination.R
+│   │           ├── test-dictionary_attributes.R
+│   │           ├── test-known-name-variations.R
+│   │           ├── test-nomatch.R
+│   │           ├── test-regex-external.R
+│   │           ├── test-regex-internal.R
+│   │           ├── test-regex-sentence.R
+│   │           ├── test-regex-special.R
+│   │           └── test-unicode-symbols.R
+│   ├── hierarchydata
+│   │   ├── Russiaally4_1 Aug22.dta
+│   │   └── USally4_1 Aug22.dta
+│   └── swiid-master
+│       ├── R
+│       │   ├── cc_swiid.R
+│       │   ├── comparing_versions.R
+│       │   ├── comparing_versions_oecd.R
+│       │   ├── data_setup.R
+│       │   ├── estimate_swiid
+│       │   │   ├── all
+│       │   │   ├── all.stan
+│       │   │   ├── all_cmdstan.R
+│       │   │   ├── all_mkt_cmdstanr.R
+│       │   │   ├── kfold
+│       │   │   │   ├── all_fold.R
+│       │   │   │   ├── baseline_rnd.rda
+│       │   │   │   ├── combine_folds.R
+│       │   │   │   ├── combine_folds_hpc.R
+│       │   │   │   └── make_baseline_rnd.R
+│       │   │   └── precursors
+│       │   │       ├── all2.R
+│       │   │       ├── all2.stan
+│       │   │       ├── corr.R
+│       │   │       ├── lis.R
+│       │   │       ├── lis.stan
+│       │   │       ├── lis2.R
+│       │   │       ├── lis2.stan
+│       │   │       ├── lis_mkt.R
+│       │   │       ├── lis_mkt.stan
+│       │   │       ├── lis_only.R
+│       │   │       ├── lis_only.stan
+│       │   │       ├── lis_plus_series.R
+│       │   │       ├── lis_plus_series.stan
+│       │   │       ├── lis_rho_s_by_t.R
+│       │   │       ├── lis_rho_s_by_t.stan
+│       │   │       ├── lis_rho_s_by_t.txt
+│       │   │       ├── not_lis.R
+│       │   │       ├── not_lis.stan
+│       │   │       ├── not_lis_mkt.R
+│       │   │       └── not_lis_mkt.stan
+│       │   ├── format_stata.do
+│       │   ├── get_lis_ginis.R
+│       │   ├── lissy.R
+│       │   ├── lissy_stata.txt
+│       │   ├── merge_output.R
+│       │   ├── plot_tscs.R
+│       │   └── ppc.R
+│       ├── README.md
+│       ├── _Rbuildignore
+│       ├── _gitignore
+│       ├── bib
+│       │   └── swiid.bib
+│       ├── data
+│       │   ├── cc_swiid.rda
+│       │   ├── for_stata.dta
+│       │   ├── ineq.Rda
+│       │   ├── ineq0.rda
+│       │   ├── kfold_output.rda
+│       │   ├── kfold_output_by_country.rda
+│       │   ├── reg.csv
+│       │   ├── res_folds.rda
+│       │   ├── swiid6_0.dta
+│       │   ├── swiid6_0.rda
+│       │   ├── swiid6_1.dta
+│       │   ├── swiid6_1.rda
+│       │   ├── swiid6_1_summary.csv
+│       │   ├── swiid6_2.dta
+│       │   ├── swiid6_2.rda
+│       │   ├── swiid6_2_summary.csv
+│       │   ├── swiid7_0.dta
+│       │   ├── swiid7_0.rda
+│       │   ├── swiid7_0_summary.csv
+│       │   ├── swiid7_1.dta
+│       │   ├── swiid7_1.rda
+│       │   ├── swiid7_1_summary.csv
+│       │   ├── swiid8_0.dta
+│       │   ├── swiid8_0.rda
+│       │   ├── swiid8_1.dta
+│       │   ├── swiid8_1.rda
+│       │   ├── swiid8_2.dta
+│       │   ├── swiid8_2.rda
+│       │   ├── swiid8_3.dta
+│       │   ├── swiid8_3.rda
+│       │   ├── swiid9_0.dta
+│       │   ├── swiid9_0.rda
+│       │   ├── swiid9_1.dta
+│       │   ├── swiid9_1.rda
+│       │   ├── swiid9_2.dta
+│       │   ├── swiid9_2.rda
+│       │   ├── swiid9_3.dta
+│       │   ├── swiid9_3.rda
+│       │   ├── swiid_source.csv
+│       │   └── swiid_summary.csv
+│       ├── data-raw
+│       │   ├── AFR_gini_sqrt.csv
+│       │   ├── GlobalDistStata.zip
+│       │   ├── LISSY
+│       │   │   ├── at.txt
+│       │   │   ├── au.txt
+│       │   │   ├── be.txt
+│       │   │   ├── br.txt
+│       │   │   ├── ca.txt
+│       │   │   ├── ch.txt
+│       │   │   ├── ci.txt
+│       │   │   ├── cl.txt
+│       │   │   ├── cn.txt
+│       │   │   ├── co.txt
+│       │   │   ├── cz.txt
+│       │   │   ├── de.txt
+│       │   │   ├── dk.txt
+│       │   │   ├── do.txt
+│       │   │   ├── ee.txt
+│       │   │   ├── eg.txt
+│       │   │   ├── es.txt
+│       │   │   ├── fi.txt
+│       │   │   ├── fr.txt
+│       │   │   ├── ge.txt
+│       │   │   ├── gr.txt
+│       │   │   ├── gt.txt
+│       │   │   ├── hu.txt
+│       │   │   ├── ie.txt
+│       │   │   ├── il.txt
+│       │   │   ├── in.txt
+│       │   │   ├── is.txt
+│       │   │   ├── it.txt
+│       │   │   ├── jp.txt
+│       │   │   ├── kr.txt
+│       │   │   ├── lt.txt
+│       │   │   ├── lu.txt
+│       │   │   ├── ml.txt
+│       │   │   ├── mx.txt
+│       │   │   ├── nl.txt
+│       │   │   ├── no.txt
+│       │   │   ├── nz.txt
+│       │   │   ├── pa.txt
+│       │   │   ├── pe.txt
+│       │   │   ├── pl.txt
+│       │   │   ├── ps.txt
+│       │   │   ├── py.txt
+│       │   │   ├── ro.txt
+│       │   │   ├── rs.txt
+│       │   │   ├── ru.txt
+│       │   │   ├── ru_old.txt
+│       │   │   ├── se.txt
+│       │   │   ├── si.txt
+│       │   │   ├── sk.txt
+│       │   │   ├── tw.txt
+│       │   │   ├── uk.txt
+│       │   │   ├── us.txt
+│       │   │   ├── uy.txt
+│       │   │   ├── vn.txt
+│       │   │   └── za.txt
+│       │   ├── WIID_19Dec2018.xlsx
+│       │   ├── abs.xlsx
+│       │   ├── amar.xlsx
+│       │   ├── armstat2016.pdf
+│       │   ├── armstat2017.pdf
+│       │   ├── armstat2018.pdf
+│       │   ├── armstat2019.pdf
+│       │   ├── armstat2020.pdf
+│       │   ├── armstat2021.pdf
+│       │   ├── atg.dta
+│       │   ├── belstat.pdf
+│       │   ├── bpsid1.xls
+│       │   ├── bpsid2.xls
+│       │   ├── capmas.xls
+│       │   ├── cbo.xlsx
+│       │   ├── ceq.csv
+│       │   ├── cso_ie.json
+│       │   ├── dane.xls
+│       │   ├── dgeec.pdf
+│       │   ├── dgeec.xls
+│       │   ├── epumy.pdf
+│       │   ├── fs_added_data.csv
+│       │   ├── geostat.csv
+│       │   ├── greenland.csv
+│       │   ├── gso_vn2.csv
+│       │   ├── gso_vn2013.pdf
+│       │   ├── hk2006.pdf
+│       │   ├── hk2011.pdf
+│       │   ├── hk2016.xlsx
+│       │   ├── ifs.xlsx
+│       │   ├── ine.csv
+│       │   ├── inebo.xlsx
+│       │   ├── ineccr.xlsx
+│       │   ├── inev.xls
+│       │   ├── insee2.xlsx
+│       │   ├── ipea.csv
+│       │   ├── istat.csv
+│       │   ├── istat2.csv
+│       │   ├── kazstat.xls
+│       │   ├── kostat1.csv
+│       │   ├── kostat2.csv
+│       │   ├── monstat.xls
+│       │   ├── nbs.xlsx
+│       │   ├── nbs0.xls
+│       │   ├── nesdc.xlsx
+│       │   ├── notes.txt
+│       │   ├── nsck.xls
+│       │   ├── nzmsd.doc
+│       │   ├── nzmsd.pdf
+│       │   ├── ons.xlsx
+│       │   ├── psa.csv
+│       │   ├── repositorio_cepal.tsv
+│       │   ├── rosstat
+│       │   │   ├── Ретро_2021_Раздел1.xls
+│       │   │   ├── Ретро_2021_Раздел10.xls
+│       │   │   ├── Ретро_2021_Раздел11.xls
+│       │   │   ├── Ретро_2021_Раздел12.xls
+│       │   │   ├── Ретро_2021_Раздел13.xls
+│       │   │   ├── Ретро_2021_Раздел14.xls
+│       │   │   ├── Ретро_2021_Раздел15.xls
+│       │   │   ├── Ретро_2021_Раздел16.xls
+│       │   │   ├── Ретро_2021_Раздел17.xls
+│       │   │   ├── Ретро_2021_Раздел18.xls
+│       │   │   ├── Ретро_2021_Раздел19.xls
+│       │   │   ├── Ретро_2021_Раздел2.xls
+│       │   │   ├── Ретро_2021_Раздел20.xls
+│       │   │   ├── Ретро_2021_Раздел21.xls
+│       │   │   ├── Ретро_2021_Раздел22.xls
+│       │   │   ├── Ретро_2021_Раздел23.xls
+│       │   │   ├── Ретро_2021_Раздел24.xls
+│       │   │   ├── Ретро_2021_Раздел3.xls
+│       │   │   ├── Ретро_2021_Раздел4.xls
+│       │   │   ├── Ретро_2021_Раздел5.xls
+│       │   │   ├── Ретро_2021_Раздел6.xls
+│       │   │   ├── Ретро_2021_Раздел7.xls
+│       │   │   ├── Ретро_2021_Раздел8.xls
+│       │   │   ├── Ретро_2021_Раздел9.xls
+│       │   │   └── Содержание_2021.xls
+│       │   ├── rosstat.rar
+│       │   ├── sedlac.xlsx
+│       │   ├── singstat.csv
+│       │   ├── snz.xls
+│       │   ├── ssb.csv
+│       │   ├── ssi.xls
+│       │   ├── ssi2.px
+│       │   ├── statinja.csv
+│       │   ├── statistics_estonia.tsv
+│       │   ├── statistics_japan2010.xls
+│       │   ├── statistics_japan2015.xls
+│       │   ├── statslk2015.pdf
+│       │   ├── statssa.pdf
+│       │   ├── tdgbas1.xls
+│       │   ├── tdgbas2.csv
+│       │   ├── transmonee.xls
+│       │   ├── tuik_hh.xls
+│       │   ├── tuik_oecdm.xls
+│       │   ├── uine1.pdf
+│       │   ├── uine2.pdf
+│       │   ├── uscb1998.pdf
+│       │   ├── uscb_ae.xlsx
+│       │   ├── uscb_ae_se.xlsx
+│       │   ├── uscb_hh.xlsx
+│       │   └── uscb_hh_se.xlsx
+│       ├── notes.txt
+│       ├── paper
+│       │   ├── figures
+│       │   │   ├── kfold_country.pdf
+│       │   │   ├── kfold_obs.pdf
+│       │   │   ├── swiid1.pdf
+│       │   │   ├── swiid2.pdf
+│       │   │   ├── swiid3.pdf
+│       │   │   ├── swiid4.pdf
+│       │   │   ├── swiid5.pdf
+│       │   │   ├── swiid6.pdf
+│       │   │   ├── swiid_lrsbt1.pdf
+│       │   │   ├── swiid_lrsbt2.pdf
+│       │   │   ├── swiid_mkt1.pdf
+│       │   │   ├── swiid_mkt2.pdf
+│       │   │   ├── swiid_mkt3.pdf
+│       │   │   ├── swiid_mkt4.pdf
+│       │   │   ├── swiid_mkt5.pdf
+│       │   │   └── swiid_mkt6.pdf
+│       │   ├── slides
+│       │   │   ├── luc.key
+│       │   │   └── luc.pdf
+│       │   ├── svm-latex-ms2.tex
+│       │   ├── typeset_pdf.R
+│       │   ├── updating_swiid.Rmd
+│       │   ├── updating_swiid.bib
+│       │   └── updating_swiid.pdf
+│       ├── swiid.xls
+│       └── vignette
+│           ├── R_swiid.Rmd
+│           ├── R_swiid.pdf
+│           ├── R_swiid_files
+│           │   └── figure-latex
+│           │       ├── 07-results-1.pdf
+│           │       └── plot-1.pdf
+│           ├── Rswiid.bib
+│           ├── apsr.bst
+│           ├── gif
+│           │   ├── swiid.gif
+│           │   ├── swiid.mov
+│           │   └── swiid_gif.txt
+│           ├── highest_ineq.R
+│           ├── highest_ineq.pdf
+│           ├── stata_scatter.png
+│           ├── stata_swiid.do
+│           ├── stata_swiid.pdf
+│           ├── stata_swiid.tex
+│           ├── svm-latex-ms2.tex
+│           ├── swiid.bib
+│           └── template_swiid.tex
+└── filelist.txt
+
+49 directories, 537 files
