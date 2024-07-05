@@ -1,0 +1,468 @@
+---
+title: "ArmedPeace"
+format: html
+editor: visual
+toc: true
+toc-depth: 2
+---
+
+# Making new DVs
+
+```{r}
+#| echo: true
+#| output: false
+library(haven)
+library(summarytools)
+library(pcse)
+library(fixest)
+library(AER)
+library(tidyverse)
+```
+
+# Loading data & creating variables
+
+```{r}
+HSS <- read_dta("Data/Raw/Democracy external threat and military spending/DP_Nord_clean.dta")
+ZFS <- read_dta("Data/Raw/JPR - What Goes Up - Replication/replication.dta") |> 
+	mutate(ln_smilex = log(smilex), 
+		   ln_milex = log(milex),
+		   ln_rgdp = log(rgdp))
+BFMM <- readRDS("~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/Barnum et al JPR 2024/data/estimates_milex_cur_20231205.rds")
+```
+
+# Base Measures: (Raw or Logged) Military Expenditure
+
+Military expenditure data are from (a) Hauenstein, Smith and Souva (021) (HSS), (b) Zielinski, Fordham, and Schilde (ZFS), and (c) Barnum, Farris, Markowitz, and Morales (2024) (BFMM).
+
+| Dataset | Variable  | Description                                                      |
+|--------------|--------------|---------------------------------------------|
+| HSS     | LMILEX    | ln(Military Expenditure)                                         |
+| HSS     | LMILGDP   | ln(Military Expenditure/GDP)                                     |
+| ZFS     | smilex    | (Raw) Military Expenditure from SIPLI.                           |
+| ZFS     | ln_smilex | ln(Military Expenditure) from SIPLI.                             |
+| ZFS     | smilincr  | Change in (Raw) Military Expenditure from t-1 to t in `smilex`   |
+| ZFS     | milex     | (Raw) Military Expenditure from Nordhaus et al.                  |
+| ZFS     | ln_milex  | ln(Military Expenditure) from Nordhouse et al.                   |
+| ZFS     | milincr   | Change in (Raw) Military Expenditure from t-1 to t in `milex`    |
+| ZFS     | rgdp      | Raw GDP                                                          |
+| ZFS     | ln_rgdp   | ln(Raw GDP)                                                      |
+| ZFS     | rgdpincr  | Change in Raw GDP from t-1 to t in `rgdp`                        |
+| BFMM    | mean      | Mean of the predicted distribution of (raw) military expenditure |
+| BFMM    | mean_log  | ln(`mean`)                                                       |
+
+Year coverage. 
+HSS: 1951-2000 
+ZFS: 1945-2015 
+BFMM:1816 - 2022
+
+## Distributions of military expenditure
+
+```{r}
+# LMILEX from HSS
+summary(HSS$LMILEX)
+hist(HSS$LMILEX)
+
+# smilex from ZFS
+summary(ZFS$smilex)
+hist(na.omit(ZFS$smilex)) # NAs are omitted
+
+# ln_smilex from ZFS
+summary(ZFS$ln_smilex)
+hist(na.omit(ZFS$ln_smilex))
+
+# milex fron ZFS
+summary(ZFS$milex)
+hist(na.omit(ZFS$milex))
+
+# ln_milex fron ZFS
+summary(ZFS$ln_milex)
+hist(na.omit(ZFS$ln_milex))
+
+# mean from BFMM
+summary(BFMM$mean)
+hist(BFMM$mean)
+
+# mean_log from BFMM
+summary(BFMM$mean_log)
+hist(BFMM$mean_log)
+```
+
+## combining datasets
+
+```{r}
+library(countrycode)
+BFMM$ccode <- countrycode(BFMM$gwno,"gwn", "cown") # Gleditsch-Ward system does not perfectly match the COW country code. This makes a warning message  later.
+
+df <- BFMM |>  left_join(ZFS, by = c("ccode" = "STATE", "year" = "YEAR")) |> 
+	left_join(HSS, by =c("ccode" = "ccode", "year" = "year"))
+
+df <- df |> mutate(LNRGDP_lag1 = lag(LNRGDP, n = 1, order_by = year), # this is for 3-year moving ave.
+					LNRGDP_lag2 = lag(LNRGDP, n = 2, order_by = year),
+					LNRGDP_lag4 = lag(LNRGDP, n = 4, order_by = year),
+					v2x_polyarchy_lag1 = lag(v2x_polyarchy, n = 1, order_by = year),
+					v2x_polyarchy_lag2 = lag(v2x_polyarchy, n = 2, order_by = year),
+					v2x_polyarchy_lag4 = lag(v2x_polyarchy, n = 4, order_by = year),
+					PN6_lag1 = lag(PN6, n = 1, order_by = year),
+					PN6_lag2 = lag(PN6, n = 2, order_by = year),
+					PN6_lag4 = lag(PN6, n = 4, order_by = year),
+					defense_dem_lag1 = lag(defense_dem, n = 1, order_by = year),
+					defense_dem_lag2 = lag(defense_dem, n = 2, order_by = year),
+					defense_dem_lag4 = lag(defense_dem, n = 4, order_by = year),
+					defense_nodem_lag1 = lag(defense_nodem, n = 1, order_by = year),
+					defense_nodem_lag2 = lag(defense_nodem, n = 2, order_by = year),
+					defense_nodem_lag4 = lag(defense_nodem, n = 4, order_by = year),
+					atwar_lag1 = lag(atwar, n=1, order_by = year),
+					atwar_lag2 = lag(atwar, n=2, order_by = year),
+					atwar_lag4 = lag(atwar, n=4, order_by = year),
+					civilwar_lag1 = lag(civilwar, n=1, order_by = year),
+					civilwar_lag2 = lag(civilwar, n=2, order_by = year),
+					civilwar_lag4 = lag(civilwar, n=4, order_by = year))
+	     
+```
+
+`df` is created based on BFMM, which means the data frame covers years from 1815 to 2022. Thus, we will have many NAs when we use variables from HSS or ZFS.
+
+## (Very) rough linear regressions
+
+Here I included fixed effects since otherwise almost all variables would have a significant p values, which would make it difficult to choose which DV we should focus on. By adding fixed effects, we can see which variables well predict the variation of the military expenditure after controlling for year-specific or unit specific factors. (But I am very open to any suggestions.)
+
+Variables
+DV: raw or logged military expenditure in various measures
+RHS: GDP, liberal democracy index in Vdem, external threat, defensive alliances with a democracy, defensive alliances with an autocracy, a dummy variable of international war, and a dummy variable of civil war.
+Fixed effects: year and country
+
+I will use the same RHS variables in the later analyses.
+
+```{r}
+fit0_1 <- fixest::feols(LMILEX ~ LNRGDP +v2x_polyarchy + PN6 + defense_dem + defense_nodem + atwar+civilwar | year + ccode, data = df) #with year and country fixed effects
+summary(fit0_1) #PN6 is a threat variable from Nordhouase. 
+
+fit0_2 <- fixest::feols(ln_smilex ~ LNRGDP +v2x_polyarchy + PN6 + defense_dem + defense_nodem + atwar+civilwar | year + ccode, data = df)
+summary(fit0_2)
+
+fit0_3 <- fixest::feols(ln_milex ~ LNRGDP +v2x_polyarchy + PN6 + defense_dem + defense_nodem + atwar+civilwar | year + ccode, data = df)
+summary(fit0_3)
+
+fit0_4 <- fixest::feols(mean_log ~ LNRGDP +v2x_polyarchy + PN6 + defense_dem + defense_nodem + atwar+civilwar | year + ccode, data = df)
+summary(fit0_4)
+```
+
+## DV as a DIfference from 3-year Moving Average
+
+Here I take 3-year moving averages of log(military expenditure), and then take a difference between log(military expenditure) and the 3-year average of log(military expenditure).
+
+(But, perhaps, it may be more appropriate to take moving averages of raw military expenditure and then take a difference. (and then taking a log of the difference, if necessary.) )
+
+```{r}
+library(zoo)
+df <- df |> group_by(ccode) |>  mutate(
+	LMILEX_ma3 = rollmean(LMILEX, k=3, fill=NA),  
+	ln_smilex_ma3 = rollmean(ln_smilex, k=3, fill=NA), 
+	ln_milex_ma3 = rollmean(ln_milex, k=3, fill=NA), 
+	mean_log_ma3 = rollmean(mean_log, k=3, fill=NA)
+) |> 
+	mutate( LMILEX_ma3_diff = LMILEX - LMILEX_ma3,
+			ln_smilex_ma3_diff = ln_smilex - ln_smilex_ma3,
+			ln_milex_ma3_diff = ln_milex - ln_milex_ma3,
+		    mean_log_ma3_diff = mean_log - mean_log_ma3
+	)
+```
+
+Let's take a look at distributions
+
+```{r}
+summary(df$LMILEX_ma3_diff)
+hist(df$LMILEX_ma3_diff)
+
+summary(df$ln_smilex_ma3_diff)
+hist(df$ln_smilex_ma3_diff)
+
+summary(df$ln_milex_ma3_diff)
+hist(df$ln_milex_ma3_diff)
+
+summary(df$mean_log_ma3_diff)
+hist(df$mean_log_ma3_diff)
+```
+
+Regressions
+
+```{r}
+fit1_1 <- fixest::feols(LMILEX_ma3_diff ~ LNRGDP_lag1 +v2x_polyarchy_lag1 + PN6_lag1 + defense_dem_lag1 + defense_nodem_lag1 + atwar_lag1+civilwar_lag1 | year + ccode, data = df) #with year and country fixed effects
+summary(fit1_1)#PN6 is a threat variable from Nordhaus
+
+fit1_2 <- fixest::feols(ln_smilex_ma3_diff ~ LNRGDP_lag1 +v2x_polyarchy_lag1 + PN6_lag1 + defense_dem_lag1 + defense_nodem_lag1 + atwar_lag1+civilwar_lag1 | year + ccode, data = df)
+summary(fit1_2)
+
+fit1_3 <- fixest::feols(ln_milex_ma3_diff ~ LNRGDP_lag1 +v2x_polyarchy_lag1 + PN6_lag1 + defense_dem_lag1 + defense_nodem_lag1 + atwar_lag1+civilwar_lag1 | year + ccode, data = df)
+summary(fit1_3)
+
+fit1_4 <- fixest::feols(mean_log_ma3_diff ~ LNRGDP_lag1 +v2x_polyarchy_lag1 + PN6_lag1 + defense_dem_lag1 + defense_nodem_lag1 + atwar_lag1+civilwar_lag1 | year + ccode, data = df)
+summary(fit1_4)
+
+```
+
+## DV as a Difference from 5-year Moving Average
+
+```{r}
+df <- df |> group_by(ccode) |>  mutate(
+	LMILEX_ma5 = rollmean(LMILEX, k=5, fill=NA),  
+	ln_smilex_ma5 = rollmean(ln_smilex, k=5, fill=NA), 
+	ln_milex_ma5 = rollmean(ln_milex, k=5, fill=NA), 
+	mean_log_ma5 = rollmean(mean_log, k=5, fill=NA)
+) |> 
+	mutate( LMILEX_ma5_diff = LMILEX - LMILEX_ma5,
+			ln_smilex_ma5_diff = ln_smilex - ln_smilex_ma5,
+			ln_milex_ma5_diff = ln_milex - ln_milex_ma5,
+		    mean_log_ma5_diff = mean_log - mean_log_ma5
+	)
+```
+
+```{r}
+summary(df$LMILEX_ma5_diff)
+hist(df$LMILEX_ma5_diff)
+
+summary(df$ln_smilex_ma5_diff)
+hist(df$ln_smilex_ma5_diff)
+
+summary(df$ln_milex_ma5_diff)
+hist(df$ln_milex_ma5_diff)
+
+summary(df$mean_log_ma5_diff)
+hist(df$mean_log_ma5_diff)
+```
+
+```{r}
+fit2_1 <- fixest::feols(LMILEX_ma5_diff ~ LNRGDP_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2 | year + ccode, data = df) #with year and country fixed effects
+summary(fit2_1)#PN6 is a threat variable from Nordhouase. v2x_polyarchy is an index of democracy, defense_dem and defense_nodem are diffensive alliance with a (non)democracy. atwar is a dummy variable of interstate war and civilwar is a dummy variable of  civil war.
+
+fit2_2 <- fixest::feols(ln_smilex_ma5_diff ~ LNRGDP_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2  | year + ccode, data = df)
+summary(fit2_2)
+
+fit2_3 <- fixest::feols(ln_milex_ma5_diff ~ LNRGDP_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2 | year + ccode, data = df)
+summary(fit2_3)
+
+fit2_4 <- fixest::feols(mean_log_ma5_diff ~ LNRGDP_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2  | year + ccode, data = df)
+summary(fit2_4)
+
+```
+
+## DV as a Difference from 10-year Moving Average
+
+```{r}
+df <- df |> group_by(ccode) |>  mutate(
+	LMILEX_ma10 = rollmean(LMILEX, k=10, fill=NA),  
+	ln_smilex_ma10 = rollmean(ln_smilex, k=10, fill=NA), 
+	ln_milex_ma10 = rollmean(ln_milex, k=10, fill=NA), 
+	mean_log_ma10 = rollmean(mean_log, k=10, fill=NA)
+) |> 
+	mutate( LMILEX_ma10_diff = LMILEX - LMILEX_ma10,
+			ln_smilex_ma10_diff = ln_smilex - ln_smilex_ma10,
+			ln_milex_ma10_diff = ln_milex - ln_milex_ma10,
+		    mean_log_ma10_diff = mean_log - mean_log_ma10
+	)
+```
+
+```{r}
+summary(df$LMILEX_ma10_diff)
+hist(df$LMILEX_ma10_diff)
+
+summary(df$ln_smilex_ma10_diff)
+hist(df$ln_smilex_ma10_diff)
+
+summary(df$ln_milex_ma10_diff)
+hist(df$ln_milex_ma10_diff)
+
+summary(df$mean_log_ma10_diff)
+hist(df$mean_log_ma10_diff)
+```
+
+```{r}
+fit3_1 <- fixest::feols(LMILEX_ma10_diff ~ LNRGDP_lag4 +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4 | year + ccode, data = df) #with year and country fixed effects
+summary(fit3_1)#PN6 is a threat variable from Nordhouase. 
+
+fit3_2 <- fixest::feols(ln_smilex_ma10_diff ~ LNRGDP_lag4 +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4  | year + ccode, data = df)
+summary(fit3_2)
+
+fit3_3 <- fixest::feols(ln_milex_ma10_diff ~ LNRGDP_lag4 +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4  | year + ccode, data = df)
+summary(fit3_3)
+
+fit3_4 <- fixest::feols(mean_log_ma10_diff ~ LNRGDP_lag4 +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4  | year + ccode, data = df)
+summary(fit3_4)
+```
+
+# GDP ratio
+
+## ln(Mil Exp/GDP)
+
+```{r}
+#LMILGDP  is ln(military expendigure/GDP)
+
+df <- df |> mutate( LMILEX_ratio = exp(LMILEX)/exp(LNRGDP),  # LMILEX and LNRGDP are logged so I convert them to original values.
+	                smilex_ratio = smilex/rgdp,
+					milex_ratio = milex/rgdp,
+					mean_ratio = mean/rgdp, # note that rgdp covers years from 1945-2015, so mean is not fully used
+					ln_smilex_ratio = log(smilex_ratio),  # the ratios of mil exp and gdp are skewed, so I take a log.
+					ln_milex_ratio = log(milex_ratio),
+					ln_mean_ratio = log(mean_ratio))
+
+```
+
+```{r}
+fit4_1 <- fixest::feols(LMILGDP  ~ LNRGDP +v2x_polyarchy + PN6 + defense_dem + defense_nodem + atwar+civilwar | year + ccode, data = df) #with year and country fixed effects
+summary(fit4_1)#PN6 is a threat variable from Nordhouase. 
+
+fit4_2 <- fixest::feols(ln_smilex_ratio ~ LNRGDP +v2x_polyarchy + PN6 + defense_dem + defense_nodem + atwar+civilwar | year + ccode, data = df)
+summary(fit4_2)
+
+fit4_3 <- fixest::feols(ln_milex_ratio ~ LNRGDP +v2x_polyarchy + PN6 + defense_dem + defense_nodem + atwar+civilwar | year + ccode, data = df)
+summary(fit4_3)
+
+fit4_4 <- fixest::feols(ln_mean_ratio ~ LNRGDP +v2x_polyarchy + PN6 + defense_dem + defense_nodem + atwar+civilwar | year + ccode, data = df)
+summary(fit4_4)
+```
+
+## 3-year Moving Average of the Mil Exp/GDP ratio
+
+```{r}
+df <- df |> group_by(ccode) |>  mutate(
+	LMILGDP_ma3 = rollmean(LMILGDP, k=3, fill=NA),  
+	ln_smilex_ratio_ma3 = rollmean(ln_smilex_ratio, k=3, fill=NA), 
+	ln_milex_ratio_ma3 = rollmean(ln_milex_ratio, k=3, fill=NA), 
+	ln_mean_ratio_ma3 = rollmean(ln_mean_ratio, k=3, fill=NA)
+) |> 
+	mutate( LMILEX_ma3_diff = LMILGDP - LMILGDP_ma3,
+			ln_smilex_ma3_diff = ln_smilex_ratio - ln_smilex_ratio_ma3,
+			ln_milex_ma3_diff = ln_milex_ratio - ln_milex_ratio_ma3,
+		    mean_log_ma3_diff = ln_mean_ratio - ln_mean_ratio_ma3
+	)
+```
+
+Lee's take a look at the distributions.
+
+```{r}
+summary(df$LMILEX_ma3_diff)
+hist(df$LMILEX_ma3_diff)
+
+summary(df$ln_smilex_ma3_diff)
+hist(df$ln_smilex_ma3_diff)
+
+summary(df$ln_milex_ma3_diff)
+hist(df$ln_milex_ma3_diff)
+
+summary(df$mean_log_ma3_diff)
+hist(df$mean_log_ma3_diff)
+```
+
+Regressions
+
+```{r}
+fit5_1 <- fixest::feols(LMILEX_ma3_diff  ~ LNRGDP_lag1 +v2x_polyarchy_lag1 + PN6_lag1 + defense_dem_lag1 + defense_nodem_lag1 + atwar_lag1+civilwar_lag1| year + ccode, data = df) #with year and country fixed effects
+summary(fit5_1)
+
+fit5_2 <- fixest::feols(ln_smilex_ma3_diff ~ LNRGDP_lag1 +v2x_polyarchy_lag1 + PN6_lag1 + defense_dem_lag1 + defense_nodem_lag1 + atwar_lag1+civilwar_lag1 | year + ccode, data = df)
+summary(fit5_2)
+
+fit5_3 <- fixest::feols(ln_milex_ma3_diff ~ LNRGDP_lag1 +v2x_polyarchy_lag1 + PN6_lag1 + defense_dem_lag1 + defense_nodem_lag1 + atwar_lag1+civilwar_lag1 | year + ccode, data = df)
+summary(fit5_3)
+
+fit5_4 <- fixest::feols(mean_log_ma3_diff ~ LNRGDP_lag1 +v2x_polyarchy_lag1 + PN6_lag1 + defense_dem_lag1 + defense_nodem_lag1 + atwar_lag1+civilwar_lag1 | year + ccode, data = df)
+summary(fit5_4)
+```
+
+## 5-year moving average
+
+```{r}
+df <- df |> group_by(ccode) |>  mutate(
+	LMILGDP_ma5 = rollmean(LMILGDP, k=5, fill=NA),  
+	ln_smilex_ratio_ma5 = rollmean(ln_smilex_ratio, k=5, fill=NA), 
+	ln_milex_ratio_ma5 = rollmean(ln_milex_ratio, k=5, fill=NA), 
+	ln_mean_ratio_ma5 = rollmean(ln_mean_ratio, k=5, fill=NA)
+) |> 
+	mutate( LMILEX_ma5_diff = LMILGDP - LMILGDP_ma5,
+			ln_smilex_ma5_diff = ln_smilex_ratio - ln_smilex_ratio_ma5,
+			ln_milex_ma5_diff = ln_milex_ratio - ln_milex_ratio_ma5,
+		    mean_log_ma5_diff = ln_mean_ratio - ln_mean_ratio_ma5
+	)
+```
+
+Let's take a look at the distributions.
+
+```{r}
+summary(df$LMILEX_ma5_diff)
+hist(df$LMILEX_ma5_diff)
+
+summary(df$ln_smilex_ma5_diff)
+hist(df$ln_smilex_ma5_diff)
+
+summary(df$ln_milex_ma5_diff)
+hist(df$ln_milex_ma5_diff)
+
+summary(df$mean_log_ma5_diff)
+hist(df$mean_log_ma5_diff)
+```
+
+Regressions
+
+```{r}
+fit6_1 <- fixest::feols(LMILEX_ma5_diff  ~ LNRGDP_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2 | year + ccode, data = df) #with year and country fixed effects
+summary(fit6_1)
+
+fit6_2 <- fixest::feols(ln_smilex_ma5_diff ~ LNRGDP_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2  | year + ccode, data = df)
+summary(fit6_2)
+
+fit6_3 <- fixest::feols(ln_milex_ma5_diff ~ LNRGDP_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2  | year + ccode, data = df)
+summary(fit6_3)
+
+fit6_4 <- fixest::feols(mean_log_ma5_diff ~ LNRGDP_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2  | year + ccode, data = df)
+summary(fit6_4)
+```
+
+## 10-year moving average
+
+a
+
+```{r}
+df <- df |> group_by(ccode) |>  mutate(
+	LMILGDP_ma10 = rollmean(LMILGDP, k=10, fill=NA),  
+	ln_smilex_ratio_ma10 = rollmean(ln_smilex_ratio, k=10, fill=NA), 
+	ln_milex_ratio_ma10 = rollmean(ln_milex_ratio, k=10, fill=NA), 
+	ln_mean_ratio_ma10 = rollmean(ln_mean_ratio, k=10, fill=NA)
+) |> 
+	mutate( LMILEX_ma10_diff = LMILGDP - LMILGDP_ma10,
+			ln_smilex_ma10_diff = ln_smilex_ratio - ln_smilex_ratio_ma10,
+			ln_milex_ma10_diff = ln_milex_ratio - ln_milex_ratio_ma10,
+		    mean_log_ma10_diff = ln_mean_ratio - ln_mean_ratio_ma10
+	)
+```
+
+LEe's take a look at the distributions.
+
+```{r}
+summary(df$LMILEX_ma10_diff)
+hist(df$LMILEX_ma10_diff)
+
+summary(df$ln_smilex_ma10_diff)
+hist(df$ln_smilex_ma10_diff)
+
+summary(df$ln_milex_ma10_diff)
+hist(df$ln_milex_ma10_diff)
+
+summary(df$mean_log_ma10_diff)
+hist(df$mean_log_ma10_diff)
+```
+
+Regressions
+
+```{r}
+fit7_1 <- fixest::feols(LMILEX_ma10_diff  ~ LNRGDP_lag4 +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4  | year + ccode, data = df) #with year and country fixed effects
+summary(fit7_1)
+
+fit7_2 <- fixest::feols(ln_smilex_ma10_diff ~ LNRGDP_lag4 +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4 | year + ccode, data = df)
+summary(fit7_2)
+
+fit7_3 <- fixest::feols(ln_milex_ma10_diff ~ LNRGDP_lag4 +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4  | year + ccode, data = df)
+summary(fit7_3)
+
+fit7_4 <- fixest::feols(mean_log_ma10_diff ~ LNRGDP_lag4 +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4 | year + ccode, data = df)
+summary(fit7_4)
+```

@@ -99,7 +99,82 @@ duplicates <- impZFS1 %>%
 	filter(n() > 1)
 
 # View the duplicates
-print(duplicates)  ## SSOMETHING WRONG WITH 255 merge
+print(duplicates)  
+
+## SSOMETHING WRONG WITH 255 merge
+ZFSimp3 <- impZFS1 %>% select(STATE_ZFS, YEAR_ZFS, morethreat_ZFS, moreathreat_ZFS, everything())
+# Load necessary libraries
+library(dplyr)
+library(plm)
+
+# Assuming your data frame is named ZFSimp3
+# Load your data (example)
+# ZFSimp3 <- read.csv("your_data_file.csv")
+
+# Identify and print duplicates
+duplicates <- ZFSimp3 %>%
+	group_by(STATE_ZFS, YEAR_ZFS) %>%
+	filter(n() > 1)
+
+print(duplicates)
+
+# Convert factors to characters to avoid type mismatch
+ZFSimp3 <- ZFSimp3 %>%
+	mutate(across(where(is.factor), as.character))
+
+# Custom function to handle duplicates
+combine_duplicates <- function(df) {
+	df_combined <- df[1,] # Start with the first row of the group
+	
+	for (col in colnames(df)) {
+		values <- df[[col]]
+		unique_values <- unique(values[!is.na(values)])
+		
+		if (length(unique_values) == 1) {
+			# All non-missing values are the same
+			df_combined[[col]] <- unique_values
+		} else if (any(!is.na(values))) {
+			# There are non-missing values, but they differ
+			non_missing_values <- values[!is.na(values)]
+			if (length(unique(non_missing_values)) == 1) {
+				df_combined[[col]] <- non_missing_values[1]
+			} else {
+				stop(paste("Inconsistent non-missing values in column", col))
+			}
+		} else {
+			# All values are missing
+			df_combined[[col]] <- NA
+		}
+	}
+	
+	return(df_combined)
+}
+
+# Apply the custom function to each group
+ZFSimp3_combined <- ZFSimp3 %>%
+	group_by(STATE_ZFS, YEAR_ZFS) %>%
+	do(combine_duplicates(.)) %>%
+	ungroup()
+
+# Create the panel data frame
+ZFSimp3_pdata <- pdata.frame(ZFSimp3_combined, index = c("STATE_ZFS", "YEAR_ZFS"))
+
+# Verify the panel data structure
+print(head(ZFSimp3_pdata))
+
+
+
+
+
+
+
+# Create the panel data frame
+ZFSimp3_pdata <- pdata.frame(ZFSimp3_combined, index = c("STATE_ZFS", "YEAR_ZFS"))
+
+# Verify the panel data structure
+print(head(ZFSimp3_pdata))
+
+
 
 
 pd <- impZFS1

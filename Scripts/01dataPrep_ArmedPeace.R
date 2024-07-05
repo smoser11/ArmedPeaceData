@@ -1068,7 +1068,7 @@ guess_field(ZFS$STATE)
 
 countrycode(ZFS$STATE, origin = "cown", destination = "country.name.en")
 
-# so ZFS 260, 340, 396, 711, 971, 972, 973 were matched unambiguously
+# so ZFS 260, 340, 396, 711, 971, 972, 973 were NOT matched unambiguously
 
 # fix 260, 340, 296, 397, 711, 971, 972, 973
 ## Export to excel
@@ -1103,6 +1103,10 @@ mmZFS50 <- left_join(ZFS, ccpConBal50, by = c("STATE_ZFS" = "cown", "YEAR_ZFS" =
 names(mmZFS50)
 
 mmZFS50 <- mmZFS50 %>% select(!"NA._ZFS"  )
+
+### DOUBLE CHECK THIS IS A PANEL!
+
+
 
 library(janitor)
 library(haven)
