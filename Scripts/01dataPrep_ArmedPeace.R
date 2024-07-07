@@ -1062,7 +1062,28 @@ library(here)
 library(readstata13)
 
 ZFS <- read.dta13(paste0(here("Data/Raw/JPR - What Goes Up - Replication/", "replication.dta") ))
+names(ZFS)
+### DOUBLE CHECK THIS IS A PANEL!
+library(plm)
+pdata.frame(ZFS, index=c("STATE","YEAR"))  ## TROUBLE HERE
+table(index(ZFS), useNA = "ifany")
 
+## So original replication data has problems (re: NAs)!!!
+
+# Check the summary of your data to identify where the missing values are
+summary(ZFS)
+
+# Remove rows with missing STATE or YEAR values
+ZFS_clean <- ZFS[!is.na(ZFS$STATE) & !is.na(ZFS$YEAR), ]
+
+# Create the pdata.frame with the cleaned data
+pdata_clean <- pdata.frame(ZFS_clean, index = c("STATE", "YEAR"))
+
+# Verify if the warning is resolved
+table(index(pdata_clean), useNA = "ifany")
+
+ZFS <- ZFS_clean
+###################
 
 guess_field(ZFS$STATE)
 
@@ -1078,8 +1099,31 @@ write.xlsx(ZFS, "Data/Processed/ZFS.xlsx")
 ## Manually changed 260 to 255 for 1990 to 2015, dropped 340, 396, 397, 711, 971, 972, 973
 gc()
 ZFS <- read.xlsx(paste0(here("Data/Processed/", "ZFS2.xlsx")), sheetIndex = 1)
+names(ZFS)
+### DOUBLE CHECK THIS IS A PANEL!
+library(plm)
+pdata.frame(ZFS, index=c("STATE","YEAR"))  ## TROUBLE HERE
+## Back to the lab, try again.
+
+# Check the summary of your data to identify where the missing values are
+summary(ZFS)
+
+# Remove rows with missing STATE or YEAR values
+ZFS_clean <- ZFS[!is.na(ZFS$STATE) & !is.na(ZFS$YEAR), ]
+names(ZFS_clean)
+
+# Create the pdata.frame with the cleaned data
+pdata_clean <- pdata.frame(ZFS_clean, index = c("STATE", "YEAR"))
+
+# Verify if the warning is resolved
+table(index(pdata_clean), useNA = "ifany")
+
+ZFS <- ZFS_clean
 
 
+
+
+library(countrycode)
 guess_field(ZFS$STATE)
 
 countrycode(ZFS$STATE, origin = "cown", destination = "cown")
@@ -1099,12 +1143,22 @@ colnames(ZFS) <- paste(colnames(ZFS), "ZFS", sep = "_")
 colnames(ZFS)
 names(ZFS)
 
+### DOUBLE CHECK THIS IS A PANEL!
+library(plm)
+pdata.frame(ZFS, index=c("STATE_ZFS","YEAR_ZFS"))  ## TROUBLE HERE
+
+
+
 mmZFS50 <- left_join(ZFS, ccpConBal50, by = c("STATE_ZFS" = "cown", "YEAR_ZFS" = "year"), keep=TRUE )
 names(mmZFS50)
 
 mmZFS50 <- mmZFS50 %>% select(!"NA._ZFS"  )
 
 ### DOUBLE CHECK THIS IS A PANEL!
+library(plm)
+pdata.frame(mmZFS50, index=c("STATE_ZFS","YEAR_ZFS"))
+
+#### TROUBLE HERE!!!
 
 
 

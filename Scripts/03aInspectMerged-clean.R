@@ -12,7 +12,7 @@ library(sampleSelection)
 library(here)
 library(plm)
 
-load(file =  paste0(here("Data/Processed/", "mmALL50.RData") ))
+load(file =  paste0(here("Data/Processed", "mmALL50.RData") ))
 
 mmALL50$country <- mmALL50$country.name.en
 mmALL50 <- mmALL50 %>% select(-country.name.en)
@@ -21,6 +21,7 @@ pd <- mmALL50
 
 
 missmap(pd, csvar = "country", tsvar = "year")
+load(file =  paste0(here("Data/Processed", "mmmALL50.RData") ))
 
 names(mmmALL50)
 mmmCLEAN50 <- mmmALL50 %>% select(-"NA." )
@@ -53,7 +54,7 @@ names(mmmCLEAN50)
 ## INSPECT MERGED DATA
 ######################################################
 
-
+rm(list=ls())
 getwd()
 library(haven)
 library(janitor)
