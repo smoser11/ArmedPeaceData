@@ -6,3 +6,4 @@
 .Rproj.user
 ArmedPeaceData.Rproj
 /Data/Processed/Imputations/*.*
+Data/Processed/Imputations/*.RData
