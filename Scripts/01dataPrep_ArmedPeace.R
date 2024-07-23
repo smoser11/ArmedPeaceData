@@ -1,3 +1,5 @@
+## Updated July 2024 to deal with blankrows in origional data messing up joins.
+
 rm(list =ls())
 
 ## In this file:
@@ -89,8 +91,26 @@ colnames(pwt10) <- paste(colnames(pwt10), "PWT", sep = "_")
 colnames(pwt10)
 names(pwt10)
 
-mmPWT50 <- left_join(pwt10, ccpConBal50, by = c( "isocode_PWT" = "iso3c", "year_PWT"="year"), keep=TRUE )
+mmPWT50 <- right_join(pwt10, ccpConBal50, by = c( "isocode_PWT" = "iso3c", "year_PWT"="year"), keep=TRUE )
 names(mmPWT50)
+
+## Make sure this is a panel!
+library(plm)
+names(mmPWT50)
+
+pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmPWT50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(mmPWT50$country.name.en) | is.na(mmPWT50$year))
+
+# Display the offending rows
+offending_rows <- mmPWT50[na_rows, ]
+print(offending_rows)
+
+sort(unique(mmPWT50$isocode_PWT))
+
+table(mmPWT50$year, mmPWT50$year_PWT, useNA = 'always')
 
 gt <- mmPWT50 %>% filter(country_PWT == "Germany") %>% select(year_PWT, country_PWT,  country.name.en, cown, cowc, isocode_PWT)
 
@@ -228,6 +248,7 @@ mmf <- mmf %>%  mutate_at(vars(majPow), ~replace_na(., 0))
 mmf <- mmf %>% select(-endyear)
 
 glimpse(mmf)
+names(mmf)
 
 
 getwd()
@@ -235,6 +256,16 @@ getwd()
 ## save
 names(mmf)
 cow_statesMajor16long <- mmf
+## Make sure this is a panel!
+library(plm)
+names(cow_statesMajor16long)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(cow_statesMajor16long, index = c("ccode.x","year.x")) %>% pdim()
+table(index(pd), useNA = "always")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(mmPWT50$country.name.en) | is.na(mmPWT50$year))
+
 save(cow_statesMajor16long, file = paste0(here("Data/Processed/", "COW_statesMajor16long.RData") ))
 getwd()
 write.csv(cow_statesMajor16long, file = paste0(here("Data/Processed/", "COW_statesMajor16long.csv" )), row.names = F)
@@ -293,11 +324,35 @@ colnames(mmf50) <- paste(colnames(mmf50), "COW", sep = "_")
 colnames(mmf50)
 
 
-mmCOW50 <- left_join(mmf50, ccpConBal50,  by = c( "ccode_COW" = "cown", "year_COW" = "year"),keep=TRUE )
+mmCOW50 <- right_join(mmf50, ccpConBal50,  by = c( "ccode_COW" = "cown", "year_COW" = "year"),keep=TRUE )
 names(mmCOW50)
+
+## Make sure this is a panel!
+library(plm)
+names(mmCOW50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmCOW50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(mmCOW50$country.name.en) | is.na(mmCOW50$year))
+print((na_rows))
+
+# Find duplicate rows based on the combination of country.name.en and year
+duplicated_rows <- duplicated(mmCOW50[, c("country.name.en", "year")]) | duplicated(mmCOW50[, c("country.name.en", "year")], fromLast = TRUE)
+# Extract the duplicate rows
+duplicate_id_time <- mmCOW50[duplicated_rows, ]
+
+##  Germany (ccode 255) is duplicated
+
+mmCOW50 <- mmCOW50[!duplicated(mmCOW50[, c("country.name.en", "year")]), ]
+pd <- pdata.frame(mmCOW50, index = c("country.name.en","year")) %>% pdim()
+
 
 ## double check merge
 mmCOW50 %>% select(year_COW,ccode_COW,  statenme_COW, country.name.en, contains("_COW") ) %>% View()
+
 
 
 library(janitor)
@@ -397,8 +452,25 @@ ineqlong2$country.name.en <- countrycode(rrc, origin = 'iso3c', destination = 'c
 
 colnames(ineqlong2) <- paste(colnames(ineqlong2), "UTIP", sep = "_")
 
+## Make sure this is a panel!
+library(plm)
+names(ineqlong2)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(ineqlong2, index = c("code_UTIP","year_UTIP")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(mmCOW50$country.name.en) | is.na(mmCOW50$year))
+print((na_rows))
+
+# Find duplicate rows based on the combination of country.name.en and year
+duplicated_rows <- duplicated(mmCOW50[, c("country.name.en", "year")]) | duplicated(mmCOW50[, c("country.name.en", "year")], fromLast = TRUE)
+# Extract the duplicate rows
+duplicate_id_time <- mmCOW50[duplicated_rows, ]
+
 ### Manually changed german federal republic to germany for 1990
-write.xlsx(ineqlong2, "Data/Processed/ineqlong2.xlsx")
+# write.xlsx(ineqlong2, "Data/Processed/ineqlong2.xlsx")
 
 ineqlong2 <- read.xlsx(paste0(here("Data/Processed/", "ineqlong2.xlsx")), sheetIndex = 1)
 
@@ -434,10 +506,28 @@ glimpse(ccpConBal50)
 
 
 names(ineqlong2)
-mmineqlong50 <- left_join(ineqlong2, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year"), keep=TRUE )
+mmineqlong50 <- right_join(ineqlong2, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year"), keep=TRUE )
 names(mmineqlong50)
 
 gt <- mmineqlong50 %>% filter(country.name.en_UTIP == "Germany") %>% select(year_UTIP, country_UTIP, countryname_UTIP, country.name.en_UTIP, cown, cowc)
+
+
+## Make sure this is a panel!
+library(plm)
+names(mmineqlong50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmineqlong50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(mmCOW50$country.name.en) | is.na(mmCOW50$year))
+print((na_rows))
+
+# Find duplicate rows based on the combination of country.name.en and year
+duplicated_rows <- duplicated(mmCOW50[, c("country.name.en", "year")]) | duplicated(mmCOW50[, c("country.name.en", "year")], fromLast = TRUE)
+# Extract the duplicate rows
+duplicate_id_time <- mmCOW50[duplicated_rows, ]
 
 
 dim(ccpConBal50)
@@ -474,10 +564,33 @@ recode(ineqlong3$country.name.en_UTIP, "'Serbia and Montenegro' = 'Yugoslavia'")
 
 ineqlong3$country.name.en_UTIP <- recode(ineqlong3$country.name.en_UTIP, "'Serbia and Montenegro' = 'Yugoslavia'")
 
-mmUTIP50 <- left_join(ineqlong3, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year"), keep=TRUE )
+mmUTIP50 <- right_join(ineqlong3, ccpConBal50, by = c("country.name.en_UTIP" ="country.name.en", "year_UTIP" = "year"), keep=TRUE )
 names(mmUTIP50)
 
 mmUTIP50 <- mmUTIP50 %>% select(!"NA.")
+
+## Make sure this is a panel!
+library(plm)
+names(mmUTIP50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmUTIP50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(mmCOW50$country.name.en) | is.na(mmCOW50$year))
+print((na_rows))
+
+# Find duplicate rows based on the combination of country.name.en and year
+duplicated_rows <- duplicated(mmCOW50[, c("country.name.en", "year")]) | duplicated(mmCOW50[, c("country.name.en", "year")], fromLast = TRUE)
+# Extract the duplicate rows
+duplicate_id_time <- mmCOW50[duplicated_rows, ]
+
+##  Germany (ccode 255) is duplicated
+
+mmCOW50 <- mmCOW50[!duplicated(mmCOW50[, c("country.name.en", "year")]), ]
+pd <- pdata.frame(mmCOW50, index = c("country.name.en","year")) %>% pdim()
+pd
 save(mmUTIP50, file = paste0(here("Data/Processed","mmUTIP50.RData") ))
 
 getwd()
@@ -599,13 +712,32 @@ ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 colnames(sipriLongCo) <- paste(colnames(sipriLongCo), "SIPRI", sep = "_")
 
 
-mmSIPRI50 <- left_join(sipriLongCo, ccpConBal50,   by = c( "Country_SIPRI" = "country.name.en"  , "year_SIPRI" = "year"), keep=TRUE )
+mmSIPRI50 <- right_join(sipriLongCo, ccpConBal50,   by = c( "Country_SIPRI" = "country.name.en"  , "year_SIPRI" = "year"), keep=TRUE )
 names(mmSIPRI50)
 
 dim(mmSIPRI50)
 ## Slight cleaning: remove sipri_currentUSD_SIPRI = NA
 mmSIPRI50 <- mmSIPRI50 %>% filter(!is.na(sipri_currentUSD_SIPRI))
 dim(mmSIPRI50)
+
+
+## Make sure this is a panel!
+library(plm)
+names(mmSIPRI50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmSIPRI50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(mmCOW50$country.name.en) | is.na(mmCOW50$year))
+print((na_rows))
+
+# Find duplicate rows based on the combination of country.name.en and year
+duplicated_rows <- duplicated(mmCOW50[, c("country.name.en", "year")]) | duplicated(mmCOW50[, c("country.name.en", "year")], fromLast = TRUE)
+# Extract the duplicate rows
+duplicate_id_time <- mmCOW50[duplicated_rows, ]
+
 
 getwd()
 save(mmSIPRI50, file = paste0(here("Data/Processed", "mmSIPRI50.RData") ))
@@ -668,10 +800,30 @@ names(nord)
 
 library(tidyverse)
 
-mmNORD50 <- left_join(nord, ccpConBal50, by = c("STATE_NORD" = "cown", "YEAR_NORD"="year"), keep=TRUE )
+mmNORD50 <- right_join(nord, ccpConBal50, by = c("STATE_NORD" = "cown", "YEAR_NORD"="year"), keep=TRUE )
 names(mmNORD50)
 names(nord)
 names(ccpConBal50)
+
+
+## Make sure this is a panel!
+library(plm)
+names(mmNORD50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmNORD50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(mmNORD50$country.name.en) | is.na(mmNORD50$year))
+print((na_rows))
+
+# Find duplicate rows based on the combination of country.name.en and year
+duplicated_rows <- duplicated(mmCOW50[, c("country.name.en", "year")]) | duplicated(mmCOW50[, c("country.name.en", "year")], fromLast = TRUE)
+# Extract the duplicate rows
+duplicate_id_time <- mmCOW50[duplicated_rows, ]
+
+
 
 library(janitor)
 library(haven)
@@ -733,8 +885,19 @@ colnames(forcasting) <- paste(colnames(forcasting), "BB", sep = "_")
 colnames(forcasting)
 names(forcasting)
 
-mmFORCASTING50 <- left_join(forcasting, ccpConBal50, by = c("STATE_BB" = "cown", "YEAR_BB"="year"), keep=TRUE )
+mmFORCASTING50 <- right_join(forcasting, ccpConBal50, by = c("STATE_BB" = "cown", "YEAR_BB"="year"), keep=TRUE )
 names(mmFORCASTING50)
+
+
+## Make sure this is a panel!
+library(plm)
+names(mmFORCASTING50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmFORCASTING50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+
 
 library(janitor)
 library(haven)
@@ -858,7 +1021,7 @@ mmPJM50 %>% select(USally_PJM, Rusdefense_PJM) %>% is.na() %>% any()
 names(PJM)
 
 library(plm)
-pp <- pdata.frame(PJM, index = c('ccode', 'year'))
+pp <- pdata.frame(PJM, index = c('ccode_PJM', 'year_PJM'))
 table(index(pp), useNA = "ifany")
 
 mmPJM50 %>%
@@ -869,6 +1032,17 @@ mmPJM50$year_PJM <- mmPJM50$year
 plot(mmPJM50$ccode_PJM,mmPJM50$cown
 )
 mmPJM50$ccode_PJM <- mmPJM50$cown
+
+## Make sure this is a panel!
+library(plm)
+names(mmPJM50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmPJM50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+
+
 
 library(janitor)
 library(haven)
@@ -955,7 +1129,7 @@ ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
 ## join by country.name.en
 
-mmSWIIDcc <- left_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID" = "year"), keep=TRUE )
+mmSWIIDcc <- right_join(swiid_summary, ccpConBal50, by = c("country_SWIID" = "country.name.en", "year_SWIID" = "year"), keep=TRUE )
 names(mmSWIIDcc)
 distinct(mmSWIIDcc)
 
@@ -967,18 +1141,26 @@ names(mmSWIID50)
 distinct(mmSWIID50)
 
 ## Join with ISO3c for Palestinian Territories
-mmSWIIDiso <- left_join(swiid_summary, ccpConBal50, by = c("iso3c_SWIID" = "iso3c", "year_SWIID" = "year"), keep=TRUE)
+mmSWIID50iso <- right_join(swiid_summary, ccpConBal50, by = c("iso3c_SWIID" = "iso3c", "year_SWIID" = "year"), keep=TRUE)
 names(mmSWIIDiso)
 distinct(mmSWIIDiso)
 
+## Make sure this is a panel!
+library(plm)
+names(mmSWIID50iso)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmSWIID50iso, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
 
 
 library(janitor)
 library(haven)
-write_dta(clean_names(mmSWIID50), path = paste0(here("Data/Processed/", "mmSWIID50.dta") ))
+write_dta(clean_names(mmSWIID50iso), path = paste0(here("Data/Processed/", "mmSWIID50.dta") ))
 
 getwd()
-save(mmSWIID50, file = paste0(here("Data/Processed/", "mmSWIID50.RData") ))
+save(mmSWIID50iso, file = paste0(here("Data/Processed/", "mmSWIID50.RData") ))
 
 
 
@@ -1040,11 +1222,22 @@ colnames(HSS) <- paste(colnames(HSS), "HSS", sep = "_")
 colnames(HSS)
 names(HSS)
 
-mmHSS50 <- left_join(HSS, ccpConBal50, by = c("ccode_HSS" = "cown", "year_HSS" = "year"), keep=TRUE )
+mmHSS50 <- right_join(HSS, ccpConBal50, by = c("ccode_HSS" = "cown", "year_HSS" = "year"), keep=TRUE )
 names(mmHSS50)
 
 mmHSS50 <- mmHSS50 %>% select(!"NA._HSS"  )
 	
+## Make sure this is a panel!
+library(plm)
+names(mmHSS50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmHSS50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+
+
+
 library(janitor)
 library(haven)
 write_dta(clean_names(mmHSS50), path = paste0(here("Data/Processed/", "mmHSS50.dta") ))
@@ -1105,20 +1298,6 @@ library(plm)
 pdata.frame(ZFS, index=c("STATE","YEAR"))  ## TROUBLE HERE
 ## Back to the lab, try again.
 
-# Check the summary of your data to identify where the missing values are
-summary(ZFS)
-
-# Remove rows with missing STATE or YEAR values
-ZFS_clean <- ZFS[!is.na(ZFS$STATE) & !is.na(ZFS$YEAR), ]
-names(ZFS_clean)
-
-# Create the pdata.frame with the cleaned data
-pdata_clean <- pdata.frame(ZFS_clean, index = c("STATE", "YEAR"))
-
-# Verify if the warning is resolved
-table(index(pdata_clean), useNA = "ifany")
-
-ZFS <- ZFS_clean
 
 
 
@@ -1147,9 +1326,23 @@ names(ZFS)
 library(plm)
 pdata.frame(ZFS, index=c("STATE_ZFS","YEAR_ZFS"))  ## TROUBLE HERE
 
+## Make sure this is a panel!
+library(plm)
+names(ZFS)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(ZFS, index = c("STATE_ZFS","YEAR_ZFS")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(ZFS$STATE_ZFS) | is.na(ZFS$YEAR_ZFS))
+print((na_rows))
+
+ZFS<- ZFS[-10972,]
 
 
-mmZFS50 <- left_join(ZFS, ccpConBal50, by = c("STATE_ZFS" = "cown", "YEAR_ZFS" = "year"), keep=TRUE )
+
+mmZFS50 <- right_join(ZFS, ccpConBal50, by = c("STATE_ZFS" = "cown", "YEAR_ZFS" = "year"), keep=TRUE )
 names(mmZFS50)
 
 mmZFS50 <- mmZFS50 %>% select(!"NA._ZFS"  )
@@ -1159,8 +1352,25 @@ library(plm)
 pdata.frame(mmZFS50, index=c("STATE_ZFS","YEAR_ZFS"))
 
 #### TROUBLE HERE!!!
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmZFS50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# Identify rows with NAs in index columns
+na_rows <- which(is.na(mmZFS50$country.name.en) | is.na(mmZFS50$year))
+print((na_rows))
 
+# Find duplicate rows based on the combination of country.name.en and year
+duplicated_rows <- duplicated(mmZFS50[, c("country.name.en", "year")]) | duplicated(mmZFS50[, c("country.name.en", "year")], fromLast = TRUE)
+# Extract the duplicate rows
+duplicate_id_time <- mmZFS50[duplicated_rows, ]
 
+duplicate_id_time
+
+##  Germany (after 1990) is duplicated
+
+mmZFS50 <- mmZFS50[!duplicated(mmZFS50[, c("country.name.en", "year")]), ]
+pd <- pdata.frame(mmZFS50, index = c("country.name.en","year")) %>% pdim()
 
 library(janitor)
 library(haven)
@@ -1213,15 +1423,28 @@ colnames(YE_COW) <- paste(make_clean_names(colnames(YE_COW)), "YE_COW", sep = "_
 colnames(YE_COW)
 names(YE_COW)
 
-mmYE_COW50 <- left_join(YE_COW, ccpConBal50, by = c("x_YE_COW" = "country.name.en", "year_YE_COW" = "year"), keep=TRUE )
+mmYE_COW50 <- right_join(YE_COW, ccpConBal50, by = c("x_YE_COW" = "country.name.en", "year_YE_COW" = "year"), keep=TRUE )
 names(mmYE_COW50)
+
+
+## Make sure this is a panel!
+library(plm)
+names(mmYE_COW50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmYE_COW50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+
+
+
 
 library(janitor)
 library(haven)
-write_dta(mmYE_COW50, path = paste0(here("Data/Processed/", "mmYE_COW50.dta") ))
-
-getwd()
-save(mmYE_COW50, file = paste0(here("Data/Processed/", "mmYE_COW50.RData") ))
+# write_dta(mmYE_COW50, path = paste0(here("Data/Processed/", "mmYE_COW50.dta") ))
+# 
+# getwd()
+# save(mmYE_COW50, file = paste0(here("Data/Processed/", "mmYE_COW50.RData") ))
 
 
 # add suffix to vars (2)
@@ -1230,12 +1453,24 @@ colnames(YE_WB) <- paste(make_clean_names(colnames(YE_WB)), "YE_WB", sep = "_")
 colnames(YE_WB)
 names(YE_WB)
 
-mmYE_WB50 <- left_join(YE_WB, ccpConBal50, by = c("country_name_YE_WB" = "country.name.en", "year_YE_WB" = "year"), keep=TRUE )
+mmYE_WB50 <- right_join(YE_WB, ccpConBal50, by = c("country_name_YE_WB" = "country.name.en", "year_YE_WB" = "year"), keep=TRUE )
 names(mmYE_WB50)
+
+## Make sure this is a panel!
+library(plm)
+names(mmYE_WB50)
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(mmYE_WB50, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+
 
 library(janitor)
 library(haven)
-write_dta(mmYE_WB50, path = paste0(here("Data/Processed/", "mmYE_WB50.dta") ))
+write_dta(clean_names( mmYE_WB50), path = paste0(here("Data/Processed/", "mmYE_WB50.dta") ))
+
+write.csv(clean_names( mmYE_WB50), file = paste0(here("Data/Processed/", "mmYE_WB50.csv") ), row.names = FALSE)
 
 getwd()
 save(mmYE_WB50, file = paste0(here("Data/Processed/", "mmYE_WB50.RData") ))

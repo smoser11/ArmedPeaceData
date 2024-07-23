@@ -181,60 +181,9 @@ ZFSimp3_pdata <- pdata.frame(ZFSimp3_combined, index = c("STATE_ZFS", "YEAR_ZFS"
 print(head(ZFSimp3_pdata))
 
 
-
-
-
-
-
-# Create the panel data frame
-ZFSimp3_pdata <- pdata.frame(ZFSimp3_combined, index = c("STATE_ZFS", "YEAR_ZFS"))
-
-# Verify the panel data structure
-print(head(ZFSimp3_pdata))
-
-
-
-
-pd <- impZFS1
-missmap(pd, csvar = "country.name.en", tsvar = "year")
-
-which(is.na(impZFS1$Rusdefense_PJM))
-
 impZFS1 <- ZFSimp3_pdata
 save(impZFS1,file =paste0(here("Data/Processed/", "impZFSimp3.RData") ))
 
-
-
-## Drop _variables_ with too few observations
-
-### Now we define a function that can calculate the longest run of non-NA values in a vector
-### https://stackoverflow.com/questions/24600716/drop-variable-in-panel-data-in-r-conditional-based-on-a-defined-number-of-consec
-consecnonNA <- function(x) {
-	rr<-rle(is.na(x))
-	max(rr$lengths[rr$values==FALSE])
-}
-
-atleast <- function(i) {function(x) x>=i}
-hasatleast8 <- names(Filter(atleast(15), sapply(pd2, consecnonNA)))
-sort(hasatleast8 )
-
-pd3 <- pd2[,hasatleast8]
-
-n <- ave(pd3$LMILEX_BB, pd3$country, FUN=function(x)sum(!is.na(x)))
-n
-
-pd3$country <- droplevels(pd3$country)
-unique(pd3$country)
-
-sort(names(pd3) )
-missmap(pd3, csvar = "country", tsvar = "year")
-
-
-
-mmmALL50 %>% group_by(country) %>% summarise(cs = colSums(is.na(.)))
-
-library(mice)
-md.pattern(mmmALL50)
 
 
 # 
@@ -274,6 +223,20 @@ names(dat[[3]])
 impHSS1 <- dat %>%  purrr::reduce(left_join, by = c(names(ccpConBal50)))
 names(impHSS1)
 head(impHSS1)
+
+
+## Make sure this is a panel!
+library(plm)
+sort(names(impHSS1) )
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(impHSS1, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# # Identify rows with NAs in index columns
+# na_rows <- which(is.na(ZFSimp3$STATE_ZFS) | is.na(ZFSimp3$YEAR_ZFS))
+# print((na_rows))
+
 
 save(impHSS1,file =paste0(here("Data/Processed/", "impHSS1.RData") ))
 
@@ -389,7 +352,7 @@ registerDoParallel(cl)
 impFun <- function(x) {
 	set.seed( (seed+x))
 	library(Amelia)
-	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
 }
 
 # Start the clock!
@@ -397,7 +360,7 @@ ptm <- proc.time()
 
 
 # Loop through the vector, adding one
-tt <- foreach(i=1:2) %dopar% impFun(i)
+tt <- foreach(i=1:1) %dopar% impFun(i)
 
 # Stop the clock
 time1<- proc.time() - ptm
@@ -409,7 +372,7 @@ set.seed(seed*2)
 ptm2 <- proc.time()
 
 # Use amelia multi-core
-a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=2, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
 
 # Stop the clock
 time2<- proc.time() - ptm2
@@ -424,7 +387,7 @@ time2
 #########################################################################
 #########################################################################
 
-
+load()
 
 seed<-111111111
 set.seed(seed)
@@ -437,6 +400,8 @@ library(doParallel)
 library(foreach)
 cl <- makeCluster(5)
 registerDoParallel(cl)
+
+load(file =paste0(here("./Data/Processed/", "impHSS1.RData") ))
 
 a.out.time1950_HSS1_emp05 <- list()
 # add ridge priors (5%)
@@ -553,7 +518,8 @@ library(here)
 
 ### 
 
-load(file =paste0(here("Data/Processed/", "impZFS1.RData") ))
+#load(file =paste0(here("Data/Processed/", "impZFS1.RData") ))
+load(file =paste0(here("Data/Processed/", "impZFSimp3.RData") ))
 
 getwd()
 #install.packages("Amelia")
