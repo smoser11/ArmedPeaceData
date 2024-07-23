@@ -219,20 +219,20 @@ library(mice)
 md.pattern(mmmALL50)
 
 
-
-## Drop countries
-
-ss <- pd %>% group_by(country.name.en) %>%
-	summarise_all(~sum(is.na(.))/n())
-
-toDrop <- ss$country[which(ss$country_name_HSS >= 0.5)]
-
-impZFS1 <- impZFS1 %>% filter(!(country %in% toDrop) )
-missmap(mmmCLEAN50, csvar = "country", tsvar = "year")
-
-mmmCLEAN50 <- mmmCLEAN50 %>% select(!contains("_YE_"))
-names(mmmCLEAN50)
-
+# 
+# ## Drop countries
+# 
+# ss <- pd %>% group_by(country.name.en) %>%
+# 	summarise_all(~sum(is.na(.))/n())
+# 
+# toDrop <- ss$country[which(ss$country_name_HSS >= 0.5)]
+# 
+# impZFS1 <- impZFS1 %>% filter(!(country %in% toDrop) )
+# missmap(mmmCLEAN50, csvar = "country", tsvar = "year")
+# 
+# mmmCLEAN50 <- mmmCLEAN50 %>% select(!contains("_YE_"))
+# names(mmmCLEAN50)
+# 
 
 
 
@@ -250,7 +250,7 @@ load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
 ccp50 <- codelist_panel2 %>% filter(year>= 1950)
 ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
 
-names(mmZFS50)
+names(mmHSS50)
 dat <- list(mmHSS50,mmPJM50,mmUTIP50)
 names(dat[[3]])
 impHSS1 <- dat %>%  purrr::reduce(left_join, by = c(names(ccpConBal50)))
@@ -306,24 +306,24 @@ library(naniar)
 library(Amelia)
 
 
-# nominal
-majPow_COW      
-"USally_PJM"                
-[84] "Rusdefense_PJM" 
-
-# check these
-[60] "LMILEX_BB"                 
-[62] "PEACEYRS_BB"               
-[63] "DEMOC_BB"                  
-[64] "TRADE_GDP_BB"              
-[65] "CONTIG_BB"                 
-[66] "ALLIES_BB"  
-"LNRGDP_BB"                 
-[70] "LNFOES_BB"                 
-[71] "LNFRIENDS_BB"  
-"DEMOC_NORD"  
-"theil_UTIP"                
-[148] "gini_UTIP"  
+# # nominal
+# majPow_COW      
+# "USally_PJM"                
+# [84] "Rusdefense_PJM" 
+# 
+# # check these
+# [60] "LMILEX_BB"                 
+# [62] "PEACEYRS_BB"               
+# [63] "DEMOC_BB"                  
+# [64] "TRADE_GDP_BB"              
+# [65] "CONTIG_BB"                 
+# [66] "ALLIES_BB"  
+# "LNRGDP_BB"                 
+# [70] "LNFOES_BB"                 
+# [71] "LNFRIENDS_BB"  
+# "DEMOC_NORD"  
+# "theil_UTIP"                
+# [148] "gini_UTIP"  
 
 
 
@@ -400,6 +400,12 @@ time1
 time2
 
 # ------------
+#########################################################################
+#########################################################################
+### FULL IMPUTATION RUNS
+#########################################################################
+#########################################################################
+
 
 
 seed<-111111111
@@ -414,11 +420,13 @@ library(foreach)
 cl <- makeCluster(5)
 registerDoParallel(cl)
 
-
+a.out.time1950_HSS1_emp05 <- list()
 # add ridge priors (5%)
 a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
 
-save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi05-polytime3.RData")))
+save(a.out.time1950_HSS1_empi05,file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi05-polytime3.RData")) )
+	 
+#save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi05-polytime3.RData")))
 
 
 
@@ -463,7 +471,10 @@ impFun_empi03 <- function(x) {
 }
 # Loop through the vector, adding one
 a.out.time1950_HSS1_emp03 <- foreach(i=1:5) %dopar% impFun_empi03(i)
-save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi03_polytime3.RData")))
+
+save(a.out.time1950_HSS1_emp03, file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi03_polytime3.RData")))
+
+#save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi03_polytime3.RData")))
 
 str(a.out.time1950_HSS1_emp03[[1]]$imputations$imp1)
 
@@ -501,7 +512,8 @@ impFun_empi01 <- function(x) {
 }
 # Loop through the vector, adding one
 a.out.time1950_HSS1_empi01 <- foreach(i=1:5) %dopar% impFun_empi01(i)
-save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi01_polytime3.RData")))
+#save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi01_polytime3.RData")))
+save(a.out.time1950_HSS1_empi01, file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi01_polytime3.RData")))
 
 
 
@@ -579,6 +591,7 @@ cl <- makeCluster(5)
 registerDoParallel(cl)
 
 
+a.out.time1950_ZFS1_empi05 <- list()
 
 impFun_empi05 <- function(x) {
 	set.seed( (seed+x))
@@ -589,19 +602,23 @@ impFun_empi05 <- function(x) {
 
 # Loop through the vector, adding one
 a.out.time1950_ZFS1_empi05 <- foreach(i=1:5) %dopar% impFun_empi05(i)
-save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi05_polytime3.RData")))
+
+save(a.out.time1950_ZFS1_empi05, file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi05_polytime3.RData")))
+
+#save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi05_polytime3.RData")))
 
 
 
 ## Less shrinkage
-a.out.time1950_ZFS1_emp03 <- list()
 names(impZFS1)
 
-amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
-ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
+# amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
+# ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
 
 
-# add ridge priors (2% -> less 'shrinkage')
+# add ridge priors (3% -> less 'shrinkage')
+a.out.time1950_ZFS1_emp03 <- list()
+
 impFun_empi03 <- function(x) {
 	set.seed( (seed+x))
 	library(Amelia)
@@ -610,7 +627,11 @@ impFun_empi03 <- function(x) {
 }
 # Loop through the vector, adding one
 a.out.time1950_ZFS1_emp03 <- foreach(i=1:5) %dopar% impFun_empi03(i)
-save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi03_polytime3.RData")))
+
+save(a.out.time1950_ZFS1_emp03,file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi03_polytime3.RData")))
+
+
+# save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi03_polytime3.RData")))
 
 str(a.out.time1950_HSS1_emp03[[1]]$imputations$imp1)
 
@@ -650,7 +671,10 @@ impFun_empi01 <- function(x) {
 }
 # Loop through the vector, adding one
 a.out.time1950_ZFS1_emp01 <- foreach(i=1:5) %dopar% impFun_empi01(i)
-save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi01_polytime3.RData")))
+
+save(a.out.time1950_ZFS1_emp01, file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi01_polytime3.RData")))
+
+#save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi01_polytime3.RData")))
 
 
 
