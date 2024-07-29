@@ -393,7 +393,7 @@ seed<-111111111
 set.seed(seed)
 library(Amelia)
 
-library(parallel)
+library(parallel)                          
 detectCores() 
 
 library(doParallel)
