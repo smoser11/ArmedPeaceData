@@ -7,3 +7,8 @@
 ArmedPeaceData.Rproj
 /Data/Processed/Imputations/*.*
 Data/Processed/Imputations/*.RData
+.Rhistory
+.Rdata
+.httr-oauth
+.DS_Store
+.quarto
