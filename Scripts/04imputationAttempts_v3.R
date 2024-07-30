@@ -159,7 +159,7 @@ library(plm)
 names(ZFSimp3)
 
 #pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
-pd <- pdata.frame(ZFS, index = c("STATE_ZFS","YEAR_ZFS")) %>% pdim()
+pd <- pdata.frame(ZFSimp3, index = c("STATE_ZFS","YEAR_ZFS")) %>% pdim()
 table(index(pd), useNA = "always")
 table(index(pd), useNA = "ifany")
 # Identify rows with NAs in index columns
@@ -387,7 +387,6 @@ time2
 #########################################################################
 #########################################################################
 
-load()
 
 seed<-111111111
 set.seed(seed)
@@ -398,17 +397,38 @@ detectCores()
 
 library(doParallel)
 library(foreach)
-cl <- makeCluster(5)           
+cl <- makeCluster(10)           
 registerDoParallel(cl)
 
 load(file =paste0(here("./Data/Processed/", "impHSS1.RData") ))
+
+sort(names(impHSS1))
+
+library(tidyverse)
+impHSS1 <- dplyr::select(impHSS1, ! c(defense_dem_HSS, defense_nodem_HSS, LMILGDP_HSS, icowterr_HSS, ht66_HSS, Rusdefense_PJM) )
+sort(names(impHSS1))
+
+
+a.out.time1950_HSS1_emp05 <- list()
+
+# add ridge priors (2% -> less 'shrinkage')
+impFun_empi05 <- function(x) {
+	set.seed( (seed+x))
+	library(Amelia)
+	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+}
+# Loop through the vector, adding one
+a.out.time1950_HSS1_emp05 <- foreach(i=1:5) %dopar% impFun_empi05(i)
+
+save(a.out.time1950_HSS1_emp05, file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi05_polytime3.RData")))
+
 
 a.out.time1950_HSS1_emp05 <- list()
 # add ridge priors (5%)
 a.out.time1950_HSS1_empi05 <- amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
 
 save(a.out.time1950_HSS1_empi05,file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi05-polytime3.RData")) )
-	 
+
 #save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi05-polytime3.RData")))
 
 
@@ -430,7 +450,75 @@ save(a.out.time1950_HSS1_empi05,file = paste0(here("Data/Processed/Imputations",
 # 	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
 # }
 
-                                               
+
+##################################################
+# Less shrinkage
+
+gc()
+seed<-111111111
+set.seed(seed)
+library(Amelia)
+
+library(parallel)
+detectCores()
+
+library(doParallel)
+library(foreach)
+cl <- makeCluster(5)
+registerDoParallel(cl)
+
+
+a.out.time1950_HSS1_emp03 <- list()
+
+# add ridge priors (2% -> less 'shrinkage')
+impFun_empi03 <- function(x) {
+	set.seed( (seed+x))
+	library(Amelia)
+	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+}
+# Loop through the vector, adding one
+a.out.time1950_HSS1_emp03 <- foreach(i=1:5) %dopar% impFun_empi03(i)
+
+save(a.out.time1950_HSS1_emp03, file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi03_polytime3.RData")))
+
+
+
+
+# https://medium.com/coinmonks/dealing-with-missing-data-using-r-3ae428da2d17
+
+
+                                    
+#############################################
+### Even less shrinkage
+
+gc()
+seed<-11111112
+set.seed(seed)
+library(Amelia)
+
+library(parallel)
+detectCores()
+
+library(doParallel)
+library(foreach)
+cl <- makeCluster(5)
+registerDoParallel(cl)
+
+
+a.out.time1950_HSS1_emp01 <- list()
+
+# add ridge priors (1% -> less 'shrinkage')
+impFun_empi01 <- function(x) {
+	set.seed( (seed*x))
+	library(Amelia)
+	amelia( dplyr::select(impHSS1,! c(version_HSS, icowterrA_HSS, icowterrB_HSS, pn6_50_HSS, pn6_66_HSS, pn6_33_HSS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .01 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_HSS", "year_HSS" ,"country_name_HSS", "stateabbA_HSS", "stateabb_HSS"  ))  # "cown_SWIID"
+}
+# Loop through the vector, adding one
+a.out.time1950_HSS1_empi01 <- foreach(i=1:5) %dopar% impFun_empi01(i)
+#save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi01_polytime3.RData")))
+save(a.out.time1950_HSS1_empi01, file = paste0(here("Data/Processed/Imputations", "aOutTime1950_HSS1_empi01_polytime3.RData")))
+
+
 
 
 
