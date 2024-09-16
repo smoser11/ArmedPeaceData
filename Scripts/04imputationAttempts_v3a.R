@@ -44,6 +44,7 @@ names(mmmALL50)
 library(sampleSelection)
 
 mmmALL50$country <- mmmALL50$country.name.en
+names(mmmALL50)
 mmmALL50 <- mmmALL50 %>% select(-country.name.en)
 glimpse(mmmALL50)
 pd <- mmmALL50 %>% select(contains("HSS"), country, year)
@@ -594,6 +595,51 @@ cl <- makeCluster(5)
 registerDoParallel(cl)
 
 
+
+load(file =paste0(here("./Data/Processed/", "impZFS1.RData") ))
+
+sort(names(impZFS1))
+
+library(tidyverse)
+impZFS1 <- dplyr::select(impZFS1, ! c(defense_dem_ZFS, defense_nodem_ZFS, LMILGDP_ZFS, icowterr_ZFS, ht66_ZFS, Rusdefense_PJM) )
+sort(names(impHSS1))
+
+
+a.out.time1950_ZFS1_emp05 <- list()
+
+# add ridge priors (2% -> less 'shrinkage')
+impFun_empi05 <- function(x) {
+	set.seed( (seed+x))
+	library(Amelia)
+	amelia( dplyr::select(impZFS1,! c(version_ZFS, icowterrA_ZFS, icowterrB_ZFS, pn6_50_ZFS, pn6_66_ZFS, pn6_33_ZFS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_ZFS", "year_ZFS" ,"country_name_ZFS", "stateabbA_ZFS", "stateabb_ZFS"  ))  # "cown_SWIID"
+}
+# Loop through the vector, adding one
+a.out.time1950_ZFS1_emp05 <- foreach(i=1:5) %dopar% impFun_empi05(i)
+
+save(a.out.time1950_ZFS1_emp05, file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi05_polytime3.RData")))
+
+
+sort(names(impZFS1))
+a.out.time1950_ZFS1_emp05 <- list()
+# # add ridge priors (5%)
+# a.out.time1950_ZFS1_empi05 <- amelia( dplyr::select(impZFS1,! c( icowterrA_ZFS, icowterrB_ZFS, pn6_50_ZFS, pn6_66_ZFS, pn6_33_ZFS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_ZFS", "year_ZFS" ,"country_name_ZFS", "stateabbA_ZFS", "stateabb_ZFS"  ))  # "cown_SWIID"
+
+sort(names(impZFS1))
+impZFS1$country <- impZFS1$country.name.en
+
+impZFS1 <- dplyr::select(impZFS1, ! c( uncertain_ZFS, smilincr_ZFS, milincr_ZFS, rgdp1_ZFS, threat_ZFS, athreat1_ZFS, rgdpincr_2_ZFS, rgdpincr_3_ZFS ) )
+
+sort(names(impZFS1))
+ccnames
+
+# add ridge priors (5%)
+a.out.time1950_ZFS1_empi05 <- amelia( impZFS1 , ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impZFS1), idvars = c( ccnames, "country", "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "YEAR_ZFS" , "STATE_ZFS"))  # "cown_SWIID"
+
+save(a.out.time1950_ZFS1_empi05,file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi05-polytime3.RData")) )
+
+
+
+
 a.out.time1950_ZFS1_empi05 <- list()
 
 impFun_empi05 <- function(x) {
@@ -636,7 +682,7 @@ save(a.out.time1950_ZFS1_emp03,file = paste0(here("Data/Processed/Imputations", 
 
 # save.image( file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi03_polytime3.RData")))
 
-str(a.out.time1950_HSS1_emp03[[1]]$imputations$imp1)
+str(a.out.time1950_ZFS1_emp03[[1]]$imputations$imp1)
 
 missmap(a.out.time1950_HSS1_emp03[[1]]$imputations$imp1, csvar = "country.name.en", tsvar = "year")
 
