@@ -817,10 +817,48 @@ library(plm)
 
 ### 
 
-#load(file =paste0(here("Data/Processed/", "impZFS1.RData") ))
-load(file =paste0(here("Data/", "data.rda") ))
 
-names(data)
+### Yuji data
+
+load(file =paste0(here("Data/", "data.rda") )  )
+ data50<- data %>% filter(year>= 1950)
+load(file =paste0(here("Data/Processed/", "mmPJM50.RData") ))
+mmPJM50 <- mmPJM50 %>% filter(year>= 1950)
+load(file =paste0(here("Data/Processed/", "mmUTIP50.RData") ))
+mmUTIP50 <- mmUTIP50 %>% filter(year>= 1950)
+load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
+ccp50 <- codelist_panel2 %>% filter(year>= 1950)
+ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
+
+library(tidyverse)
+sort(names(ccpConBal50) )
+
+ddata50 <-left_join(ccpConBal50, data50, by = c("gwn" = "gwno", "year"="year") )
+
+names(ddata50)
+dat <- list(ddata50,mmPJM50,mmUTIP50)
+names(dat[[3]])
+impYUJI1 <- dat %>%  purrr::reduce(left_join, by = c(names(ccpConBal50)))
+names(impYUJI1)
+head(impYUJI1)
+
+
+## Make sure this is a panel!
+library(plm)
+sort(names(impYUJI1) )
+
+#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
+pd <- pdata.frame(impYUJI1, index = c("country.name.en","year")) %>% pdim()
+table(index(pd), useNA = "always")
+table(index(pd), useNA = "ifany")
+# # Identify rows with NAs in index columns
+# na_rows <- which(is.na(ZFSimp3$STATE_ZFS) | is.na(ZFSimp3$YEAR_ZFS))
+# print((na_rows))
+pd
+class(pd)
+
+save(impYUJI1,file =paste0(here("Data/Processed/", "impYUJI1.RData") ))
+
 
 #save(impZFS1,file =paste0(here("Data/Processed/", "impZFSimp3.RData") ))
 pdata.frame(data, index = c("gwno","year"))
@@ -828,23 +866,6 @@ pdata.frame(data, index = c("gwno","year"))
 
 getwd()
 #install.packages("Amelia")
-
-
-load(file =paste0(here("Data/Processed/", "codelist_panel2.RData") ))
-
-ccp50 <- codelist_panel2 %>% filter(year>= 1950)
-ccpConBal50 <- codelist_panel2_ConBal %>% filter(year>= 1950)
-names(ccpConBal50)
-
-
-# library(mice)
-# md.pattern(mmALL50)
-
-# https://cran.r-project.org/web/packages/naniar/vignettes/naniar-visualisation.html
-# install.packages(c("UpSetR ", "naniar")
-library(naniar)
-# https://naniar.njtierney.com/articles/getting-started-w-naniar.html
-
 
 
 ccnames <- c(paste(sQuote(names(ccpConBal50)), collapse = "," ))
@@ -865,26 +886,10 @@ cccnames <- c("iso3n", "cown", "un", "gwn", "fao" ,"gaul" ,"imf" ,"iso4217n", "u
 c(ccnames, "asdf")
 sort(names(data))
 
-data %>% select(! c(year,ccode, year, country.name.en ) )  %>% names()
+impYUJI1 %>% select(! c(year,ccode, year, country.name.en ) )  %>% names()
 
 
-
-## MAKE SURE THIS IS AS PANNEL
-## Make sure this is a panel!
-library(plm)
-sort(names(impZFS1) )
-
-#pdata.frame(mmPWT50, index = c("country_PWT","year_PWT")) %>% pdim()
-pd <- pdata.frame(impZFS1, index = c("country.name.en","year")) %>% pdim()
-table(index(pd), useNA = "always")
-table(index(pd), useNA = "ifany")
-# # Identify rows with NAs in index columns
-# na_rows <- which(is.na(ZFSimp3$STATE_ZFS) | is.na(ZFSimp3$YEAR_ZFS))
-# print((na_rows))
-pd
-class(pd)
-
-
+###############################################################
 seed<-111111111
 set.seed(seed)
 library(Amelia)
@@ -901,57 +906,68 @@ registerDoParallel(cl)
 
 # load(file =paste0(here("./Data/Processed/", "impZFS1.RData") ))
 
-sort(names(impZFS1))
+sort(names(impYUJI1))
 
 library(tidyverse)
-# impZFS1 <- dplyr::select(impZFS1, ! c(defense_dem_ZFS, defense_nodem_ZFS, LMILGDP_ZFS, icowterr_ZFS, ht66_ZFS, Rusdefense_PJM) )  # not needed
-sort(names(impZFS1))
+# impYUJI1 <- dplyr::select(impYUJI1, ! c(defense_dem_ZFS, defense_nodem_ZFS, LMILGDP_ZFS, icowterr_ZFS, ht66_ZFS, Rusdefense_PJM) )  # not needed
+sort(names(impYUJI1))
 
-class(impZFS1)
-names(impZFS1)
-pdata.frame(impZFS1, index = c("country.name.en", "year"))
-pdata.frame(impZFS1, index = c("STATE_ZFS", "YEAR_ZFS"))
+class(impYUJI1)
+sort(names(impYUJI1)) 
 
+pdata.frame(impYUJI1, index = c("country.name.en", "year"))
 
+sort(names())
+ccnames
+a.out.time1950_YUJI1_emp05 <- list()
 
-a.out.time1950_ZFS1_emp05 <- list()
-
-# add ridge priors (2% -> less 'shrinkage')
+# add ridge priors (25% -> less 'shrinkage')
 impFun_empi05 <- function(x) {
 	set.seed( (seed+x))
 	library(Amelia)
-	amelia( dplyr::select(impZFS1,! c(version_ZFS, icowterrA_ZFS, icowterrB_ZFS, pn6_50_ZFS, pn6_66_ZFS, pn6_33_ZFS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_ZFS", "year_ZFS" ,"country_name_ZFS", "stateabbA_ZFS", "stateabb_ZFS"  ))  # "cown_SWIID"
+	amelia( dplyr::select(impYUJI1), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impYUJI1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode", "year", "gwn", "gwc"   ))  # "cown_SWIID"
 }
 
-# add ridge priors (2% -> less 'shrinkage')
-impFun_empi05 <- function(x) {
-	set.seed( (seed+x))
-	library(Amelia)
-	amelia( impZFS1, ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impHSS1), idvars = c(   "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_ZFS", "year_ZFS" ,"country_name_ZFS", "stateabbA_ZFS", "stateabb_ZFS"  ))  # "cown_SWIID"
-}
-sort(names(impZFS1))
+
+
+a.out.time1950_YUJI1_emp05 <- list()
+
+# # add ridge priors (25% -> less 'shrinkage')
+# impFun_empi05 <- function(x) {
+# 	set.seed( (seed+x))
+# 	library(Amelia)
+# 	amelia( dplyr::select(impYUJI1,! c(version_ZFS, icowterrA_ZFS, icowterrB_ZFS, pn6_50_ZFS, pn6_66_ZFS, pn6_33_ZFS ) ), ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impYUJI1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode", "year", "gwn", "gwc"   ))  # "cown_SWIID"
+# }
+# 
+# # add ridge priors (2% -> less 'shrinkage')
+# impFun_empi05 <- function(x) {
+# 	set.seed( (seed+x))
+# 	library(Amelia)
+# 	amelia( impYUJI1, ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow(impYUJI1), idvars = c(   "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_ZFS", "year_ZFS" ,"country_name_ZFS", "stateabbA_ZFS", "stateabb_ZFS"  ))  # "cown_SWIID"
+# }
+sort(names(impYUJI1))
 
 # Loop through the vector, adding one
-a.out.time1950_ZFS1_emp05 <- foreach(i=1:5) %dopar% impFun_empi05(i)
+a.out.time1950_YUJI1_emp05 <- foreach(i=1:5) %dopar% impFun_empi05(i)
 
 save(a.out.time1950_ZFS1_emp05, file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi05_polytime3.RData")))
 
 
-sort(names(impZFS1))
-a.out.time1950_ZFS1_emp05 <- list()
+sort(names(impYUJI1))
+a.out.time1950_YUJI_emp05 <- list()
 # # add ridge priors (5%)
-# a.out.time1950_ZFS1_empi05 <- amelia( dplyr::select(impZFS1,! c( icowterrA_ZFS, icowterrB_ZFS, pn6_50_ZFS, pn6_66_ZFS, pn6_33_ZFS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impHSS1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_ZFS", "year_ZFS" ,"country_name_ZFS", "stateabbA_ZFS", "stateabb_ZFS"  ))  # "cown_SWIID"
+# a.out.time1950_ZFS1_empi05 <- amelia( dplyr::select(impYUJI1,! c( icowterrA_ZFS, icowterrB_ZFS, pn6_50_ZFS, pn6_66_ZFS, pn6_33_ZFS ) ), ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impYUJI1), idvars = c( ccnames,  "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "ccode_ZFS", "year_ZFS" ,"country_name_ZFS", "stateabbA_ZFS", "stateabb_ZFS"  ))  # "cown_SWIID"
 
-sort(names(impZFS1))
-impZFS1$country <- impZFS1$country.name.en
+sort(names(impYUJI1))
+impYUJI1$country <- impYUJI1$country.name.en
 
-impZFS1 <- dplyr::select(impZFS1, ! c( uncertain_ZFS, smilincr_ZFS, milincr_ZFS, rgdp1_ZFS, threat_ZFS, athreat1_ZFS, rgdpincr_2_ZFS, rgdpincr_3_ZFS ) )
+impYUJI1 <- dplyr::select(impYUJI1, ! c( uncertain_ZFS, smilincr_ZFS, milincr_ZFS, rgdp1_ZFS, threat_ZFS, athreat1_ZFS, rgdpincr_2_ZFS, rgdpincr_3_ZFS ) )
 
-sort(names(impZFS1))
+sort(names(impYUJI1))
 ccnames
 
 # add ridge priors (5%)
-a.out.time1950_ZFS1_empi05 <- amelia( impZFS1 , ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impZFS1), idvars = c( ccnames, "country", "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "YEAR_ZFS" , "STATE_ZFS"))  # "cown_SWIID"
+a.out.time1950_YUJI1_empi05 <- amelia( impYUJI1 , ts = "year", cs = "country.name.en", parallel = "multicore", ncpus = 5, polytime = 3, intercs = TRUE, p2s = 2, m=5, empri = .05 * nrow(impYUJI1), idvars = c( ccnames, "country", "country.name.en_UTIP", "year_UTIP", "code_UTIP", "country_UTIP", "countryname_UTIP", "year_PJM", "ccode_PJM", "YEAR_ZFS" , "STATE_ZFS"))  # "cown_SWIID"
 
 save(a.out.time1950_ZFS1_empi05,file = paste0(here("Data/Processed/Imputations", "aOutTime1950_ZFS1_empi05-polytime3.RData")) )
 
@@ -963,8 +979,8 @@ a.out.time1950_ZFS1_empi05 <- list()
 impFun_empi05 <- function(x) {
 	set.seed( (seed+x))
 	library(Amelia)
-	amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
-		   ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
+	amelia(dplyr:::select(impYUJI1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
+		   ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .05 * nrow( impYUJI1), idvars = c( ccnames  ))  # "cown_SWIID"
 }
 
 ># Loop through the vector, adding one
@@ -977,10 +993,10 @@ save(a.out.time1950_ZFS1_empi05, file = paste0(here("Data/Processed/Imputations"
 
 
 ## Less shrinkage
-names(impZFS1)
+names(impYUJI1)
 
-# amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
-# ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
+# amelia(dplyr:::select(impYUJI1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
+# ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow( impYUJI1), idvars = c( ccnames  ))  # "cown_SWIID"
 
 
 # add ridge priors (3% -> less 'shrinkage')
@@ -989,8 +1005,8 @@ a.out.time1950_ZFS1_emp03 <- list()
 impFun_empi03 <- function(x) {
 	set.seed( (seed+x))
 	library(Amelia)
-	amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
-		   ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
+	amelia(dplyr:::select(impYUJI1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
+		   ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .03 * nrow( impYUJI1), idvars = c( ccnames  ))  # "cown_SWIID"
 }
 # Loop through the vector, adding one
 a.out.time1950_ZFS1_emp03 <- foreach(i=1:5) %dopar% impFun_empi03(i)
@@ -1033,8 +1049,8 @@ a.out.time1950_ZFS1_emp01 <- list()
 impFun_empi01 <- function(x) {
 	set.seed( (seed+x))
 	library(Amelia)
-	amelia(dplyr:::select(impZFS1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
-		   ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .01 * nrow( impZFS1), idvars = c( ccnames  ))  # "cown_SWIID"
+	amelia(dplyr:::select(impYUJI1, !c("ccode_PJM","year_PJM", "code_UTIP"    ,"year_UTIP","country_UTIP", "countryname_UTIP" ,  "country.name.en_UTIP"  ) ),
+		   ts = "year", cs = "country.name.en", parallel = "no", ncpus = 1, polytime = 3, intercs = TRUE, p2s = 2, m=1, empri = .01 * nrow( impYUJI1), idvars = c( ccnames  ))  # "cown_SWIID"
 }
 # Loop through the vector, adding one
 a.out.time1950_ZFS1_emp01 <- foreach(i=1:5) %dopar% impFun_empi01(i)
