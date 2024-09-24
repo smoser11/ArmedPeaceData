@@ -1,0 +1,267 @@
+---
+title: "ArmedPeace_20240820"
+author: "Yuji Masumura"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: true
+#| output: false
+library(fixest)
+library(peacesciencer)
+library(tidyverse)
+library(zoo)
+```
+
+# Loading data
+
+```{r}
+BFMM <- readRDS("~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/Barnum et al JPR 2024/data/estimates_milex_cur_20231205.rds") 
+BFMM <- BFMM |> filter(indicator == "milex_cur_nmc") |> # the indiator is the COW NMC.
+	select(-indicator,  -og,  -con, - group) |> 
+	rename(mean_log_milex = mean_log,
+		   mean_milex = mean,
+		   mean_log10_milex = mean_log10,
+		   sd_log_milex = sd_log,
+		   sd_milex = sd,
+		   sd_log10_milex = sd_log10)
+
+GDP <- readRDS("~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/GDP-etc/estimates_gdp_model_combined_normal_noslope_gamma_lambda_additive_test_20240416.rds")
+GDP <- GDP |>  filter(indicator == "WorldBank_gdp_con_bc_2010") |>  #the indicator is World Bank GDP 2010
+	select(-indicator,  -og, -og_log, -og_log10, -group) |> 
+	rename(mean_log_gdp = mean_log,
+		   mean_gdp = mean,
+		   mean_log10_gdp = mean_log10,
+		   sd_log_gdp = sd_log,
+		   sd_gdp = sd,
+		   sd_log10_gdp = sd_log10)
+
+GDPpc <- readRDS("~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/GDP-etc/estimates_gdppc_model_combined_normal_noslope_gamma_lambda_additive_test_20240416.rds")
+GDPpc <- GDPpc |>  filter(indicator == "WorldBank_gdppc_con_bc_2010") |>  #the indicator is World Bank GDP 2010
+	select(-indicator,  -og, -og_log, -og_log10, -group) |> 
+	rename(mean_log_gdppc = mean_log,
+		   mean_gdppc = mean,
+		   mean_log10_gdppc = mean_log10,
+		   sd_log_gdppc = sd_log,
+		   sd_gdppc = sd,
+		   sd_log10_gdppc = sd_log10)
+
+POP <- readRDS("~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/GDP-etc/estimates_pop_model_combined_normal_noslope_gamma_lambda_additive_test_20240416.rds")
+POP <- POP |> filter(indicator == "WorldBank_pop")|>  #the indicator is World Bank
+	select(-indicator,  -og, -og_log, -og_log10, -group) |> 
+	rename(mean_log_pop = mean_log,
+		   mean_pop = mean,
+		   mean_log10_pop = mean_log10,
+		   sd_log_pop = sd_log,
+		   sd_pop = sd,
+		   sd_log10_pop = sd_log10)
+
+political_data <- create_stateyears(system = "gw", mry = TRUE, subset_years=  c(1816:2022)) |> 
+	add_ccode_to_gw() |> 
+	add_cow_wars(type = "intra") |> mutate(civilwar = if_else(cowintraonset == 1 | cowintraongoing == 1, 1, 0)) |> 
+	add_democracy() |> 
+	select(gwcode, statename, year, ccode,  civilwar, v2x_polyarchy, polity2)
+
+# international war 
+intlwar <- create_dyadyears(system = "gw", mry = TRUE, subset_years=  c(1816:2022)) |> 
+	add_ccode_to_gw() |> 
+	add_cow_wars(type = "inter") |> 
+	mutate(interwar_el = if_else(cowinterongoing == 1 | cowinteronset ==1, 1, 0)) |> 
+	group_by(ccode1, year) |> mutate(interwar = if_else(sum(interwar_el, na.rm = T)>= 1 , 1, 0)) |> 
+	ungroup() |> distinct(ccode1, year, .keep_all = T) |> 
+	rename(ccode = ccode1) |> select(ccode, year, interwar)
+
+
+alliance <- create_dyadyears(system = "cow", mry = TRUE, directed = TRUE, subset_years = c(1816:2016)) |> add_democracy() |> add_atop_alliance() |>  
+	mutate(dem_ally_el = if_else(atop_defense == 1 & polity22 >= 7, 1, 0), nondem_ally_el = if_else(atop_defense == 1 & polity22 <= 6, 1, 0)) |> # Follow  Digiuseppe and Poast (2018)
+	group_by(ccode1, year) |> mutate(dem_ally = if_else(sum(dem_ally_el, na.rm = T)>=1, 1, 0),  nondem_ally = if_else(sum(nondem_ally_el, na.rm = T)>=1, 1, 0)) |> ungroup() |> distinct(ccode1, year, .keep_all = T) |> 
+	rename(ccode = ccode1) |> select(ccode, year, dem_ally, nondem_ally) 
+
+#NATO or not 
+atop <- read_csv("Data/Raw/ATOP 5.1 (.csv)/atop5_1sy_NNA.csv")
+atop <- atop |> mutate(nato = if_else(as.logical(rowSums(select(atop, starts_with("atopid")) == 3180, na.rm = T)), 1, 0)) |> select(state, year, defense, nato)
+# Atop id. 3180 is NATO
+alliance <- alliance |> left_join(atop, by = c( "ccode"="state" ,"year")) |> mutate(defense = replace_na(defense, 0),
+																					nato = replace_na(nato, 0), 
+																					defense_wo_nato = if_else(defense == 1 & nato ==0, 1, 0),
+																					dem_ally_wo_nato = if_else(dem_ally == 1 & nato ==0, 1, 0))
+# since atop data is merged to a state-year dataset, when defensive alliance does not exist, it has NA in the data. The code here fixes this problem
+```
+
+
+```{r}
+#merging data
+data <- BFMM |> left_join(political_data, by =c("year", "gwno" = "gwcode")) |> 
+	            left_join(intlwar, by =c("year", "ccode")) |> 
+        	    left_join(GDP, by = c("year", "gwno")) |> 
+	            left_join(GDPpc ,  by = c("year","gwno")) |> 
+	            left_join(POP,  by = c("year", "gwno")) 
+
+data <- data |> left_join(alliance, by = c("ccode", "year"))
+
+
+#finally, since alliance data exist until 2016, i trim the data
+data <- data |> filter(year<=2016)
+```
+
+
+# Creating New DVs
+
+I use military expenditure data from Barnum, Farris, Markowitz, and Morales (BFMM). The GDP, GDP per capita, and population data are from Fariss, Anders, Markowitz, and Morales (FAMM) (2022) in JCR. These data cover years from 1816 to 2019, but the final dataset covers years from 1816 to 2016 since we have the alliance data until 2016.
+
+The new DV is logged squared distance of the military-expenditure-to-GDP ratio at year $t$ and a 10-year average of it. Specifically, the DV is $ln((\frac{Military Expenditure_{t}}{GDP_{t}} - \frac{\Sigma_{i = t-4}^{t+5} \frac{Military Expenditure_{i}}{GDP_{i}}}{10})^{2})$. I squared the distance because $ln()$ does not accept negative values. 
+I also make 5-year moving averages below.
+
+```{r}
+# variable construction ---------------------------------------------------
+
+data <- data |> mutate(milex_ratio = mean_milex/mean_gdp) |> 
+	group_by(ccode) |>  
+	mutate(milex_ma10 = rollapply(milex_ratio, 10, mean, na.rm = TRUE, align = "center", partial = T, fill = NA),
+		   milex_ma5 = rollapply(milex_ratio, 5, mean, na.rm = TRUE, align = "center", partial = T, fill = NA),
+           
+		   milex_ma10_fluc = (milex_ratio - milex_ma10)^2,
+		   milex_ma5_fluc = (milex_ratio - milex_ma5)^2, 
+		
+		   milex_ma10_fluc_log = log(milex_ma10_fluc),
+		   milex_ma5_fluc_log = log(milex_ma5_fluc))	
+```
+
+
+| Variable           | Description                                                          |
+|--------------------|----------------------------------------------------------------------|
+ | `milex_ma10_fluc_log` | The logged fluctuation of Military Expenditure/GDP in 10 years (data are from BFMM and FAMM)           |
+ | `milex_ma5_fluc_log`  | The logged fluctuation of Military Expenditure/GDP in 5 years (data are from BFMM  and FAMM)   |
+
+
+# RHS Variable
+```{r}
+#GDP growth
+data <- data |> mutate(gdp_growth = 100 * (mean_gdp/lag(mean_gdp, n = 1, order_by = year) - 1))  #growth percentage
+
+# lag RHS
+data <- data |> mutate(civilwar_lag2 = lag(civilwar, n=2, order_by = year),
+					   civilwar_lag4 = lag(civilwar, n=4, order_by = year),
+					   
+					   polity2_lag2 = lag(polity2, n = 2, order_by = year),
+					   polity2_lag4 = lag(polity2, n = 4, order_by = year),
+					   
+					   polyarchy_lag2 = lag(v2x_polyarchy, n = 2, order_by = year),
+					   polyarchy_lag4 = lag(v2x_polyarchy, n = 4, order_by = year),
+					   
+					   interwar_lag2 = lag(interwar, n = 2, order_by = year),
+					   interwar_lag4 = lag(interwar, n = 4, order_by = year),
+					   
+					   dem_ally_lag2 = lag(dem_ally, n = 2, order_by = year),
+					   dem_ally_lag4 = lag(dem_ally, n = 4, order_by = year),
+					   
+					   nondem_ally_lag2 = lag(nondem_ally, n = 2, order_by = year),
+					   nondem_ally_lag4 = lag(nondem_ally, n = 4, order_by = year),
+					   
+					   defense_lag2 = lag(defense, n = 2, order_by = year),
+					   defense_lag4 = lag(defense, n = 4, order_by = year),
+					   
+					   defense_wo_nato_lag2 = lag(defense_wo_nato, n = 2, order_by = year),
+					   defense_wo_nato_lag4 = lag(defense_wo_nato, n = 4, order_by = year),
+					   
+					   dem_ally_wo_nato_lag2 = lag(dem_ally_wo_nato, n = 2, order_by = year),
+					   dem_ally_wo_nato_lag4 = lag(dem_ally_wo_nato, n = 4, order_by = year),
+					   
+					   gdp_growth_lag2 = lag(gdp_growth, n = 2, order_by = year),
+					   gdp_growth_lag4 = lag(gdp_growth, n = 4, order_by = year), 
+					   
+					   pop_lag2 = lag(mean_pop, n=2, order_by = year),
+					   pop_lag4 = lag(mean_pop, n=4, order_by = year),
+					   
+					   gdppc_lag2 = lag(mean_gdppc, n=2, order_by = year),
+					   gdppc_lag4 = lag(mean_gdppc, n=4, order_by = year),
+					   
+					   gdp_lag2 = lag(mean_gdp, n = 2, order_by = year),
+					   gdp_lag4 = lag(mean_gdp, n = 4, order_by = year))
+```
+
+Below is the description of the RHS variables
+
+| Variable           | Description                                                          |
+|--------------------|----------------------------------------------------------------------|
+ | `civilwar` | A dummy variable about civil war from COW          |
+ | `interwar`  | A dummy variable about international war from COW    |
+  | `polyarchy` | Polyarchy (democracy) level from Vdem          |
+ | `polity2`  | Democracy level from Polity2      |
+ | `defense`  | A dummy variable about defensive alliance from ATOP   |
+  | `dem_ally` | A dummy variable about defensive alliance with democracy from ATOP  (See Digiuseppe and Poast (2018))     |
+ | `nondem_ally`  | A dummy variable about defensive alliance with autocracy from ATOP  (See Digiuseppe and Poast (2018))   |
+  | `gdp_growth` | GDP growth percentage from year $t-1$ from FAMM         |
+ | `gdp`  | GDP from FAMM    |
+  | `gdppc` | GDP per capita from FAMM          |
+ | `pop`  | Population from FAMM   |
+
+# Analysis
+## Descriptive Statistics
+```{r}
+summary(data |> select(milex_ma10_fluc_log, milex_ma5_fluc_log, civilwar, interwar, v2x_polyarchy, polity2, defense, dem_ally, nondem_ally))
+```
+
+No missing data in the main DV, teh alliance variables, and the international war variable. There are some NAs in other RHS variables, but they are not large. (c.f. the number of observartion is 15951)
+
+## Regression
+I did regression analysis with year- and country-fiexed effects.
+
+```{r}
+library(fixest)
+fit1_1 <- feols(milex_ma10_fluc_log ~ civilwar_lag4 + interwar_lag4 + defense_lag4 + polyarchy_lag4 + gdp_growth_lag4 +  pop_lag4 + gdppc_lag4 + gdp_lag4| year + gwno, data = data) 
+summary(fit1_1)
+```
+Civil war has a large effect on the fluctuation of Military Expenditure/GDP. 
+
+```{r}
+fit1_2 <- feols(milex_ma10_fluc_log ~ civilwar_lag4 + interwar_lag4 + dem_ally_lag4 + nondem_ally_lag4 + polyarchy_lag4 + gdp_growth_lag4 +  pop_lag4 + gdppc_lag4 + gdp_lag4| year + gwno, data = data) 
+summary(fit1_2)
+```
+Defensive alliances with an autocracy has a larger effect on the fluctuation, which is similar to Digiuseppe and Poast (2018)'s finding.
+
+
+### Robustness check (NATO)
+
+I exclude NATO countries from the alliance variables.
+```{r}
+#NATO robustness
+
+fit1_3 <- feols(milex_ma10_fluc_log ~ civilwar_lag4 + interwar_lag4 + defense_wo_nato_lag4 + polyarchy_lag4 + gdp_growth_lag4 +  pop_lag4 + gdppc_lag4 + gdp_lag4| year + gwno, data = data) 
+summary(fit1_3)
+
+fit1_4 <- feols(milex_ma10_fluc_log ~ civilwar_lag4 + interwar_lag4 + dem_ally_wo_nato_lag4 + nondem_ally_lag4 + polyarchy_lag4 + gdp_growth_lag4 +  pop_lag4 + gdppc_lag4 + gdp_lag4| year + gwno, data = data) 
+summary(fit1_4)
+```
+
+The finding is robust.
+
+# 5-year moving average
+
+I do the exace same analysis by using the 5-year moving average. We can see the same tendency as before.
+
+```{r}
+library(fixest)
+fit2_1 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + gdp_growth_lag2 +  pop_lag2 + gdppc_lag2 + gdp_lag2| year + gwno, data = data) 
+summary(fit2_1)
+```
+Civil war has a large effect on the fluctuation of Military Expenditure/GDP
+
+```{r}
+fit2_2 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + dem_ally_lag2 + nondem_ally_lag2 + polyarchy_lag2 + gdp_growth_lag2 +  pop_lag2 + gdppc_lag2 + gdp_lag2| year + gwno, data = data) 
+summary(fit2_2)
+```
+
+### Robustness check (NATO)
+
+Finally, I exclude NATO countries from the alliance variables.
+```{r}
+#NATO robustness
+
+fit2_3 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + defense_wo_nato_lag2 + polyarchy_lag2 + gdp_growth_lag2 +  pop_lag2 + gdppc_lag2 + gdp_lag2| year + gwno, data = data) 
+summary(fit2_3)
+
+fit2_4 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + dem_ally_wo_nato_lag2 + nondem_ally_lag2 + polyarchy_lag2 + gdp_growth_lag2 +  pop_lag2 + gdppc_lag2 + gdp_lag2| year + gwno, data = data) 
+summary(fit2_4)
+```

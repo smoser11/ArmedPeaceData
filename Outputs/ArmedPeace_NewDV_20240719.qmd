@@ -1,0 +1,321 @@
+---
+title: "ArmedPeace_NewDV_ 20240719"
+format: html
+editor: visual
+---
+
+---
+title: "ArmedPeace"
+format: html
+editor: visual
+toc: true
+toc-depth: 2
+---
+
+# Constracting new DVs
+
+```{r}
+#| echo: true
+#| output: false
+library(haven)
+library(summarytools)
+library(pcse)
+library(fixest)
+library(AER)
+library(tidyverse)
+library(zoo)
+```
+
+# Loading data
+
+```{r}
+HSS <- read_dta("Data/Raw/Democracy external threat and military spending/DP_Nord_clean.dta")
+ZFS <- read_dta("Data/Raw/JPR - What Goes Up - Replication/replication.dta") 
+BFMM <- readRDS("~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/Barnum et al JPR 2024/data/estimates_milex_cur_20231205.rds") 
+BFMM <- BFMM |> filter(indicator == "milex_cur_nmc") |> # the indiator is the COW NMC.
+                select(-indicator,  -og,  -con, - group) |> 
+	            rename(mean_log_milex = mean_log,
+	            	   mean_milex = mean,
+	            	   mean_log10_milex = mean_log10,
+	            	   sd_log_milex = sd_log,
+	            	   sd_milex = sd,
+	            	   sd_log10_milex = sd_log10)
+GDP <- readRDS("~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/GDP-etc/estimates_gdp_model_combined_normal_noslope_gamma_lambda_additive_test_20240416.rds")
+GDP <- GDP |>  filter(indicator == "WorldBank_gdp_con_bc_2010") |>  #the indicator is World Bank GDP 2010
+	            select(-indicator,  -og, -og_log, -og_log10, -group) |> 
+	            rename(mean_log_gdp = mean_log,
+	            	   mean_gdp = mean,
+	            	   mean_log10_gdp = mean_log10,
+	            	   sd_log_gdp = sd_log,
+	            	   sd_gdp = sd,
+	            	   sd_log10_gdp = sd_log10)
+
+GDPpc <- readRDS("~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/GDP-etc/estimates_gdppc_model_combined_normal_noslope_gamma_lambda_additive_test_20240416.rds")
+GDPpc <- GDPpc |>  filter(indicator == "WorldBank_gdppc_con_bc_2010") |>  #the indicator is World Bank GDP 2010
+	            select(-indicator,  -og, -og_log, -og_log10, -group) |> 
+	            rename(mean_log_gdppc = mean_log,
+	            	   mean_gdppc = mean,
+	            	   mean_log10_gdppc = mean_log10,
+	            	   sd_log_gdppc = sd_log,
+	            	   sd_gdppc = sd,
+	            	   sd_log10_gdppc = sd_log10)
+
+POP <- readRDS("~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/GDP-etc/estimates_pop_model_combined_normal_noslope_gamma_lambda_additive_test_20240416.rds")
+POP <- POP |> filter(indicator == "WorldBank_pop")|>  #the indicator is World Bank
+	            select(-indicator,  -og, -og_log, -og_log10, -group) |> 
+	            rename(mean_log_pop = mean_log,
+	            	   mean_pop = mean,
+	            	   mean_log10_gdp = mean_log10,
+	            	   sd_log_pop = sd_log,
+	            	   sd_pop = sd,
+	            	   sd_log10_pop = sd_log10)
+```
+
+# Measurements of (Raw or Logged) Military Expenditure in datasets
+
+Military expenditure data are from (a) Hauenstein, Smith and Souva (HSS), (b) Zielinski, Fordham, and Schilde (ZFS), and (c) Barnum, Farris, Markowitz, and Morales (BFMM). The GDP, GDP per capita, and population data are from Fariss, Anders, Markowitz, and Morales (FAMM) (2022) in JCR.
+
+| Dataset | Variable  | Description                                                      |
+|---------|-----------|------------------------------------------------------------------|
+| HSS     | LMILEX    | ln(Military Expenditure)                                         |
+| HSS     | LMILGDP   | ln(Military Expenditure/GDP)                                     |
+| ZFS     | smilex    | (Raw) Military Expenditure from SIPLI.                           |
+| ZFS     | ln_smilex | ln(Military Expenditure) from SIPLI.                             |
+| ZFS     | smilincr  | Change in (Raw) Military Expenditure from t-1 to t in `smilex`   |
+| ZFS     | milex     | (Raw) Military Expenditure from Nordhaus et al.                  |
+| ZFS     | ln_milex  | ln(Military Expenditure) from Nordhouse et al.                   |
+| ZFS     | milincr   | Change in (Raw) Military Expenditure from t-1 to t in `milex`    |
+| ZFS     | rgdp      | Raw GDP                                                          |
+| ZFS     | ln_rgdp   | ln(Raw GDP)                                                      |
+| ZFS     | rgdpincr  | Change in Raw GDP from t-1 to t in `rgdp`                        |
+| BFMM    | mean_milex      | Mean of the predicted distribution of (raw) military expenditure |
+| BFMM    | mean_log  | ln(`mean`)                                                       |
+| GDP (FAMM)    | mean_gdp      | Mean of the predicted distribution of GDP |
+| GDPpc  (FAMM)    | mean_gdppc      | Mean of the predicted distribution of GDP per capita |
+| POP  (FAMM)    | mean_pop      | Mean of the predicted distribution of Population |
+
+Year coverage: HSS: 1951-2000, ZFS: 1945-2015, BFMM: 1816 - 2022, and BFMM: 1500 - 2019
+
+# Creating New DVs
+
+First, data cleaning.
+
+Germany: The BMFF dataset has Germany (COW 255) from 1816 to 1945, West Germany (COW 260) from 1948 to 2019, and East Germany (COW 265) from 1948 to 1990. I fixed the ZFC dataset based on this. Scott found that the ZFC dataset has Germany (COW 255) from 1960, but also has German Federal Republic (COW 260) from 1949 to 2015, and East Germany (COW 265) from 1949-1990. So I just removed 'Germany' (COW 255) from the ZFC dataset.
+
+
+```{r}
+ZFS <- ZFS |> filter(STATE != 255)
+```
+
+
+Then, I combine the three datasets
+
+```{r}
+library(countrycode)
+BFMM$ccode <- countrycode(BFMM$gwno,"gwn", "cown") # Gleditsch-Ward system does not perfectly match the COW country code. This makes a warning message  later.
+
+df <- BFMM |>  left_join(ZFS, by = c("ccode" = "STATE", "year" = "YEAR")) |> 
+	left_join(HSS, by =c("ccode" = "ccode", "year" = "year")) |> 
+	left_join(GDP, by = c("gwno", "year")) |> 
+	left_join(GDPpc, by = c("gwno", "year")) |>
+    left_join(POP, by = c("gwno", "year"))
+```
+
+Then, I make new DVs.
+
+The new DV is logged squared distance of the military-expenditure-to-GDP ratio at year $t$ and a 10-year average of it. Specifically, the DV is $ln((\frac{Military Expenditure_{t}}{GDP_{t}} - \frac{\Sigma_{i = t-4}^{t+5} \frac{Military Expenditure_{i}}{GDP_{i}}}{10})^{2})$. I squared the distance because $ln()$ does not accept negative values. 
+
+I also make 5-year moving averages below.
+
+Note that LMILEX is logged from the beginning, so this may not be easy to interpret.
+```{r}
+df <- df |> mutate(smilex_ratio = smilex/rgdp,
+					milex_ratio = milex/rgdp,
+					mean_ratio = mean_milex/mean_gdp)
+					
+df <- df |> group_by(ccode) |>  mutate(
+	LMILEX_ma10 = rollapplyr(LMILEX, 10, mean, na.rm = TRUE, align = "center", partial = T, fill = NA),  # LMILEX is logged from the beginning, so this may not be easy to interpret.
+	smilex_ma10 = rollapplyr(smilex_ratio, 10, mean, na.rm = TRUE, align = "center", partial = T, fill = NA),
+	milex_ma10 = rollapplyr(milex_ratio, 10, mean, na.rm = TRUE, align = "center", partial = T, fill = NA),
+	mean_ma10 = rollapplyr(mean_ratio, 10, mean, na.rm = TRUE, align = "center", partial = T, fill = NA),
+	
+	LMILEX_ma5 = rollapplyr(LMILEX, 5, mean, na.rm = TRUE, align = "center", partial = T, fill = NA),,  
+	smilex_ma5 = rollapplyr(smilex_ratio, 5, mean, na.rm = TRUE, align = "center", partial = T, fill = NA), 
+	milex_ma5 = rollapplyr(milex_ratio, 5, mean, na.rm = TRUE, align = "center", partial = T, fill = NA), 
+	mean_ma5 = rollapplyr(mean_ratio, 5, mean, na.rm = TRUE, align = "center", partial = T, fill = NA),
+) |> 
+	mutate( LMILEX_ma10_fluc = (LMILEX - LMILEX_ma10)^2,
+			smilex_ma10_fluc = (smilex_ratio - smilex_ma10)^2,
+			milex_ma10_fluc = (milex_ratio - milex_ma10)^2,
+		    mean_ma10_fluc = (mean_ratio - mean_ma10)^2,
+			
+			LMILEX_ma5_fluc = (LMILEX - LMILEX_ma5)^2,
+			smilex_ma5_fluc = (smilex_ratio - smilex_ma5)^2,
+			milex_ma5_fluc = (milex_ratio - milex_ma5)^2,
+		    mean_ma5_fluc = (mean_ratio - mean_ma5)^2, 
+			
+			LMILEX_ma10_fluc_log = log(LMILEX_ma10_fluc), 
+			milex_ma10_fluc_log = log(milex_ma10_fluc),
+			smilex_ma10_fluc_log = log(smilex_ma10_fluc),
+			mean_ma10_fluc_log = log(mean_ma10_fluc),
+			
+			LMILEX_ma5_fluc_log = log(LMILEX_ma5_fluc), 
+			milex_ma5_fluc_log = log(milex_ma5_fluc),
+			smilex_ma5_fluc_log = log(smilex_ma5_fluc),
+			mean_ma5_fluc_log = log(mean_ma5_fluc)
+	)	
+```
+
+Below is the description of the new DVs
+
+| Original Dataset | Variable           | Description                                                          |
+|------------------|--------------------|----------------------------------------------------------------------|
+| ZFC              | `smilex_ma10_fluc_log` | The logged fluctuation of Military Expenditure/GDP from SIPLI           |
+| ZFC              | `milex_ma10_fluc_log`  | The logged fluctuation of Military Expenditure/GDP from Nordhaus et al.     |
+| BFMM             | `mean_ma10_fluc_log`   | The logged fluctuation of Military Expenditure/GDP from BFMM's military expenditure and FAMM's GDP|
+
+I add some lagged independent variables. They are lagged for 4 years since the 10-year moving averages are calculated from $t-4$ to $t+5$. (I also and 2-year lagged variables for the 5-year moving averages.)
+
+ | Variable           | Description                                                          |
+|--------------------|----------------------------------------------------------------------|
+| `LNRGDP` | Logged GDP from ZFC           |
+| `v2x_polyarchy` | Liberal democracy index from Vdem           |
+| `PN6_lag1` | External Threats from Nordhaus et al.           |
+| `defense_dem` | Defensive alliance with democracies           |
+| `defense_nondem` | Defensive alliance with autocracies           |
+| `atwar` | Dummy variable about involving in international war           |
+| `civilwar` | Dummy variable about involving in civil war           |
+| `mean_gdp` | Estimated GDP from FAMM   |
+| `mean_gdppc` | Estimated GDP per capita from FAMM   |
+| `mean_gdp` | Estimated population from FAMM   |
+
+Based on BFMM, I restricted the year coverage to the period of 1815-2019.
+
+```{r}
+df <- df |> filter(year >=1816 & year <=2019) |>  mutate(LNRGDP_lag1 = lag(LNRGDP, n = 1, order_by = year), # this is for 3-year moving ave.
+					LNRGDP_lag2 = lag(LNRGDP, n = 2, order_by = year),
+					LNRGDP_lag4 = lag(LNRGDP, n = 4, order_by = year),
+					v2x_polyarchy_lag1 = lag(v2x_polyarchy, n = 1, order_by = year),
+					v2x_polyarchy_lag2 = lag(v2x_polyarchy, n = 2, order_by = year),
+					v2x_polyarchy_lag4 = lag(v2x_polyarchy, n = 4, order_by = year),
+					PN6_lag1 = lag(PN6, n = 1, order_by = year),
+					PN6_lag2 = lag(PN6, n = 2, order_by = year),
+					PN6_lag4 = lag(PN6, n = 4, order_by = year),
+					defense_dem_lag1 = lag(defense_dem, n = 1, order_by = year),
+					defense_dem_lag2 = lag(defense_dem, n = 2, order_by = year),
+					defense_dem_lag4 = lag(defense_dem, n = 4, order_by = year),
+					defense_nodem_lag1 = lag(defense_nodem, n = 1, order_by = year),
+					defense_nodem_lag2 = lag(defense_nodem, n = 2, order_by = year),
+					defense_nodem_lag4 = lag(defense_nodem, n = 4, order_by = year),
+					atwar_lag1 = lag(atwar, n=1, order_by = year),
+					atwar_lag2 = lag(atwar, n=2, order_by = year),
+					atwar_lag4 = lag(atwar, n=4, order_by = year),
+					civilwar_lag1 = lag(civilwar, n=1, order_by = year),
+					civilwar_lag2 = lag(civilwar, n=2, order_by = year),
+					civilwar_lag4 = lag(civilwar, n=4, order_by = year),
+					
+					mean_gdp_lag2 = lag(mean_gdp, n=2, order_by = year),
+					mean_gdp_lag4 = lag(mean_gdp, n=4, order_by = year),
+					mean_gdppc_lag2 = lag(mean_gdppc, n=2, order_by = year),
+					mean_gdppc_lag4 = lag(mean_gdppc, n=4, order_by = year),
+					mean_pop_lag2 = lag(mean_pop, n=2, order_by = year),
+					mean_pop_lag4 = lag(mean_gdp, n=4, order_by = year))
+```
+
+`df` is created based on BFMM, which means the data frame covers years from 1815 to 2022. Thus, we will have many NAs when we use variables from HSS or ZFS.
+
+# Descriptive Statistics
+
+Next, I check the missingness and distribution of the new DVs.
+
+```{r}
+summary(df$smilex_ma10_fluc_log)
+mean(is.na(df$smilex_ma10_fluc_log))
+hist(df$smilex_ma10_fluc_log)
+
+summary(df$milex_ma10_fluc_log)
+mean(is.na(df$milex_ma10_fluc_log))
+hist(df$milex_ma10_fluc_log)
+
+summary(df$mean_ma10_fluc_log)
+mean(is.na(df$mean_ma10_fluc_log))
+hist(df$mean_ma10_fluc_log)
+```
+
+There are many missing values for `smilex_ma10_fluc_log` and `milex_ma10_fluc_log`. The reason of the large number of missing values is that the dataset covers years from 1816 to 2019, but the military expenditure data exists only from 1950 to 2011 (ZFC p. 796). Thus, below I restricted the year coverage to 1950-2011 for these two dependent variables.
+
+```{r}
+summary(df$smilex_ma10_fluc_log[df$year >= 1950 & df$year <= 2011])
+mean(is.na(df$smilex_ma10_fluc_log[df$year >= 1950 & df$year <= 2011]))
+hist(df$smilex_ma10_fluc_log[df$year >= 1950 & df$year <= 2011])
+
+summary(df$milex_ma10_fluc_log[df$year >= 1950 & df$year <= 2011])
+mean(is.na(df$milex_ma10_fluc_log[df$year >= 1950 & df$year <= 2011]))
+hist(df$milex_ma10_fluc_log[df$year >= 1950 & df$year <= 2011])
+```
+
+# Regression
+
+Variables RHS: estimated GDP, estimated GDP per capita, estimated population, liberal democracy index in Vdem, external threat, defensive alliances with a democracy, defensive alliances with an autocracy, a dummy variable of international war, and a dummy variable of civil war. Fixed effects: year and country.
+
+Note that some RHS variables do not cover all of the years from 1816 to 2019 in Fit1_4, even though the DV and some RHS variables covers the years. 
+
+```{r}
+fit1_2 <- fixest::feols(smilex_ma10_fluc_log ~ mean_gdp_lag4 + mean_gdppc_lag4 + mean_pop_lag4  +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4 | year + gwno, data = df |> filter(year>= 1950 & year <= 2011))
+summary(fit1_2)
+
+fit1_3 <- fixest::feols(milex_ma10_fluc_log ~ mean_gdp_lag4 + mean_gdppc_lag4 + mean_pop_lag4  +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4  | year + gwno, data = df|> filter(year>= 1950 & year <= 2011))
+summary(fit1_3)
+
+fit1_4 <- fixest::feols(mean_ma10_fluc_log ~ mean_gdp_lag4 + mean_gdppc_lag4 + mean_pop_lag4  +v2x_polyarchy_lag4 + PN6_lag4 + defense_dem_lag4 + defense_nodem_lag4 + atwar_lag4+civilwar_lag4 | year + gwno, data = df) # this covers years from 1816 to 2019
+summary(fit1_4)
+```
+
+# 5-year moving average
+
+I do the same operations for the 5-year moving averages. First, I check the distribution and missing values.
+
+```{r}
+summary(df$smilex_ma5_fluc_log)
+mean(is.na(df$smilex_ma5_fluc_log))
+hist(df$smilex_ma5_fluc_log)
+
+summary(df$milex_ma5_fluc_log)
+mean(is.na(df$milex_ma5_fluc_log))
+hist(df$milex_ma5_fluc_log)
+
+summary(df$mean_ma5_fluc_log)
+mean(is.na(df$mean_ma5_fluc_log))
+hist(df$mean_ma5_fluc_log)
+```
+
+Then, I do the same regression as above, except for using two-year lagged variables for RHS.
+
+```{r}
+fit2_2 <- fixest::feols(smilex_ma5_fluc_log ~ mean_gdp_lag2 + mean_gdppc_lag2 + mean_pop_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2 | year + gwno, data = df|> filter(year>= 1950 & year <= 2011))
+summary(fit2_2)
+
+fit2_3 <- fixest::feols(milex_ma5_fluc_log ~ mean_gdp_lag2 + mean_gdppc_lag2 + mean_pop_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2 | year + gwno, data = df|> filter(year>= 1950 & year <= 2011))
+summary(fit2_3)
+
+fit2_4 <- fixest::feols(mean_ma5_fluc_log ~ mean_gdp_lag2 + mean_gdppc_lag2 + mean_pop_lag2 +v2x_polyarchy_lag2 + PN6_lag2 + defense_dem_lag2 + defense_nodem_lag2 + atwar_lag2+civilwar_lag2 | year + gwno, data = df)
+summary(fit2_4)
+```
+
+# (c.f.) Regression of military expenditure form 1816 to 2019
+
+The regressions of fit1_4 and fit2-f do not use the full range of the years since some RHS variables do not exist before 1945. Here, I use only estimated military expenditure, estimated GDP and GDP per capita, and estimated population to fully use the year range.
+
+## 10-year moving average
+```{r}
+fit3_1 <- fixest::feols(mean_ma10_fluc_log ~ mean_gdp_lag4 + mean_gdppc_lag4 + mean_pop_lag4 | year + gwno, data = df)
+summary(fit3_1)
+```
+I do not know why `mean_pop_lag4` does not have a coefficient.
+
+
+## 5-year moving average
+```{r}
+fit3_2 <- fixest::feols(mean_ma5_fluc_log ~ mean_gdp_lag2 + mean_gdppc_lag2 + mean_pop_lag2 | year + gwno, data = df)
+summary(fit3_2)
+```

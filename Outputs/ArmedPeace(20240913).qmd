@@ -1,0 +1,249 @@
+---
+title: "ArmedPeace_20240913"
+author: "Yuji Masumura"
+format: html
+editor: visual
+toc: true
+---
+
+```{r}
+#| echo: true
+#| output: false
+library(fixest)
+library(tidyverse)
+```
+
+# Loading Data
+
+First, let's load the data
+```{r}
+load("data.rda")
+```
+
+| Variable           | Description                                                          |
+|--------------------|----------------------------------------------------------------------|
+|`milex_ma10_fluc_log`| The logged fluctuation of military expenditure/GDP ratio based on 10-year moving average (DV)|
+|`milex_ma5_fluc_log`| The logged fluctuation of military expenditure/GDP ratio based on 5-year moving average (DV)|
+ | `civilwar` | A dummy variable about civil war from COW          |
+ | `interwar`  | A dummy variable about international war from COW    |
+  | `polyarchy` | Polyarchy (democracy) level from Vdem          |
+ | `polity2`  | Democracy level from Polity2      |
+ |`polity_int`|A dummy variable of Political Interruption from Polity (-66, -77, -88)|
+ | `defense`  | A dummy variable about defensive alliance from ATOP   |
+  | `dem_ally` | A dummy variable about defensive alliance with democracy from ATOP  (See Digiuseppe and Poast (2018))     |
+ | `nondem_ally`  | A dummy variable about defensive alliance with autocracy from ATOP  (See Digiuseppe and Poast (2018))   |
+  | `gdp_growth` | GDP growth percentage from year $t-1$ from FAMM         |
+ | `gdp`  | GDP from FAMM    |
+  | `gdppc` | GDP per capita from FAMM          |
+ | `pop`  | Population from FAMM   |
+ |`csh_x`| Share of merchandise exports at current PPPs (Purchasing Power Parity) from PWT (years: 1950-2019)|
+
+# Descriptive Statistics
+```{r}
+summary(data |> select(milex_ma10_fluc_log, milex_ma5_fluc_log, civilwar, interwar, v2x_polyarchy, polity2, polity_int, defense, dem_ally, nondem_ally, gdp_growth, gdp, gdppc, pop, csh_x))
+```
+
+No missing data in the main DV, the alliance variables, and the international war variable. There are some NAs in other RHS variables, but they are not large. (c.f. the number of observation is 15951). `csh_z` has many missing values, but this is because the variable exists after 1950.
+
+# Regression (all time coverage)
+I did regression analysis with year- and country-fixed effects. Standard errors are clustered by country. Since our focus has moved to domestic factors, I do not decompose defensive alliances into ones with democracy and ones with autocracy. First, I show results of the regression using all year coverage. Below, I mainly use `milex_ma5_fluc_log` to make it easy to compare with other periods.
+
+```{r}
+fit1_1 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdppc_lag2 + gdp_lag2 | gwno+ year, data = data) 
+summary(fit1_1)
+```
+`civilwar_lag2` and `interwar_lag2` have positive and significant coefficients. `polyarchy_lag2` (democracy index from Vdem) and `gdppc_lag2` (GDP per capita) have negative and significant results. `polity_int_lag2` does not have a significant coefficient possively because the variable takes 1 in only 4\% of the data.
+
+Next, I use `polity2` instead of `polyarchy_lag2` below.
+```{r}
+fit1_2 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdppc_lag2 + gdp_lag2 | gwno+ year, data = data) 
+summary(fit1_2)
+```
+We get almost the same results. But now, `defense_lag2` (defensive alliance) has a positive and significant coefficient.
+
+
+
+# Time Period (Two periods)
+Next, I check the time dependency of the results. The original data have years from 1816 to 2016, and I do divide the years into two or four periods. In this section, I use a DV using 5-year moving average since 10-year moving average might be affected a lot by other periods.
+
+I construct two time periods. `Period1`: years from 1816 to 1945 and `Period2`: years from 1945 to 2016
+```{r}
+data <- data |> mutate(period1 = if_else(year <=1944, 1, 0),
+					   period2 = if_else(year >=1945, 1, 0))
+```
+
+### Period 1 (Before WWII. from 1816 to 1945)
+```{r}
+# Vdem,  pooled defensive alliance including NATO, 5 year moving average
+Model1 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 | gwno+year, data = data|> filter(period1 ==1)) 
+summary(Model1)
+```
+`interwar_lag2`, `defense_lag2`, and `pop_lag2` (Population) have positive and significant coefficients. But, unline the results before, `civilwar_lag2` and `polyarchy_lag2` do not have significant results. (`civilwar_lag2` is close though. p = 0.11)
+
+I do the same analysis by using `polity2` instead of `polyarchy` below.
+```{r}
+# Polity2, pooled defensive alliance including NATO, 5 year moving average
+Model2 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 | gwno+year, data = data|> filter(period1 ==1)) 
+summary(Model2)
+```
+The result is almost the same.
+
+
+### Period 2 (After WWII. from 1945 to 2016)
+Next, I will see the time period after the second world war.
+```{r}
+# Vdem,  pooled defensive alliance including NATO, 5 year moving average
+Model3 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 +defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 | gwno+year, data = data|> filter(period2 ==1)) 
+summary(Model3)
+```
+`civilwar_lag2`, `interwar_lag2`, and `defense_lag2` have positive and significant coefficients.  `polyarchy_lag2`, `gdp_growth_lag2`, `pop_lag2`, and `gdppc_lag2` have negative and significant results. 
+
+Again, I do the same analysis by using polity2 instead of Vdem below.
+```{r}
+# Polity2, pooled defensive alliance including NATO, 5 year moving average
+Model4 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 | gwno+year, data = data|> filter(period2 ==1)) 
+summary(Model4)
+```
+The result is almost the same.
+
+### Export (Trade)
+Next, I add `csh_x`, the share of merchandise exports at current PPPs (Purchasing Power Parity) from PWT. Note that the variable covers from 1950, so I do the analysis for the second period.  
+
+```{r}
+Model5 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 + csh_x_lag2 | gwno+year, data = data|> filter(period2 ==1)) 
+summary(Model5)
+```
+
+The result shows that `csh_x_lag2` (the export variable) has a negative but not significant result. The p-value is 0.16. 
+
+Again, I do the same analysis by using `polity2` instead of `polyarchy` below.
+```{r}
+Model6 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 + csh_x_lag2 | gwno+year, data = data|> filter(period2 ==1)) 
+summary(Model6)
+```
+The result is the same. 
+
+
+# Time Period (Four periods)
+I construct three time periods. `Period1`: years from 1816 to 1918, `Period2`: years from 1919 to 1945, and `Period3`: years from 1946 to 1991, and `Period4`: years from 1992 to 2016. 
+
+```{r}
+data <- data |> mutate(period1 = if_else(year <=1918, 1, 0),
+					   period2 = if_else(year >=1919 & year <= 1945 , 1, 0),
+					   period3 = if_else(year >=1946 & year <= 1991, 1, 0),
+					   period4 = if_else(year >=1992, 1, 0))
+```
+
+
+## Period 1 (Before WWI, from 1816 to 1918)
+
+```{r}
+# Vdem,  pooled defensive alliance including NATO, 5 year moving average
+Model5 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2| gwno+year, data = data|> filter(period1 ==1)) 
+summary(Model5)
+```
+`interwar_lag2`, `defense_lag2`, and `pop_lag2` (Population) have positive and significant coefficients. This is the same as the analysis from 1816-1945.
+
+ I do the same analysis by using `polity2` instead of `polyarchy` below.
+```{r}
+# Polity2, pooled defensive alliance including NATO, 5 year moving average
+Model6 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2| gwno+year, data = data|> filter(period1 ==1)) 
+summary(Model6)
+```
+The result is almost the same.
+
+## Period 2 (Inter-War Period, from 1919 to 1945)
+
+```{r}
+# Vdem,  pooled defensive alliance including NATO, 5 year moving average
+Model9 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2| gwno+year, data = data|> filter(period2 ==1)) 
+summary(Model9)
+```
+`interwar_lag2` (International War) and `gdp` have a positive and significant results. `civilwar` and `gdppc` (GDP per capita) have large but not very significant coefficient (p = 0.07 and p = 0.056). 
+
+Again, I do the same analysis by using `polity2` instead of `polyarchy` below.
+```{r}
+# Polity2, pooled defensive alliance including NATO, 5 year moving average
+Model10 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2| gwno+year, data = data|> filter(period2 ==1)) 
+summary(Model10)
+```
+The result is the same. 
+
+
+## Period 3 (Cold War, from 1946 to 1991)
+
+```{r}
+# Vdem,  pooled defensive alliance including NATO, 5 year moving average
+Model11 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2| gwno+year, data = data|> filter(period3 ==1)) 
+summary(Model11)
+```
+`civilwar`, `interwar` (International War), and `gdp` have a positive and significant results. `polyarchy`, `pop`, and `gdppc` (GDP per capita) have a negative and significant coefficient. 
+
+Again, I do the same analysis by using `polity2` instead of `polyarchy` below.
+```{r}
+# Polity2, pooled defensive alliance including NATO, 5 year moving average
+Model12 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2| gwno+year, data = data|> filter(period3 ==1)) 
+summary(Model12)
+```
+The result is similar, but `polity2` does not have a significant coefficient. `gdp` lose its significant, too. `defense` became a significant variable. 
+
+### Export (Trade)
+
+After I add the export variable (`csh_x`), I did the same analysis in `Period 3`
+```{r}
+Model13 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 + csh_x_lag2| gwno+year, data = data|> filter(period3 ==1)) 
+summary(Model13)
+
+Model14 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 + csh_x_lag2| gwno+year, data = data|> filter(period3 ==1)) 
+summary(Model14)
+```
+
+The results show that `csh_x` does not have a significant result in either case. Moreover, the significance in the democracy variable (`polyarchy`) disappear.
+
+## Period 4 (After Cold War, from 1992 to 2016)
+```{r}
+# Vdem,  pooled defensive alliance including NATO, 5 year moving average
+Model15 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2| gwno+year, data = data|> filter(period4 ==1)) 
+summary(Model15)
+```
+`civilwar` has a positive and significant results. `polyarchy` has a negative and significant coefficient. 
+
+Again, I do the same analysis by using `polity2` instead of `polyarchy` below.
+```{r}
+# Polity2, pooled defensive alliance including NATO, 5 year moving average
+Model16 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2| gwno+year, data = data|> filter(period4 ==1)) 
+summary(Model16)
+```
+The result is similar, but`civilwar` and `polity2` lose their significance.
+
+### Export (Trade)
+
+After I add the export variable (`csh_x`), I did the same analysis in `Period 4`
+```{r}
+Model17 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 + csh_x_lag2| gwno+year, data = data|> filter(period4 ==1)) 
+summary(Model17)
+
+Model18 <- feols(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polity2_lag2 + polity_int_lag2 + gdp_growth_lag2 +  pop_lag2 + gdp_lag2 + gdppc_lag2 + csh_x_lag2| gwno+year, data = data|> filter(period4 ==1)) 
+summary(Model18)
+```
+
+The results show that `csh_x` does not have a significant result in either case. 
+
+
+# Hausman Text
+
+I try a Hausman test to see if random-effect model can be used. Note that the control variables are different from above because I get an error message when I perform the `plm` function to produce `random_plm` below. This is probably because a calculation in linear algebra does not work at some point. This problem is fixed when I reduce the number of RHS variables, so I report that result below. 
+```{r}
+library(plm)
+data_hausman <- pdata.frame(data, index = c("gwno", "year"))
+fixed_plm <- plm(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2, data = data_hausman, model = "within")
+ 
+random_plm <- plm(milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 + defense_lag2 + polyarchy_lag2 + polity_int_lag2, data = data_hausman, model = "random") 
+
+phtest(fixed_plm, random_plm)
+```
+The null hypothesis is rejected. Thus, we should not use random effect models and should use fixed-effect models instead.
+
+
+
+

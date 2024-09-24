@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Yuji Masumura">
+
+<title>ArmedPeace_20240913</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="ArmedPeace(20240913)_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ArmedPeace(20240913)_files/libs/quarto-html/quarto.js"></script>
+<script src="ArmedPeace(20240913)_files/libs/quarto-html/popper.min.js"></script>
+<script src="ArmedPeace(20240913)_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ArmedPeace(20240913)_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ArmedPeace(20240913)_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ArmedPeace(20240913)_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ArmedPeace(20240913)_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ArmedPeace(20240913)_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ArmedPeace(20240913)_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#loading-data" id="toc-loading-data" class="nav-link active" data-scroll-target="#loading-data">Loading Data</a></li>
+  <li><a href="#descriptive-statistics" id="toc-descriptive-statistics" class="nav-link" data-scroll-target="#descriptive-statistics">Descriptive Statistics</a></li>
+  <li><a href="#regression-all-time-coverage" id="toc-regression-all-time-coverage" class="nav-link" data-scroll-target="#regression-all-time-coverage">Regression (all time coverage)</a></li>
+  <li><a href="#time-period-two-periods" id="toc-time-period-two-periods" class="nav-link" data-scroll-target="#time-period-two-periods">Time Period (Two periods)</a>
+  <ul class="collapse">
+  <li><a href="#period-1-before-wwii.-from-1816-to-1945" id="toc-period-1-before-wwii.-from-1816-to-1945" class="nav-link" data-scroll-target="#period-1-before-wwii.-from-1816-to-1945">Period 1 (Before WWII. from 1816 to 1945)</a></li>
+  <li><a href="#period-2-after-wwii.-from-1945-to-2016" id="toc-period-2-after-wwii.-from-1945-to-2016" class="nav-link" data-scroll-target="#period-2-after-wwii.-from-1945-to-2016">Period 2 (After WWII. from 1945 to 2016)</a></li>
+  <li><a href="#export-trade" id="toc-export-trade" class="nav-link" data-scroll-target="#export-trade">Export (Trade)</a></li>
+  </ul></li>
+  <li><a href="#time-period-four-periods" id="toc-time-period-four-periods" class="nav-link" data-scroll-target="#time-period-four-periods">Time Period (Four periods)</a>
+  <ul class="collapse">
+  <li><a href="#period-1-before-wwi-from-1816-to-1918" id="toc-period-1-before-wwi-from-1816-to-1918" class="nav-link" data-scroll-target="#period-1-before-wwi-from-1816-to-1918">Period 1 (Before WWI, from 1816 to 1918)</a></li>
+  <li><a href="#period-2-inter-war-period-from-1919-to-1945" id="toc-period-2-inter-war-period-from-1919-to-1945" class="nav-link" data-scroll-target="#period-2-inter-war-period-from-1919-to-1945">Period 2 (Inter-War Period, from 1919 to 1945)</a></li>
+  <li><a href="#period-3-cold-war-from-1946-to-1991" id="toc-period-3-cold-war-from-1946-to-1991" class="nav-link" data-scroll-target="#period-3-cold-war-from-1946-to-1991">Period 3 (Cold War, from 1946 to 1991)</a>
+  <ul class="collapse">
+  <li><a href="#export-trade-1" id="toc-export-trade-1" class="nav-link" data-scroll-target="#export-trade-1">Export (Trade)</a></li>
+  </ul></li>
+  <li><a href="#period-4-after-cold-war-from-1992-to-2016" id="toc-period-4-after-cold-war-from-1992-to-2016" class="nav-link" data-scroll-target="#period-4-after-cold-war-from-1992-to-2016">Period 4 (After Cold War, from 1992 to 2016)</a>
+  <ul class="collapse">
+  <li><a href="#export-trade-2" id="toc-export-trade-2" class="nav-link" data-scroll-target="#export-trade-2">Export (Trade)</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#hausman-text" id="toc-hausman-text" class="nav-link" data-scroll-target="#hausman-text">Hausman Text</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">ArmedPeace_20240913</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Yuji Masumura </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fixest)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="loading-data" class="level1">
+<h1>Loading Data</h1>
+<p>First, let’s load the data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data.rda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 77%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>milex_ma10_fluc_log</code></td>
+<td>The logged fluctuation of military expenditure/GDP ratio based on 10-year moving average (DV)</td>
+</tr>
+<tr class="even">
+<td><code>milex_ma5_fluc_log</code></td>
+<td>The logged fluctuation of military expenditure/GDP ratio based on 5-year moving average (DV)</td>
+</tr>
+<tr class="odd">
+<td><code>civilwar</code></td>
+<td>A dummy variable about civil war from COW</td>
+</tr>
+<tr class="even">
+<td><code>interwar</code></td>
+<td>A dummy variable about international war from COW</td>
+</tr>
+<tr class="odd">
+<td><code>polyarchy</code></td>
+<td>Polyarchy (democracy) level from Vdem</td>
+</tr>
+<tr class="even">
+<td><code>polity2</code></td>
+<td>Democracy level from Polity2</td>
+</tr>
+<tr class="odd">
+<td><code>polity_int</code></td>
+<td>A dummy variable of Political Interruption from Polity (-66, -77, -88)</td>
+</tr>
+<tr class="even">
+<td><code>defense</code></td>
+<td>A dummy variable about defensive alliance from ATOP</td>
+</tr>
+<tr class="odd">
+<td><code>dem_ally</code></td>
+<td>A dummy variable about defensive alliance with democracy from ATOP (See Digiuseppe and Poast (2018))</td>
+</tr>
+<tr class="even">
+<td><code>nondem_ally</code></td>
+<td>A dummy variable about defensive alliance with autocracy from ATOP (See Digiuseppe and Poast (2018))</td>
+</tr>
+<tr class="odd">
+<td><code>gdp_growth</code></td>
+<td>GDP growth percentage from year <span class="math inline">\(t-1\)</span> from FAMM</td>
+</tr>
+<tr class="even">
+<td><code>gdp</code></td>
+<td>GDP from FAMM</td>
+</tr>
+<tr class="odd">
+<td><code>gdppc</code></td>
+<td>GDP per capita from FAMM</td>
+</tr>
+<tr class="even">
+<td><code>pop</code></td>
+<td>Population from FAMM</td>
+</tr>
+<tr class="odd">
+<td><code>csh_x</code></td>
+<td>Share of merchandise exports at current PPPs (Purchasing Power Parity) from PWT (years: 1950-2019)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="descriptive-statistics" class="level1">
+<h1>Descriptive Statistics</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data <span class="sc">|&gt;</span> <span class="fu">select</span>(milex_ma10_fluc_log, milex_ma5_fluc_log, civilwar, interwar, v2x_polyarchy, polity2, polity_int, defense, dem_ally, nondem_ally, gdp_growth, gdp, gdppc, pop, csh_x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Adding missing grouping variables: `ccode`</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     ccode       milex_ma10_fluc_log milex_ma5_fluc_log    civilwar     
+ Min.   :  2.0   Min.   :-71.113     Min.   :-68.990    Min.   :0.0000  
+ 1st Qu.:200.0   1st Qu.:-30.586     1st Qu.:-32.172    1st Qu.:0.0000  
+ Median :360.0   Median :-28.230     Median :-29.726    Median :0.0000  
+ Mean   :393.7   Mean   :-29.336     Mean   :-30.798    Mean   :0.0677  
+ 3rd Qu.:615.0   3rd Qu.:-26.174     3rd Qu.:-27.661    3rd Qu.:0.0000  
+ Max.   :950.0   Max.   : -9.222     Max.   : -9.672    Max.   :1.0000  
+                                                        NA's   :1512    
+    interwar       v2x_polyarchy       polity2           polity_int    
+ Min.   :0.00000   Min.   :0.0080   Min.   :-10.0000   Min.   :0.0000  
+ 1st Qu.:0.00000   1st Qu.:0.1500   1st Qu.: -7.0000   1st Qu.:0.0000  
+ Median :0.00000   Median :0.2540   Median : -1.0000   Median :0.0000  
+ Mean   :0.04615   Mean   :0.3612   Mean   : -0.0623   Mean   :0.0433  
+ 3rd Qu.:0.00000   3rd Qu.:0.5820   3rd Qu.:  8.0000   3rd Qu.:0.0000  
+ Max.   :1.00000   Max.   :0.9240   Max.   : 10.0000   Max.   :1.0000  
+                   NA's   :844      NA's   :945        NA's   :1010    
+    defense          dem_ally       nondem_ally       gdp_growth      
+ Min.   :0.0000   Min.   :0.0000   Min.   :0.0000   Min.   : -75.470  
+ 1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:   1.599  
+ Median :1.0000   Median :0.0000   Median :0.0000   Median :   4.561  
+ Mean   :0.5398   Mean   :0.3413   Mean   :0.4537   Mean   :   5.676  
+ 3rd Qu.:1.0000   3rd Qu.:1.0000   3rd Qu.:1.0000   3rd Qu.:   7.953  
+ Max.   :1.0000   Max.   :1.0000   Max.   :1.0000   Max.   :8583.340  
+                                                    NA's   :194       
+      gdp                gdppc                pop                csh_x      
+ Min.   :1.150e+07   Min.   :    69.43   Min.   :1.030e+05   Min.   :0.000  
+ 1st Qu.:1.885e+09   1st Qu.:   862.20   1st Qu.:2.657e+06   1st Qu.:0.066  
+ Median :8.422e+09   Median :  2155.09   Median :6.352e+06   Median :0.135  
+ Mean   :5.774e+13   Mean   :  6915.90   Mean   :2.832e+07   Mean   :0.208  
+ 3rd Qu.:5.454e+10   3rd Qu.:  6226.94   3rd Qu.:1.943e+07   3rd Qu.:0.274  
+ Max.   :4.044e+16   Max.   :111515.94   Max.   :1.380e+09   Max.   :2.822  
+                                                             NA's   :6757   </code></pre>
+</div>
+</div>
+<p>No missing data in the main DV, the alliance variables, and the international war variable. There are some NAs in other RHS variables, but they are not large. (c.f. the number of observation is 15951). <code>csh_z</code> has many missing values, but this is because the variable exists after 1950.</p>
+</section>
+<section id="regression-all-time-coverage" class="level1">
+<h1>Regression (all time coverage)</h1>
+<p>I did regression analysis with year- and country-fixed effects. Standard errors are clustered by country. Since our focus has moved to domestic factors, I do not decompose defensive alliances into ones with democracy and ones with autocracy. First, I show results of the regression using all year coverage. Below, I mainly use <code>milex_ma5_fluc_log</code> to make it easy to compare with other periods.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit1_1 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">|</span> gwno<span class="sc">+</span> year, <span class="at">data =</span> data) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 3,142 observations removed because of NA values (RHS: 3,142).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 12,047 
+Fixed-effects: gwno: 172,  year: 192
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    9.325189e-01 2.726732e-01  3.419914 7.8332e-04 ***
+interwar_lag2    1.840834e+00 2.315922e-01  7.948600 2.4399e-13 ***
+defense_lag2     4.631708e-01 2.561466e-01  1.808225 7.2328e-02 .  
+polyarchy_lag2  -2.877997e+00 5.746955e-01 -5.007864 1.3615e-06 ***
+polity_int_lag2  9.250253e-02 3.604309e-01  0.256644 7.9776e-01    
+gdp_growth_lag2 -1.327935e-04 7.641379e-05 -1.737822 8.4043e-02 .  
+pop_lag2         1.854493e-09 1.866393e-09  0.993624 3.2181e-01    
+gdppc_lag2      -5.849493e-05 1.630730e-05 -3.587040 4.3634e-04 ***
+gdp_lag2        -5.660000e-19 3.570000e-17 -0.015839 9.8738e-01    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.74393     Adj. R2: 0.754208
+                Within R2: 0.065516</code></pre>
+</div>
+</div>
+<p><code>civilwar_lag2</code> and <code>interwar_lag2</code> have positive and significant coefficients. <code>polyarchy_lag2</code> (democracy index from Vdem) and <code>gdppc_lag2</code> (GDP per capita) have negative and significant results. <code>polity_int_lag2</code> does not have a significant coefficient possively because the variable takes 1 in only 4% of the data.</p>
+<p>Next, I use <code>polity2</code> instead of <code>polyarchy_lag2</code> below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fit1_2 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">|</span> gwno<span class="sc">+</span> year, <span class="at">data =</span> data) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 2,824 observations removed because of NA values (RHS: 2,824).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 12,365 
+Fixed-effects: gwno: 178,  year: 192
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    9.937567e-01 2.742255e-01  3.623867 3.7909e-04 ***
+interwar_lag2    1.861000e+00 2.283193e-01  8.150866 6.3616e-14 ***
+defense_lag2     5.093597e-01 2.416402e-01  2.107926 3.6445e-02 *  
+polity2_lag2    -6.404205e-02 1.346993e-02 -4.754445 4.1073e-06 ***
+polity_int_lag2  2.610243e-01 3.548115e-01  0.735670 4.6291e-01    
+gdp_growth_lag2 -1.248420e-04 7.683719e-05 -1.624760 1.0599e-01    
+pop_lag2         1.640050e-09 2.171902e-09  0.755122 4.5118e-01    
+gdppc_lag2      -6.766986e-05 1.707044e-05 -3.964153 1.0675e-04 ***
+gdp_lag2        -1.350000e-18 3.650000e-17 -0.037047 9.7049e-01    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.75794     Adj. R2: 0.767531
+                Within R2: 0.05715 </code></pre>
+</div>
+</div>
+<p>We get almost the same results. But now, <code>defense_lag2</code> (defensive alliance) has a positive and significant coefficient.</p>
+</section>
+<section id="time-period-two-periods" class="level1">
+<h1>Time Period (Two periods)</h1>
+<p>Next, I check the time dependency of the results. The original data have years from 1816 to 2016, and I do divide the years into two or four periods. In this section, I use a DV using 5-year moving average since 10-year moving average might be affected a lot by other periods.</p>
+<p>I construct two time periods. <code>Period1</code>: years from 1816 to 1945 and <code>Period2</code>: years from 1945 to 2016</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">period1 =</span> <span class="fu">if_else</span>(year <span class="sc">&lt;=</span><span class="dv">1944</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">period2 =</span> <span class="fu">if_else</span>(year <span class="sc">&gt;=</span><span class="dv">1945</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="period-1-before-wwii.-from-1816-to-1945" class="level3">
+<h3 class="anchored" data-anchor-id="period-1-before-wwii.-from-1816-to-1945">Period 1 (Before WWII. from 1816 to 1945)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vdem,  pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>Model1 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period1 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 1,014 observations removed because of NA values (RHS: 1,014).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 4,313 
+Fixed-effects: gwno: 73,  year: 126
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    4.268270e-01 2.665096e-01  1.601545 1.1364e-01    
+interwar_lag2    1.716085e+00 2.715634e-01  6.319280 1.9364e-08 ***
+defense_lag2     1.056092e+00 2.692540e-01  3.922291 1.9822e-04 ***
+polyarchy_lag2  -8.017054e-01 9.341975e-01 -0.858175 3.9364e-01    
+polity_int_lag2 -3.003762e-01 3.960099e-01 -0.758507 4.5062e-01    
+gdp_growth_lag2 -5.997663e-04 3.300919e-03 -0.181697 8.5633e-01    
+pop_lag2         2.614649e-08 5.460869e-09  4.787972 8.7456e-06 ***
+gdp_lag2         3.060000e-18 6.330000e-17  0.048365 9.6156e-01    
+gdppc_lag2      -1.485226e-04 1.099937e-04 -1.350283 1.8115e-01    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.67856     Adj. R2: 0.877049
+                Within R2: 0.050328</code></pre>
+</div>
+</div>
+<p><code>interwar_lag2</code>, <code>defense_lag2</code>, and <code>pop_lag2</code> (Population) have positive and significant coefficients. But, unline the results before, <code>civilwar_lag2</code> and <code>polyarchy_lag2</code> do not have significant results. (<code>civilwar_lag2</code> is close though. p = 0.11)</p>
+<p>I do the same analysis by using <code>polity2</code> instead of <code>polyarchy</code> below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polity2, pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>Model2 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period1 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 810 observations removed because of NA values (RHS: 810).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 4,517 
+Fixed-effects: gwno: 78,  year: 126
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    3.424413e-01 2.812810e-01  1.217435 2.2716e-01    
+interwar_lag2    1.806306e+00 2.680855e-01  6.737799 2.5964e-09 ***
+defense_lag2     1.017582e+00 2.737207e-01  3.717593 3.7961e-04 ***
+polity2_lag2    -3.119575e-03 2.390418e-02 -0.130503 8.9651e-01    
+polity_int_lag2 -2.218413e-01 5.100794e-01 -0.434915 6.6484e-01    
+gdp_growth_lag2 -9.627414e-04 3.122843e-03 -0.308290 7.5869e-01    
+pop_lag2         3.015057e-08 6.955269e-09  4.334925 4.3606e-05 ***
+gdp_lag2         7.290000e-18 6.140000e-17  0.118731 9.0580e-01    
+gdppc_lag2      -1.510967e-04 1.270311e-04 -1.189446 2.3792e-01    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.68544     Adj. R2: 0.882906
+                Within R2: 0.048369</code></pre>
+</div>
+</div>
+<p>The result is almost the same.</p>
+</section>
+<section id="period-2-after-wwii.-from-1945-to-2016" class="level3">
+<h3 class="anchored" data-anchor-id="period-2-after-wwii.-from-1945-to-2016">Period 2 (After WWII. from 1945 to 2016)</h3>
+<p>Next, I will see the time period after the second world war.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vdem,  pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>Model3 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span>defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period2 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 2,128 observations removed because of NA values (RHS: 2,128).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 7,734 
+Fixed-effects: gwno: 163,  year: 66
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    1.120117e+00 2.735081e-01  4.095371 6.6402e-05 ***
+interwar_lag2    1.209822e+00 2.912721e-01  4.153579 5.2826e-05 ***
+defense_lag2     4.746460e-01 2.280039e-01  2.081745 3.8938e-02 *  
+polyarchy_lag2  -2.417119e+00 4.742575e-01 -5.096638 9.5402e-07 ***
+polity_int_lag2  3.001170e-01 4.254077e-01  0.705481 4.8152e-01    
+gdp_growth_lag2 -1.249272e-04 6.092394e-05 -2.050544 4.1923e-02 *  
+pop_lag2        -4.501905e-09 1.880790e-09 -2.393624 1.7826e-02 *  
+gdp_lag2         2.350000e-14 1.220000e-14  1.927473 5.5670e-02 .  
+gdppc_lag2      -5.735422e-05 1.324902e-05 -4.328940 2.6155e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.53869     Adj. R2: 0.405108
+                Within R2: 0.055874</code></pre>
+</div>
+</div>
+<p><code>civilwar_lag2</code>, <code>interwar_lag2</code>, and <code>defense_lag2</code> have positive and significant coefficients. <code>polyarchy_lag2</code>, <code>gdp_growth_lag2</code>, <code>pop_lag2</code>, and <code>gdppc_lag2</code> have negative and significant results.</p>
+<p>Again, I do the same analysis by using polity2 instead of Vdem below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polity2, pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>Model4 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period2 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 2,014 observations removed because of NA values (RHS: 2,014).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 7,848 
+Fixed-effects: gwno: 167,  year: 66
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    1.184222e+00 2.770317e-01  4.274682 3.2194e-05 ***
+interwar_lag2    1.237148e+00 2.861275e-01  4.323763 2.6380e-05 ***
+defense_lag2     5.169624e-01 2.220955e-01  2.327658 2.1137e-02 *  
+polity2_lag2    -5.966160e-02 1.592492e-02 -3.746430 2.4716e-04 ***
+polity_int_lag2  4.538009e-01 4.121987e-01  1.100928 2.7252e-01    
+gdp_growth_lag2 -1.047973e-04 5.209193e-05 -2.011775 4.5861e-02 *  
+pop_lag2        -5.364926e-09 1.721748e-09 -3.115976 2.1607e-03 ** 
+gdp_lag2         2.590000e-16 4.160000e-15  0.062264 9.5043e-01    
+gdppc_lag2      -6.358332e-05 1.339650e-05 -4.746264 4.4484e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.5572     Adj. R2: 0.417467
+               Within R2: 0.050246</code></pre>
+</div>
+</div>
+<p>The result is almost the same.</p>
+</section>
+<section id="export-trade" class="level3">
+<h3 class="anchored" data-anchor-id="export-trade">Export (Trade)</h3>
+<p>Next, I add <code>csh_x</code>, the share of merchandise exports at current PPPs (Purchasing Power Parity) from PWT. Note that the variable covers from 1950, so I do the analysis for the second period.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>Model5 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">+</span> csh_x_lag2 <span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period2 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 3,267 observations removed because of NA values (RHS: 3,267).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 6,595 
+Fixed-effects: gwno: 152,  year: 58
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    9.728377e-01 2.857270e-01  3.404780 8.4833e-04 ***
+interwar_lag2    7.609725e-01 2.437619e-01  3.121786 2.1546e-03 ** 
+defense_lag2     5.421733e-01 2.379621e-01  2.278402 2.4105e-02 *  
+polyarchy_lag2  -1.908786e+00 4.634730e-01 -4.118440 6.2608e-05 ***
+polity_int_lag2  1.817242e-01 2.591470e-01  0.701240 4.8423e-01    
+gdp_growth_lag2 -1.119207e-04 4.571693e-05 -2.448124 1.5506e-02 *  
+pop_lag2        -4.572724e-09 2.360208e-09 -1.937424 5.4560e-02 .  
+gdp_lag2        -5.090000e-14 1.320000e-13 -0.386442 6.9971e-01    
+gdppc_lag2      -3.559274e-05 1.063664e-05 -3.346238 1.0338e-03 ** 
+csh_x_lag2      -8.618009e-01 6.118739e-01 -1.408462 1.6105e-01    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.43456     Adj. R2: 0.358232
+                Within R2: 0.036206</code></pre>
+</div>
+</div>
+<p>The result shows that <code>csh_x_lag2</code> (the export variable) has a negative but not significant result. The p-value is 0.16.</p>
+<p>Again, I do the same analysis by using <code>polity2</code> instead of <code>polyarchy</code> below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>Model6 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">+</span> csh_x_lag2 <span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period2 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 3,292 observations removed because of NA values (RHS: 3,292).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 6,570 
+Fixed-effects: gwno: 153,  year: 58
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value  Pr(&gt;|t|)    
+civilwar_lag2    9.781073e-01 2.902365e-01  3.370036 0.0009528 ***
+interwar_lag2    7.654225e-01 2.352631e-01  3.253475 0.0014049 ** 
+defense_lag2     5.398128e-01 2.369450e-01  2.278220 0.0241069 *  
+polity2_lag2    -4.716092e-02 1.639380e-02 -2.876753 0.0045960 ** 
+polity_int_lag2  4.546992e-01 2.806659e-01  1.620073 0.1072895    
+gdp_growth_lag2 -9.773386e-05 3.870470e-05 -2.525116 0.0125912 *  
+pop_lag2        -4.583861e-09 2.248776e-09 -2.038380 0.0432453 *  
+gdp_lag2        -5.770000e-14 1.430000e-13 -0.403114 0.6874311    
+gdppc_lag2      -3.690828e-05 1.129899e-05 -3.266511 0.0013458 ** 
+csh_x_lag2      -8.829201e-01 6.261357e-01 -1.410110 0.1605503    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.44126     Adj. R2: 0.357251
+                Within R2: 0.032352</code></pre>
+</div>
+</div>
+<p>The result is the same.</p>
+</section>
+</section>
+<section id="time-period-four-periods" class="level1">
+<h1>Time Period (Four periods)</h1>
+<p>I construct three time periods. <code>Period1</code>: years from 1816 to 1918, <code>Period2</code>: years from 1919 to 1945, and <code>Period3</code>: years from 1946 to 1991, and <code>Period4</code>: years from 1992 to 2016.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">period1 =</span> <span class="fu">if_else</span>(year <span class="sc">&lt;=</span><span class="dv">1918</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">period2 =</span> <span class="fu">if_else</span>(year <span class="sc">&gt;=</span><span class="dv">1919</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">1945</span> , <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">period3 =</span> <span class="fu">if_else</span>(year <span class="sc">&gt;=</span><span class="dv">1946</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">1991</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">period4 =</span> <span class="fu">if_else</span>(year <span class="sc">&gt;=</span><span class="dv">1992</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="period-1-before-wwi-from-1816-to-1918" class="level2">
+<h2 class="anchored" data-anchor-id="period-1-before-wwi-from-1816-to-1918">Period 1 (Before WWI, from 1816 to 1918)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vdem,  pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>Model5 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period1 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 823 observations removed because of NA values (RHS: 823).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 2,905 
+Fixed-effects: gwno: 52,  year: 100
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    1.846900e-01 2.694486e-01  0.685437 4.9617e-01    
+interwar_lag2    1.200098e+00 2.678536e-01  4.480427 4.2277e-05 ***
+defense_lag2     8.798950e-01 2.638646e-01  3.334646 1.5974e-03 ** 
+polyarchy_lag2   6.330461e-02 1.950636e+00  0.032453 9.7424e-01    
+polity_int_lag2 -1.435263e-02 5.975109e-01 -0.024021 9.8093e-01    
+gdp_growth_lag2 -1.731580e-03 3.220882e-03 -0.537610 5.9318e-01    
+pop_lag2         2.812320e-08 1.359060e-08  2.069313 4.3602e-02 *  
+gdp_lag2         1.330000e-17 6.130000e-17  0.216460 8.2949e-01    
+gdppc_lag2      -5.081603e-04 2.752660e-04 -1.846070 7.0690e-02 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.59671     Adj. R2: 0.912158
+                Within R2: 0.039559</code></pre>
+</div>
+</div>
+<p><code>interwar_lag2</code>, <code>defense_lag2</code>, and <code>pop_lag2</code> (Population) have positive and significant coefficients. This is the same as the analysis from 1816-1945.</p>
+<p>I do the same analysis by using <code>polity2</code> instead of <code>polyarchy</code> below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polity2, pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>Model6 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period1 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 672 observations removed because of NA values (RHS: 672).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 3,056 
+Fixed-effects: gwno: 54,  year: 100
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    1.881881e-01 2.575689e-01  0.730632 4.6822e-01    
+interwar_lag2    1.185182e+00 2.715302e-01  4.364826 5.9234e-05 ***
+defense_lag2     8.405193e-01 2.713037e-01  3.098075 3.1134e-03 ** 
+polity2_lag2    -5.095441e-03 4.399183e-02 -0.115827 9.0823e-01    
+polity_int_lag2 -2.001302e-02 7.523104e-01 -0.026602 9.7888e-01    
+gdp_growth_lag2 -1.936415e-03 2.985307e-03 -0.648648 5.1937e-01    
+pop_lag2         3.041705e-08 1.466318e-08  2.074383 4.2916e-02 *  
+gdp_lag2         1.560000e-17 5.870000e-17  0.265320 7.9179e-01    
+gdppc_lag2      -4.688823e-04 2.639781e-04 -1.776217 8.1438e-02 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.61127     Adj. R2: 0.916022
+                Within R2: 0.035976</code></pre>
+</div>
+</div>
+<p>The result is almost the same.</p>
+</section>
+<section id="period-2-inter-war-period-from-1919-to-1945" class="level2">
+<h2 class="anchored" data-anchor-id="period-2-inter-war-period-from-1919-to-1945">Period 2 (Inter-War Period, from 1919 to 1945)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vdem,  pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>Model9 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period2 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 198 observations removed because of NA values (RHS: 198).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model9)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 1,465 
+Fixed-effects: gwno: 63,  year: 27
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value Pr(&gt;|t|)    
+civilwar_lag2    9.406967e-01 5.237272e-01  1.796158 0.077342 .  
+interwar_lag2    1.829974e+00 6.188840e-01  2.956892 0.004392 ** 
+defense_lag2     2.015111e-02 3.850009e-01  0.052340 0.958426    
+polyarchy_lag2  -9.713769e-01 1.149913e+00 -0.844740 0.401504    
+polity_int_lag2 -4.732655e-01 4.897350e-01 -0.966370 0.337613    
+gdp_growth_lag2  7.473982e-03 2.200158e-02  0.339702 0.735229    
+pop_lag2        -6.585400e-09 3.416142e-08 -0.192772 0.847768    
+gdp_lag2         1.440000e-11 6.230000e-12  2.310196 0.024219 *  
+gdppc_lag2       5.277601e-04 2.716581e-04  1.942736 0.056593 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.63834     Adj. R2: 0.580751
+                Within R2: 0.052662</code></pre>
+</div>
+</div>
+<p><code>interwar_lag2</code> (International War) and <code>gdp</code> have a positive and significant results. <code>civilwar</code> and <code>gdppc</code> (GDP per capita) have large but not very significant coefficient (p = 0.07 and p = 0.056).</p>
+<p>Again, I do the same analysis by using <code>polity2</code> instead of <code>polyarchy</code> below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polity2, pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>Model10 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period2 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 144 observations removed because of NA values (RHS: 144).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 1,519 
+Fixed-effects: gwno: 66,  year: 27
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value  Pr(&gt;|t|)    
+civilwar_lag2    1.023262e+00 5.786336e-01  1.768411 0.0816844 .  
+interwar_lag2    1.993633e+00 6.126557e-01  3.254084 0.0018071 ** 
+defense_lag2     5.303219e-02 3.826119e-01  0.138606 0.8901903    
+polity2_lag2    -1.175866e-02 4.174147e-02 -0.281702 0.7790669    
+polity_int_lag2 -3.627943e-01 4.983927e-01 -0.727929 0.4692714    
+gdp_growth_lag2  5.583690e-03 2.330149e-02  0.239628 0.8113727    
+pop_lag2        -5.694500e-08 6.937965e-08 -0.820774 0.4147750    
+gdp_lag2         1.910000e-11 8.810000e-12  2.164546 0.0341010 *  
+gdppc_lag2       4.859440e-04 2.707358e-04  1.794901 0.0773188 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.61707     Adj. R2: 0.575371
+                Within R2: 0.055878</code></pre>
+</div>
+</div>
+<p>The result is the same.</p>
+</section>
+<section id="period-3-cold-war-from-1946-to-1991" class="level2">
+<h2 class="anchored" data-anchor-id="period-3-cold-war-from-1946-to-1991">Period 3 (Cold War, from 1946 to 1991)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vdem,  pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>Model11 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period3 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 696 observations removed because of NA values (RHS: 696).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 4,881 
+Fixed-effects: gwno: 141,  year: 46
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    1.065902e+00 3.200512e-01  3.330411 1.1089e-03 ** 
+interwar_lag2    1.063873e+00 3.124868e-01  3.404537 8.6488e-04 ***
+defense_lag2     4.022894e-01 2.280384e-01  1.764130 7.9891e-02 .  
+polyarchy_lag2  -1.778303e+00 6.465148e-01 -2.750599 6.7351e-03 ** 
+polity_int_lag2  3.355776e-01 4.144491e-01  0.809696 4.1949e-01    
+gdp_growth_lag2 -5.154753e-03 2.955566e-03 -1.744083 8.3339e-02 .  
+pop_lag2        -4.712205e-09 2.064811e-09 -2.282148 2.3988e-02 *  
+gdp_lag2         2.990000e-14 7.060000e-15  4.238193 4.0661e-05 ***
+gdppc_lag2      -1.080964e-04 2.101329e-05 -5.144194 8.8982e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.52533     Adj. R2: 0.469212
+                Within R2: 0.057943</code></pre>
+</div>
+</div>
+<p><code>civilwar</code>, <code>interwar</code> (International War), and <code>gdp</code> have a positive and significant results. <code>polyarchy</code>, <code>pop</code>, and <code>gdppc</code> (GDP per capita) have a negative and significant coefficient.</p>
+<p>Again, I do the same analysis by using <code>polity2</code> instead of <code>polyarchy</code> below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polity2, pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>Model12 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period3 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 569 observations removed because of NA values (RHS: 569).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model12)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 5,008 
+Fixed-effects: gwno: 146,  year: 46
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    1.117330e+00 3.137692e-01  3.560994 5.0018e-04 ***
+interwar_lag2    1.098278e+00 3.140136e-01  3.497547 6.2367e-04 ***
+defense_lag2     4.937122e-01 2.191364e-01  2.252991 2.5761e-02 *  
+polity2_lag2    -3.759778e-02 2.209693e-02 -1.701493 9.0994e-02 .  
+polity_int_lag2  3.474116e-01 3.855197e-01  0.901151 3.6900e-01    
+gdp_growth_lag2 -4.546749e-03 4.243754e-03 -1.071398 2.8577e-01    
+pop_lag2        -6.122722e-09 2.381938e-09 -2.570480 1.1164e-02 *  
+gdp_lag2         1.390000e-15 4.340000e-15  0.321063 7.4862e-01    
+gdppc_lag2      -1.200085e-04 2.268451e-05 -5.290329 4.4154e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.53969     Adj. R2: 0.488197
+                Within R2: 0.055009</code></pre>
+</div>
+</div>
+<p>The result is similar, but <code>polity2</code> does not have a significant coefficient. <code>gdp</code> lose its significant, too. <code>defense</code> became a significant variable.</p>
+<section id="export-trade-1" class="level3">
+<h3 class="anchored" data-anchor-id="export-trade-1">Export (Trade)</h3>
+<p>After I add the export variable (<code>csh_x</code>), I did the same analysis in <code>Period 3</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>Model13 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">+</span> csh_x_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period3 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 1,650 observations removed because of NA values (RHS: 1,650).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model13)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 3,927 
+Fixed-effects: gwno: 129,  year: 40
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    8.584763e-01 3.571930e-01  2.403396 1.7678e-02 *  
+interwar_lag2    7.129489e-01 2.869052e-01  2.484963 1.4247e-02 *  
+defense_lag2     5.243671e-01 2.780681e-01  1.885750 6.1595e-02 .  
+polyarchy_lag2  -1.121042e+00 7.279568e-01 -1.539985 1.2603e-01    
+polity_int_lag2  1.373916e-01 3.460905e-01  0.396982 6.9204e-01    
+gdp_growth_lag2 -3.464810e-03 3.356015e-03 -1.032418 3.0382e-01    
+pop_lag2        -4.629969e-09 1.843150e-09 -2.511988 1.3249e-02 *  
+gdp_lag2        -4.600000e-13 3.880000e-13 -1.185503 2.3801e-01    
+gdppc_lag2      -7.435541e-05 1.655535e-05 -4.491321 1.5624e-05 ***
+csh_x_lag2      -1.242662e+00 9.573229e-01 -1.298059 1.9660e-01    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.42381     Adj. R2: 0.412473
+                Within R2: 0.04012 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>Model14 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">+</span> csh_x_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period3 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 1,645 observations removed because of NA values (RHS: 1,645).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model14)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 3,932 
+Fixed-effects: gwno: 131,  year: 40
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value   Pr(&gt;|t|)    
+civilwar_lag2    9.381164e-01 3.507874e-01  2.674316 8.4499e-03 ** 
+interwar_lag2    7.846347e-01 2.974639e-01  2.637748 9.3642e-03 ** 
+defense_lag2     5.356425e-01 2.726635e-01  1.964482 5.1607e-02 .  
+polity2_lag2    -2.385460e-02 2.565126e-02 -0.929958 3.5412e-01    
+polity_int_lag2  1.769287e-01 3.697513e-01  0.478507 6.3309e-01    
+gdp_growth_lag2 -3.028147e-03 3.370415e-03 -0.898449 3.7061e-01    
+pop_lag2        -4.648080e-09 1.844883e-09 -2.519444 1.2966e-02 *  
+gdp_lag2        -4.610000e-13 4.000000e-13 -1.153271 2.5092e-01    
+gdppc_lag2      -7.800773e-05 1.701924e-05 -4.583503 1.0599e-05 ***
+csh_x_lag2      -1.225414e+00 9.737175e-01 -1.258491 2.1047e-01    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.42419     Adj. R2: 0.416862
+                Within R2: 0.04012 </code></pre>
+</div>
+</div>
+<p>The results show that <code>csh_x</code> does not have a significant result in either case. Moreover, the significance in the democracy variable (<code>polyarchy</code>) disappear.</p>
+</section>
+</section>
+<section id="period-4-after-cold-war-from-1992-to-2016" class="level2">
+<h2 class="anchored" data-anchor-id="period-4-after-cold-war-from-1992-to-2016">Period 4 (After Cold War, from 1992 to 2016)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vdem,  pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>Model15 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period4 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 1,425 observations removed because of NA values (RHS: 1,425).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model15)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 2,796 
+Fixed-effects: gwno: 160,  year: 19
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value Pr(&gt;|t|)    
+civilwar_lag2    5.782321e-01 2.713045e-01  2.131303 0.034601 *  
+interwar_lag2    2.237309e-01 5.774452e-01  0.387450 0.698942    
+defense_lag2     5.197657e-01 2.778165e-01  1.870896 0.063197 .  
+polyarchy_lag2  -2.076499e+00 8.619602e-01 -2.409043 0.017137 *  
+polity_int_lag2 -1.511743e-01 3.162468e-01 -0.478026 0.633288    
+gdp_growth_lag2 -4.998189e-05 3.734118e-05 -1.338519 0.182638    
+pop_lag2         3.607783e-09 7.662063e-09  0.470863 0.638384    
+gdp_lag2         1.980000e-13 2.760000e-13  0.715349 0.475443    
+gdppc_lag2      -4.209346e-05 2.173451e-05 -1.936711 0.054554 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.23116     Adj. R2: 0.37818 
+                Within R2: 0.012763</code></pre>
+</div>
+</div>
+<p><code>civilwar</code> has a positive and significant results. <code>polyarchy</code> has a negative and significant coefficient.</p>
+<p>Again, I do the same analysis by using <code>polity2</code> instead of <code>polyarchy</code> below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polity2, pooled defensive alliance including NATO, 5 year moving average</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>Model16 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period4 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 1,439 observations removed because of NA values (RHS: 1,439).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model16)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 2,782 
+Fixed-effects: gwno: 163,  year: 19
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value Pr(&gt;|t|)    
+civilwar_lag2    4.946004e-01 2.746034e-01  1.801144 0.073540 .  
+interwar_lag2    6.090382e-02 5.747541e-01  0.105965 0.915741    
+defense_lag2     4.491004e-01 2.643949e-01  1.698597 0.091315 .  
+polity2_lag2     2.969907e-03 2.761185e-02  0.107559 0.914478    
+polity_int_lag2 -7.215203e-02 3.248015e-01 -0.222142 0.824483    
+gdp_growth_lag2 -5.768894e-05 3.685927e-05 -1.565113 0.119508    
+pop_lag2         3.313735e-09 8.039728e-09  0.412170 0.680760    
+gdp_lag2         2.060000e-13 2.690000e-13  0.767039 0.444175    
+gdppc_lag2      -3.580658e-05 1.965410e-05 -1.821838 0.070324 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.24211     Adj. R2: 0.372514
+                Within R2: 0.005684</code></pre>
+</div>
+</div>
+<p>The result is similar, but<code>civilwar</code> and <code>polity2</code> lose their significance.</p>
+<section id="export-trade-2" class="level3">
+<h3 class="anchored" data-anchor-id="export-trade-2">Export (Trade)</h3>
+<p>After I add the export variable (<code>csh_x</code>), I did the same analysis in <code>Period 4</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>Model17 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">+</span> csh_x_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period4 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 1,553 observations removed because of NA values (RHS: 1,553).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model17)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 2,668 
+Fixed-effects: gwno: 152,  year: 18
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value  Pr(&gt;|t|)    
+civilwar_lag2    5.245773e-01 2.874754e-01  1.824773 0.0700118 .  
+interwar_lag2    3.764012e-01 6.078860e-01  0.619197 0.5367196    
+defense_lag2     4.383078e-01 2.826079e-01  1.550940 0.1230096    
+polyarchy_lag2  -2.299655e+00 8.804034e-01 -2.612047 0.0099091 ** 
+polity_int_lag2 -2.833137e-01 3.260421e-01 -0.868948 0.3862546    
+gdp_growth_lag2 -4.690108e-05 3.852709e-05 -1.217353 0.2253689    
+pop_lag2         3.001208e-09 7.878513e-09  0.380936 0.7037863    
+gdp_lag2         1.690000e-13 2.710000e-13  0.624512 0.5332336    
+gdppc_lag2      -5.118027e-05 2.183267e-05 -2.344206 0.0203703 *  
+csh_x_lag2       7.195211e-01 7.094988e-01  1.014126 0.3121449    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.22376     Adj. R2: 0.351614
+                Within R2: 0.014412</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>Model18 <span class="ot">&lt;-</span> <span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polity2_lag2 <span class="sc">+</span> polity_int_lag2 <span class="sc">+</span> gdp_growth_lag2 <span class="sc">+</span>  pop_lag2 <span class="sc">+</span> gdp_lag2 <span class="sc">+</span> gdppc_lag2 <span class="sc">+</span> csh_x_lag2<span class="sc">|</span> gwno<span class="sc">+</span>year, <span class="at">data =</span> data<span class="sc">|&gt;</span> <span class="fu">filter</span>(period4 <span class="sc">==</span><span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 1,583 observations removed because of NA values (RHS: 1,583).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Model18)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 2,638 
+Fixed-effects: gwno: 152,  year: 18
+Standard-errors: Clustered (gwno) 
+                     Estimate   Std. Error   t value Pr(&gt;|t|)    
+civilwar_lag2    3.993657e-01 2.912013e-01  1.371442 0.172272    
+interwar_lag2    2.086560e-01 5.920889e-01  0.352406 0.725025    
+defense_lag2     4.245695e-01 2.816562e-01  1.507403 0.133797    
+polity2_lag2    -1.225125e-02 2.841698e-02 -0.431124 0.666993    
+polity_int_lag2 -1.309694e-01 3.475035e-01 -0.376887 0.706787    
+gdp_growth_lag2 -5.743279e-05 3.750521e-05 -1.531328 0.127781    
+pop_lag2         2.848432e-09 8.146194e-09  0.349664 0.727078    
+gdp_lag2         1.790000e-13 2.650000e-13  0.678135 0.498724    
+gdppc_lag2      -4.619438e-05 1.972522e-05 -2.341893 0.020492 *  
+csh_x_lag2       7.435110e-01 7.273133e-01  1.022271 0.308288    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.23168     Adj. R2: 0.343384
+                Within R2: 0.006791</code></pre>
+</div>
+</div>
+<p>The results show that <code>csh_x</code> does not have a significant result in either case.</p>
+</section>
+</section>
+</section>
+<section id="hausman-text" class="level1">
+<h1>Hausman Text</h1>
+<p>I try a Hausman test to see if random-effect model can be used. Note that the control variables are different from above because I get an error message when I perform the <code>plm</code> function to produce <code>random_plm</code> below. This is probably because a calculation in linear algebra does not work at some point. This problem is fixed when I reduce the number of RHS variables, so I report that result below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'plm'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:dplyr':
+
+    between, lag, lead</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>data_hausman <span class="ot">&lt;-</span> <span class="fu">pdata.frame</span>(data, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"gwno"</span>, <span class="st">"year"</span>))</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>fixed_plm <span class="ot">&lt;-</span> <span class="fu">plm</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2, <span class="at">data =</span> data_hausman, <span class="at">model =</span> <span class="st">"within"</span>)</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>random_plm <span class="ot">&lt;-</span> <span class="fu">plm</span>(milex_ma5_fluc_log <span class="sc">~</span> civilwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> interwar_lag2 <span class="sc">+</span> defense_lag2 <span class="sc">+</span> polyarchy_lag2 <span class="sc">+</span> polity_int_lag2, <span class="at">data =</span> data_hausman, <span class="at">model =</span> <span class="st">"random"</span>) </span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a><span class="fu">phtest</span>(fixed_plm, random_plm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Hausman Test
+
+data:  milex_ma5_fluc_log ~ civilwar_lag2 + interwar_lag2 + interwar_lag2 +  ...
+chisq = 88.789, df = 5, p-value &lt; 2.2e-16
+alternative hypothesis: one model is inconsistent</code></pre>
+</div>
+</div>
+<p>The null hypothesis is rejected. Thus, we should not use random effect models and should use fixed-effect models instead.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

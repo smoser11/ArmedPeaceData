@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ArmedPeace</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="ArmedPeace_NewDV_20240719_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ArmedPeace_NewDV_20240719_files/libs/quarto-html/quarto.js"></script>
+<script src="ArmedPeace_NewDV_20240719_files/libs/quarto-html/popper.min.js"></script>
+<script src="ArmedPeace_NewDV_20240719_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ArmedPeace_NewDV_20240719_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ArmedPeace_NewDV_20240719_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ArmedPeace_NewDV_20240719_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ArmedPeace_NewDV_20240719_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ArmedPeace_NewDV_20240719_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ArmedPeace_NewDV_20240719_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#constracting-new-dvs" id="toc-constracting-new-dvs" class="nav-link active" data-scroll-target="#constracting-new-dvs">Constracting new DVs</a></li>
+  <li><a href="#loading-data" id="toc-loading-data" class="nav-link" data-scroll-target="#loading-data">Loading data</a></li>
+  <li><a href="#measurements-of-raw-or-logged-military-expenditure-in-datasets" id="toc-measurements-of-raw-or-logged-military-expenditure-in-datasets" class="nav-link" data-scroll-target="#measurements-of-raw-or-logged-military-expenditure-in-datasets">Measurements of (Raw or Logged) Military Expenditure in datasets</a></li>
+  <li><a href="#creating-new-dvs" id="toc-creating-new-dvs" class="nav-link" data-scroll-target="#creating-new-dvs">Creating New DVs</a></li>
+  <li><a href="#descriptive-statistics" id="toc-descriptive-statistics" class="nav-link" data-scroll-target="#descriptive-statistics">Descriptive Statistics</a></li>
+  <li><a href="#regression" id="toc-regression" class="nav-link" data-scroll-target="#regression">Regression</a></li>
+  <li><a href="#year-moving-average" id="toc-year-moving-average" class="nav-link" data-scroll-target="#year-moving-average">5-year moving average</a></li>
+  <li><a href="#c.f.-regression-of-military-expenditure-form-1816-to-2019" id="toc-c.f.-regression-of-military-expenditure-form-1816-to-2019" class="nav-link" data-scroll-target="#c.f.-regression-of-military-expenditure-form-1816-to-2019">(c.f.) Regression of military expenditure form 1816 to 2019</a>
+  <ul class="collapse">
+  <li><a href="#year-moving-average-1" id="toc-year-moving-average-1" class="nav-link" data-scroll-target="#year-moving-average-1">10-year moving average</a></li>
+  <li><a href="#year-moving-average-2" id="toc-year-moving-average-2" class="nav-link" data-scroll-target="#year-moving-average-2">5-year moving average</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">ArmedPeace</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="constracting-new-dvs" class="level1">
+<h1>Constracting new DVs</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(summarytools)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pcse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fixest)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AER)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(zoo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="loading-data" class="level1">
+<h1>Loading data</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>HSS <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"Data/Raw/Democracy external threat and military spending/DP_Nord_clean.dta"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ZFS <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"Data/Raw/JPR - What Goes Up - Replication/replication.dta"</span>) </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>BFMM <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/Barnum et al JPR 2024/data/estimates_milex_cur_20231205.rds"</span>) </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>BFMM <span class="ot">&lt;-</span> BFMM <span class="sc">|&gt;</span> <span class="fu">filter</span>(indicator <span class="sc">==</span> <span class="st">"milex_cur_nmc"</span>) <span class="sc">|&gt;</span> <span class="co"># the indiator is the COW NMC.</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                <span class="fu">select</span>(<span class="sc">-</span>indicator,  <span class="sc">-</span>og,  <span class="sc">-</span>con, <span class="sc">-</span> group) <span class="sc">|&gt;</span> </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">rename</span>(<span class="at">mean_log_milex =</span> mean_log,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean_milex =</span> mean,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean_log10_milex =</span> mean_log10,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_log_milex =</span> sd_log,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_milex =</span> sd,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_log10_milex =</span> sd_log10)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>GDP <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/GDP-etc/estimates_gdp_model_combined_normal_noslope_gamma_lambda_additive_test_20240416.rds"</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>GDP <span class="ot">&lt;-</span> GDP <span class="sc">|&gt;</span>  <span class="fu">filter</span>(indicator <span class="sc">==</span> <span class="st">"WorldBank_gdp_con_bc_2010"</span>) <span class="sc">|&gt;</span>  <span class="co">#the indicator is World Bank GDP 2010</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                <span class="fu">select</span>(<span class="sc">-</span>indicator,  <span class="sc">-</span>og, <span class="sc">-</span>og_log, <span class="sc">-</span>og_log10, <span class="sc">-</span>group) <span class="sc">|&gt;</span> </span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                <span class="fu">rename</span>(<span class="at">mean_log_gdp =</span> mean_log,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean_gdp =</span> mean,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean_log10_gdp =</span> mean_log10,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_log_gdp =</span> sd_log,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_gdp =</span> sd,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_log10_gdp =</span> sd_log10)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>GDPpc <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/GDP-etc/estimates_gdppc_model_combined_normal_noslope_gamma_lambda_additive_test_20240416.rds"</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>GDPpc <span class="ot">&lt;-</span> GDPpc <span class="sc">|&gt;</span>  <span class="fu">filter</span>(indicator <span class="sc">==</span> <span class="st">"WorldBank_gdppc_con_bc_2010"</span>) <span class="sc">|&gt;</span>  <span class="co">#the indicator is World Bank GDP 2010</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                <span class="fu">select</span>(<span class="sc">-</span>indicator,  <span class="sc">-</span>og, <span class="sc">-</span>og_log, <span class="sc">-</span>og_log10, <span class="sc">-</span>group) <span class="sc">|&gt;</span> </span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>                <span class="fu">rename</span>(<span class="at">mean_log_gdppc =</span> mean_log,</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean_gdppc =</span> mean,</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean_log10_gdppc =</span> mean_log10,</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_log_gdppc =</span> sd_log,</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_gdppc =</span> sd,</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_log10_gdppc =</span> sd_log10)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>POP <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Library/Mobile Documents/com~apple~CloudDocs/Research/Armed Peace with Scott, Pat, and Terry/R/Domestic Bargaining and Military Balance/data/ArmedPeaceData-main/Data/Raw/GDP-etc/estimates_pop_model_combined_normal_noslope_gamma_lambda_additive_test_20240416.rds"</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>POP <span class="ot">&lt;-</span> POP <span class="sc">|&gt;</span> <span class="fu">filter</span>(indicator <span class="sc">==</span> <span class="st">"WorldBank_pop"</span>)<span class="sc">|&gt;</span>  <span class="co">#the indicator is World Bank</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>                <span class="fu">select</span>(<span class="sc">-</span>indicator,  <span class="sc">-</span>og, <span class="sc">-</span>og_log, <span class="sc">-</span>og_log10, <span class="sc">-</span>group) <span class="sc">|&gt;</span> </span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>                <span class="fu">rename</span>(<span class="at">mean_log_pop =</span> mean_log,</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean_pop =</span> mean,</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mean_log10_gdp =</span> mean_log10,</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_log_pop =</span> sd_log,</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_pop =</span> sd,</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sd_log10_pop =</span> sd_log10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="measurements-of-raw-or-logged-military-expenditure-in-datasets" class="level1">
+<h1>Measurements of (Raw or Logged) Military Expenditure in datasets</h1>
+<p>Military expenditure data are from (a) Hauenstein, Smith and Souva (HSS), (b) Zielinski, Fordham, and Schilde (ZFS), and (c) Barnum, Farris, Markowitz, and Morales (BFMM). The GDP, GDP per capita, and population data are from Fariss, Anders, Markowitz, and Morales (FAMM) (2022) in JCR.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 12%">
+<col style="width: 76%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Dataset</th>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>HSS</td>
+<td>LMILEX</td>
+<td>ln(Military Expenditure)</td>
+</tr>
+<tr class="even">
+<td>HSS</td>
+<td>LMILGDP</td>
+<td>ln(Military Expenditure/GDP)</td>
+</tr>
+<tr class="odd">
+<td>ZFS</td>
+<td>smilex</td>
+<td>(Raw) Military Expenditure from SIPLI.</td>
+</tr>
+<tr class="even">
+<td>ZFS</td>
+<td>ln_smilex</td>
+<td>ln(Military Expenditure) from SIPLI.</td>
+</tr>
+<tr class="odd">
+<td>ZFS</td>
+<td>smilincr</td>
+<td>Change in (Raw) Military Expenditure from t-1 to t in <code>smilex</code></td>
+</tr>
+<tr class="even">
+<td>ZFS</td>
+<td>milex</td>
+<td>(Raw) Military Expenditure from Nordhaus et al.</td>
+</tr>
+<tr class="odd">
+<td>ZFS</td>
+<td>ln_milex</td>
+<td>ln(Military Expenditure) from Nordhouse et al.</td>
+</tr>
+<tr class="even">
+<td>ZFS</td>
+<td>milincr</td>
+<td>Change in (Raw) Military Expenditure from t-1 to t in <code>milex</code></td>
+</tr>
+<tr class="odd">
+<td>ZFS</td>
+<td>rgdp</td>
+<td>Raw GDP</td>
+</tr>
+<tr class="even">
+<td>ZFS</td>
+<td>ln_rgdp</td>
+<td>ln(Raw GDP)</td>
+</tr>
+<tr class="odd">
+<td>ZFS</td>
+<td>rgdpincr</td>
+<td>Change in Raw GDP from t-1 to t in <code>rgdp</code></td>
+</tr>
+<tr class="even">
+<td>BFMM</td>
+<td>mean_milex</td>
+<td>Mean of the predicted distribution of (raw) military expenditure</td>
+</tr>
+<tr class="odd">
+<td>BFMM</td>
+<td>mean_log</td>
+<td>ln(<code>mean</code>)</td>
+</tr>
+<tr class="even">
+<td>GDP (FAMM)</td>
+<td>mean_gdp</td>
+<td>Mean of the predicted distribution of GDP</td>
+</tr>
+<tr class="odd">
+<td>GDPpc (FAMM)</td>
+<td>mean_gdppc</td>
+<td>Mean of the predicted distribution of GDP per capita</td>
+</tr>
+<tr class="even">
+<td>POP (FAMM)</td>
+<td>mean_pop</td>
+<td>Mean of the predicted distribution of Population</td>
+</tr>
+</tbody>
+</table>
+<p>Year coverage: HSS: 1951-2000, ZFS: 1945-2015, BFMM: 1816 - 2022, and BFMM: 1500 - 2019</p>
+</section>
+<section id="creating-new-dvs" class="level1">
+<h1>Creating New DVs</h1>
+<p>First, data cleaning.</p>
+<p>Germany: The BMFF dataset has Germany (COW 255) from 1816 to 1945, West Germany (COW 260) from 1948 to 2019, and East Germany (COW 265) from 1948 to 1990. I fixed the ZFC dataset based on this. Scott found that the ZFC dataset has Germany (COW 255) from 1960, but also has German Federal Republic (COW 260) from 1949 to 2015, and East Germany (COW 265) from 1949-1990. So I just removed ‘Germany’ (COW 255) from the ZFC dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ZFS <span class="ot">&lt;-</span> ZFS <span class="sc">|&gt;</span> <span class="fu">filter</span>(STATE <span class="sc">!=</span> <span class="dv">255</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then, I combine the three datasets</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(countrycode)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>BFMM<span class="sc">$</span>ccode <span class="ot">&lt;-</span> <span class="fu">countrycode</span>(BFMM<span class="sc">$</span>gwno,<span class="st">"gwn"</span>, <span class="st">"cown"</span>) <span class="co"># Gleditsch-Ward system does not perfectly match the COW country code. This makes a warning message  later.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Some values were not matched unambiguously: 255, 271, 273, 275, 340, 591, 730, 816</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> BFMM <span class="sc">|&gt;</span>  <span class="fu">left_join</span>(ZFS, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ccode"</span> <span class="ot">=</span> <span class="st">"STATE"</span>, <span class="st">"year"</span> <span class="ot">=</span> <span class="st">"YEAR"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(HSS, <span class="at">by =</span><span class="fu">c</span>(<span class="st">"ccode"</span> <span class="ot">=</span> <span class="st">"ccode"</span>, <span class="st">"year"</span> <span class="ot">=</span> <span class="st">"year"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(GDP, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"gwno"</span>, <span class="st">"year"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(GDPpc, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"gwno"</span>, <span class="st">"year"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(POP, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"gwno"</span>, <span class="st">"year"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then, I make new DVs.</p>
+<p>The new DV is logged squared distance of the military-expenditure-to-GDP ratio at year <span class="math inline">\(t\)</span> and a 10-year average of it. Specifically, the DV is <span class="math inline">\(ln((\frac{Military Expenditure_{t}}{GDP_{t}} - \frac{\Sigma_{i = t-4}^{t+5} \frac{Military Expenditure_{i}}{GDP_{i}}}{10})^{2})\)</span>. I squared the distance because <span class="math inline">\(ln()\)</span> does not accept negative values.</p>
+<p>I also make 5-year moving averages below.</p>
+<p>Note that LMILEX is logged from the beginning, so this may not be easy to interpret.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">smilex_ratio =</span> smilex<span class="sc">/</span>rgdp,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">milex_ratio =</span> milex<span class="sc">/</span>rgdp,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean_ratio =</span> mean_milex<span class="sc">/</span>mean_gdp)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                    </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">group_by</span>(ccode) <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">LMILEX_ma10 =</span> <span class="fu">rollapplyr</span>(LMILEX, <span class="dv">10</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">align =</span> <span class="st">"center"</span>, <span class="at">partial =</span> T, <span class="at">fill =</span> <span class="cn">NA</span>),  <span class="co"># LMILEX is logged from the beginning, so this may not be easy to interpret.</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">smilex_ma10 =</span> <span class="fu">rollapplyr</span>(smilex_ratio, <span class="dv">10</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">align =</span> <span class="st">"center"</span>, <span class="at">partial =</span> T, <span class="at">fill =</span> <span class="cn">NA</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">milex_ma10 =</span> <span class="fu">rollapplyr</span>(milex_ratio, <span class="dv">10</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">align =</span> <span class="st">"center"</span>, <span class="at">partial =</span> T, <span class="at">fill =</span> <span class="cn">NA</span>),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_ma10 =</span> <span class="fu">rollapplyr</span>(mean_ratio, <span class="dv">10</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">align =</span> <span class="st">"center"</span>, <span class="at">partial =</span> T, <span class="at">fill =</span> <span class="cn">NA</span>),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">LMILEX_ma5 =</span> <span class="fu">rollapplyr</span>(LMILEX, <span class="dv">5</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">align =</span> <span class="st">"center"</span>, <span class="at">partial =</span> T, <span class="at">fill =</span> <span class="cn">NA</span>),,  </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">smilex_ma5 =</span> <span class="fu">rollapplyr</span>(smilex_ratio, <span class="dv">5</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">align =</span> <span class="st">"center"</span>, <span class="at">partial =</span> T, <span class="at">fill =</span> <span class="cn">NA</span>), </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">milex_ma5 =</span> <span class="fu">rollapplyr</span>(milex_ratio, <span class="dv">5</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">align =</span> <span class="st">"center"</span>, <span class="at">partial =</span> T, <span class="at">fill =</span> <span class="cn">NA</span>), </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_ma5 =</span> <span class="fu">rollapplyr</span>(mean_ratio, <span class="dv">5</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">align =</span> <span class="st">"center"</span>, <span class="at">partial =</span> T, <span class="at">fill =</span> <span class="cn">NA</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>( <span class="at">LMILEX_ma10_fluc =</span> (LMILEX <span class="sc">-</span> LMILEX_ma10)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">smilex_ma10_fluc =</span> (smilex_ratio <span class="sc">-</span> smilex_ma10)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">milex_ma10_fluc =</span> (milex_ratio <span class="sc">-</span> milex_ma10)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_ma10_fluc =</span> (mean_ratio <span class="sc">-</span> mean_ma10)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">LMILEX_ma5_fluc =</span> (LMILEX <span class="sc">-</span> LMILEX_ma5)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">smilex_ma5_fluc =</span> (smilex_ratio <span class="sc">-</span> smilex_ma5)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>            <span class="at">milex_ma5_fluc =</span> (milex_ratio <span class="sc">-</span> milex_ma5)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_ma5_fluc =</span> (mean_ratio <span class="sc">-</span> mean_ma5)<span class="sc">^</span><span class="dv">2</span>, </span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>            <span class="at">LMILEX_ma10_fluc_log =</span> <span class="fu">log</span>(LMILEX_ma10_fluc), </span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>            <span class="at">milex_ma10_fluc_log =</span> <span class="fu">log</span>(milex_ma10_fluc),</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>            <span class="at">smilex_ma10_fluc_log =</span> <span class="fu">log</span>(smilex_ma10_fluc),</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_ma10_fluc_log =</span> <span class="fu">log</span>(mean_ma10_fluc),</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>            <span class="at">LMILEX_ma5_fluc_log =</span> <span class="fu">log</span>(LMILEX_ma5_fluc), </span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>            <span class="at">milex_ma5_fluc_log =</span> <span class="fu">log</span>(milex_ma5_fluc),</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>            <span class="at">smilex_ma5_fluc_log =</span> <span class="fu">log</span>(smilex_ma5_fluc),</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_ma5_fluc_log =</span> <span class="fu">log</span>(mean_ma5_fluc)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    )   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Below is the description of the new DVs</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 18%">
+<col style="width: 64%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Original Dataset</th>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ZFC</td>
+<td><code>smilex_ma10_fluc_log</code></td>
+<td>The logged fluctuation of Military Expenditure/GDP from SIPLI</td>
+</tr>
+<tr class="even">
+<td>ZFC</td>
+<td><code>milex_ma10_fluc_log</code></td>
+<td>The logged fluctuation of Military Expenditure/GDP from Nordhaus et al.</td>
+</tr>
+<tr class="odd">
+<td>BFMM</td>
+<td><code>mean_ma10_fluc_log</code></td>
+<td>The logged fluctuation of Military Expenditure/GDP from BFMM’s military expenditure and FAMM’s GDP</td>
+</tr>
+</tbody>
+</table>
+<p>I add some lagged independent variables. They are lagged for 4 years since the 10-year moving averages are calculated from <span class="math inline">\(t-4\)</span> to <span class="math inline">\(t+5\)</span>. (I also and 2-year lagged variables for the 5-year moving averages.)</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 77%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>LNRGDP</code></td>
+<td>Logged GDP from ZFC</td>
+</tr>
+<tr class="even">
+<td><code>v2x_polyarchy</code></td>
+<td>Liberal democracy index from Vdem</td>
+</tr>
+<tr class="odd">
+<td><code>PN6_lag1</code></td>
+<td>External Threats from Nordhaus et al.</td>
+</tr>
+<tr class="even">
+<td><code>defense_dem</code></td>
+<td>Defensive alliance with democracies</td>
+</tr>
+<tr class="odd">
+<td><code>defense_nondem</code></td>
+<td>Defensive alliance with autocracies</td>
+</tr>
+<tr class="even">
+<td><code>atwar</code></td>
+<td>Dummy variable about involving in international war</td>
+</tr>
+<tr class="odd">
+<td><code>civilwar</code></td>
+<td>Dummy variable about involving in civil war</td>
+</tr>
+<tr class="even">
+<td><code>mean_gdp</code></td>
+<td>Estimated GDP from FAMM</td>
+</tr>
+<tr class="odd">
+<td><code>mean_gdppc</code></td>
+<td>Estimated GDP per capita from FAMM</td>
+</tr>
+<tr class="even">
+<td><code>mean_gdp</code></td>
+<td>Estimated population from FAMM</td>
+</tr>
+</tbody>
+</table>
+<p>Based on BFMM, I restricted the year coverage to the period of 1815-2019.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">filter</span>(year <span class="sc">&gt;=</span><span class="dv">1816</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span><span class="dv">2019</span>) <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(<span class="at">LNRGDP_lag1 =</span> <span class="fu">lag</span>(LNRGDP, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">order_by =</span> year), <span class="co"># this is for 3-year moving ave.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">LNRGDP_lag2 =</span> <span class="fu">lag</span>(LNRGDP, <span class="at">n =</span> <span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">LNRGDP_lag4 =</span> <span class="fu">lag</span>(LNRGDP, <span class="at">n =</span> <span class="dv">4</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">v2x_polyarchy_lag1 =</span> <span class="fu">lag</span>(v2x_polyarchy, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">v2x_polyarchy_lag2 =</span> <span class="fu">lag</span>(v2x_polyarchy, <span class="at">n =</span> <span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">v2x_polyarchy_lag4 =</span> <span class="fu">lag</span>(v2x_polyarchy, <span class="at">n =</span> <span class="dv">4</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">PN6_lag1 =</span> <span class="fu">lag</span>(PN6, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">PN6_lag2 =</span> <span class="fu">lag</span>(PN6, <span class="at">n =</span> <span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">PN6_lag4 =</span> <span class="fu">lag</span>(PN6, <span class="at">n =</span> <span class="dv">4</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">defense_dem_lag1 =</span> <span class="fu">lag</span>(defense_dem, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                    <span class="at">defense_dem_lag2 =</span> <span class="fu">lag</span>(defense_dem, <span class="at">n =</span> <span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                    <span class="at">defense_dem_lag4 =</span> <span class="fu">lag</span>(defense_dem, <span class="at">n =</span> <span class="dv">4</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                    <span class="at">defense_nodem_lag1 =</span> <span class="fu">lag</span>(defense_nodem, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                    <span class="at">defense_nodem_lag2 =</span> <span class="fu">lag</span>(defense_nodem, <span class="at">n =</span> <span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                    <span class="at">defense_nodem_lag4 =</span> <span class="fu">lag</span>(defense_nodem, <span class="at">n =</span> <span class="dv">4</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>                    <span class="at">atwar_lag1 =</span> <span class="fu">lag</span>(atwar, <span class="at">n=</span><span class="dv">1</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>                    <span class="at">atwar_lag2 =</span> <span class="fu">lag</span>(atwar, <span class="at">n=</span><span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>                    <span class="at">atwar_lag4 =</span> <span class="fu">lag</span>(atwar, <span class="at">n=</span><span class="dv">4</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>                    <span class="at">civilwar_lag1 =</span> <span class="fu">lag</span>(civilwar, <span class="at">n=</span><span class="dv">1</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>                    <span class="at">civilwar_lag2 =</span> <span class="fu">lag</span>(civilwar, <span class="at">n=</span><span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>                    <span class="at">civilwar_lag4 =</span> <span class="fu">lag</span>(civilwar, <span class="at">n=</span><span class="dv">4</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>                    </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean_gdp_lag2 =</span> <span class="fu">lag</span>(mean_gdp, <span class="at">n=</span><span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean_gdp_lag4 =</span> <span class="fu">lag</span>(mean_gdp, <span class="at">n=</span><span class="dv">4</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean_gdppc_lag2 =</span> <span class="fu">lag</span>(mean_gdppc, <span class="at">n=</span><span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean_gdppc_lag4 =</span> <span class="fu">lag</span>(mean_gdppc, <span class="at">n=</span><span class="dv">4</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean_pop_lag2 =</span> <span class="fu">lag</span>(mean_pop, <span class="at">n=</span><span class="dv">2</span>, <span class="at">order_by =</span> year),</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean_pop_lag4 =</span> <span class="fu">lag</span>(mean_gdp, <span class="at">n=</span><span class="dv">4</span>, <span class="at">order_by =</span> year))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>df</code> is created based on BFMM, which means the data frame covers years from 1815 to 2022. Thus, we will have many NAs when we use variables from HSS or ZFS.</p>
+</section>
+<section id="descriptive-statistics" class="level1">
+<h1>Descriptive Statistics</h1>
+<p>Next, I check the missingness and distribution of the new DVs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df<span class="sc">$</span>smilex_ma10_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+   -Inf -15.410 -13.434    -Inf -11.609   0.217    9513 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">is.na</span>(df<span class="sc">$</span>smilex_ma10_fluc_log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6071611</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df<span class="sc">$</span>smilex_ma10_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ArmedPeace_NewDV_20240719_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df<span class="sc">$</span>milex_ma10_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+-29.878 -13.769 -11.716 -11.916  -9.745  -0.927    9598 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">is.na</span>(df<span class="sc">$</span>milex_ma10_fluc_log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6125862</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df<span class="sc">$</span>milex_ma10_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ArmedPeace_NewDV_20240719_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df<span class="sc">$</span>mean_ma10_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-71.113 -30.551 -28.236 -29.285 -26.200  -9.222 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">is.na</span>(df<span class="sc">$</span>mean_ma10_fluc_log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df<span class="sc">$</span>mean_ma10_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ArmedPeace_NewDV_20240719_files/figure-html/unnamed-chunk-7-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There are many missing values for <code>smilex_ma10_fluc_log</code> and <code>milex_ma10_fluc_log</code>. The reason of the large number of missing values is that the dataset covers years from 1816 to 2019, but the military expenditure data exists only from 1950 to 2011 (ZFC p.&nbsp;796). Thus, below I restricted the year coverage to 1950-2011 for these two dependent variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df<span class="sc">$</span>smilex_ma10_fluc_log[df<span class="sc">$</span>year <span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> df<span class="sc">$</span>year <span class="sc">&lt;=</span> <span class="dv">2011</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
+    -Inf -15.4097 -13.4336     -Inf -11.6086   0.2169     2538 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">is.na</span>(df<span class="sc">$</span>smilex_ma10_fluc_log[df<span class="sc">$</span>year <span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> df<span class="sc">$</span>year <span class="sc">&lt;=</span> <span class="dv">2011</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.291959</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df<span class="sc">$</span>smilex_ma10_fluc_log[df<span class="sc">$</span>year <span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> df<span class="sc">$</span>year <span class="sc">&lt;=</span> <span class="dv">2011</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ArmedPeace_NewDV_20240719_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df<span class="sc">$</span>milex_ma10_fluc_log[df<span class="sc">$</span>year <span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> df<span class="sc">$</span>year <span class="sc">&lt;=</span> <span class="dv">2011</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
+-29.8785 -13.7689 -11.7162 -11.9159  -9.7446  -0.9268     2623 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">is.na</span>(df<span class="sc">$</span>milex_ma10_fluc_log[df<span class="sc">$</span>year <span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> df<span class="sc">$</span>year <span class="sc">&lt;=</span> <span class="dv">2011</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.301737</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df<span class="sc">$</span>milex_ma10_fluc_log[df<span class="sc">$</span>year <span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> df<span class="sc">$</span>year <span class="sc">&lt;=</span> <span class="dv">2011</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ArmedPeace_NewDV_20240719_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="regression" class="level1">
+<h1>Regression</h1>
+<p>Variables RHS: estimated GDP, estimated GDP per capita, estimated population, liberal democracy index in Vdem, external threat, defensive alliances with a democracy, defensive alliances with an autocracy, a dummy variable of international war, and a dummy variable of civil war. Fixed effects: year and country.</p>
+<p>Note that some RHS variables do not cover all of the years from 1816 to 2019 in Fit1_4, even though the DV and some RHS variables covers the years.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>fit1_2 <span class="ot">&lt;-</span> fixest<span class="sc">::</span><span class="fu">feols</span>(smilex_ma10_fluc_log <span class="sc">~</span> mean_gdp_lag4 <span class="sc">+</span> mean_gdppc_lag4 <span class="sc">+</span> mean_pop_lag4  <span class="sc">+</span>v2x_polyarchy_lag4 <span class="sc">+</span> PN6_lag4 <span class="sc">+</span> defense_dem_lag4 <span class="sc">+</span> defense_nodem_lag4 <span class="sc">+</span> atwar_lag4<span class="sc">+</span>civilwar_lag4 <span class="sc">|</span> year <span class="sc">+</span> gwno, <span class="at">data =</span> df <span class="sc">|&gt;</span> <span class="fu">filter</span>(year<span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2011</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 4,075 observations removed because of NA and infinite values (LHS: 2,621, RHS: 2,661).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: smilex_ma10_fluc_log
+Observations: 4,618 
+Fixed-effects: year: 50,  gwno: 151
+Standard-errors: Clustered (year) 
+                        Estimate   Std. Error   t value   Pr(&gt;|t|)    
+mean_gdp_lag4      -1.940000e-13 6.450000e-14 -3.005542 0.00417141 ** 
+mean_gdppc_lag4    -2.118131e-05 8.453711e-06 -2.505564 0.01559753 *  
+mean_pop_lag4      -2.100000e-14 3.220000e-14 -0.652691 0.51700624    
+v2x_polyarchy_lag4 -1.169312e+00 2.896959e-01 -4.036342 0.00019014 ***
+PN6_lag4            9.324427e-01 9.218448e-01  1.011496 0.31674778    
+defense_dem_lag4   -2.445411e-01 1.437685e-01 -1.700937 0.09529369 .  
+defense_nodem_lag4  6.112156e-01 1.806749e-01  3.382959 0.00141764 ** 
+atwar_lag4          4.053855e-01 2.578647e-01  1.572086 0.12236606    
+civilwar_lag4       6.022572e-01 1.677825e-01  3.589512 0.00076461 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.39768     Adj. R2: 0.368847
+                Within R2: 0.014273</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>fit1_3 <span class="ot">&lt;-</span> fixest<span class="sc">::</span><span class="fu">feols</span>(milex_ma10_fluc_log <span class="sc">~</span> mean_gdp_lag4 <span class="sc">+</span> mean_gdppc_lag4 <span class="sc">+</span> mean_pop_lag4  <span class="sc">+</span>v2x_polyarchy_lag4 <span class="sc">+</span> PN6_lag4 <span class="sc">+</span> defense_dem_lag4 <span class="sc">+</span> defense_nodem_lag4 <span class="sc">+</span> atwar_lag4<span class="sc">+</span>civilwar_lag4  <span class="sc">|</span> year <span class="sc">+</span> gwno, <span class="at">data =</span> df<span class="sc">|&gt;</span> <span class="fu">filter</span>(year<span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2011</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 3,364 observations removed because of NA values (LHS: 2,623, RHS: 2,661).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma10_fluc_log
+Observations: 5,329 
+Fixed-effects: year: 46,  gwno: 160
+Standard-errors: Clustered (year) 
+                        Estimate   Std. Error   t value   Pr(&gt;|t|)    
+mean_gdp_lag4       8.660000e-16 3.450000e-15  0.251013 8.0295e-01    
+mean_gdppc_lag4    -4.451736e-05 1.259384e-05 -3.534852 9.5781e-04 ***
+mean_pop_lag4       2.548000e-15 3.460000e-15  0.736349 4.6534e-01    
+v2x_polyarchy_lag4 -1.053645e+00 3.308009e-01 -3.185132 2.6279e-03 ** 
+PN6_lag4            1.753123e+00 9.385535e-01  1.867899 6.8296e-02 .  
+defense_dem_lag4   -5.436829e-02 1.241874e-01 -0.437792 6.6363e-01    
+defense_nodem_lag4  6.623454e-01 1.562617e-01  4.238692 1.1011e-04 ***
+atwar_lag4          7.950507e-01 2.470396e-01  3.218313 2.3931e-03 ** 
+civilwar_lag4       6.916633e-01 1.356457e-01  5.099043 6.6102e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.41729     Adj. R2: 0.443432
+                Within R2: 0.022869</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fit1_4 <span class="ot">&lt;-</span> fixest<span class="sc">::</span><span class="fu">feols</span>(mean_ma10_fluc_log <span class="sc">~</span> mean_gdp_lag4 <span class="sc">+</span> mean_gdppc_lag4 <span class="sc">+</span> mean_pop_lag4  <span class="sc">+</span>v2x_polyarchy_lag4 <span class="sc">+</span> PN6_lag4 <span class="sc">+</span> defense_dem_lag4 <span class="sc">+</span> defense_nodem_lag4 <span class="sc">+</span> atwar_lag4<span class="sc">+</span>civilwar_lag4 <span class="sc">|</span> year <span class="sc">+</span> gwno, <span class="at">data =</span> df) <span class="co"># this covers years from 1816 to 2019</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 9,636 observations removed because of NA values (RHS: 9,636).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The variable 'mean_pop_lag4' has been removed because of collinearity (see $collin.var).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1_4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: mean_ma10_fluc_log
+Observations: 6,032 
+Fixed-effects: year: 50,  gwno: 162
+Standard-errors: Clustered (year) 
+                        Estimate   Std. Error   t value   Pr(&gt;|t|)    
+mean_gdp_lag4      -1.130000e-14 3.530000e-15 -3.211787 2.3319e-03 ** 
+mean_gdppc_lag4    -2.673286e-05 1.107329e-05 -2.414174 1.9552e-02 *  
+v2x_polyarchy_lag4 -1.399356e+00 2.519807e-01 -5.553427 1.1320e-06 ***
+PN6_lag4           -2.154249e+00 7.050800e-01 -3.055325 3.6319e-03 ** 
+defense_dem_lag4    3.110650e-02 1.636095e-01  0.190127 8.5000e-01    
+defense_nodem_lag4  3.734367e-01 1.503865e-01  2.483180 1.6493e-02 *  
+atwar_lag4          7.029095e-01 2.393688e-01  2.936512 5.0442e-03 ** 
+civilwar_lag4       6.658128e-01 1.361699e-01  4.889573 1.1286e-05 ***
+... 1 variable was removed because of collinearity (mean_pop_lag4)
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.39475     Adj. R2: 0.488848
+                Within R2: 0.018624</code></pre>
+</div>
+</div>
+</section>
+<section id="year-moving-average" class="level1">
+<h1>5-year moving average</h1>
+<p>I do the same operations for the 5-year moving averages. First, I check the distribution and missing values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df<span class="sc">$</span>smilex_ma5_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+   -Inf -16.351 -14.263    -Inf -12.411  -0.151    9513 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">is.na</span>(df<span class="sc">$</span>smilex_ma5_fluc_log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6071611</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df<span class="sc">$</span>smilex_ma5_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ArmedPeace_NewDV_20240719_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df<span class="sc">$</span>milex_ma5_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+   -Inf -14.734 -12.647    -Inf -10.658  -1.849    9598 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">is.na</span>(df<span class="sc">$</span>milex_ma5_fluc_log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6125862</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df<span class="sc">$</span>milex_ma5_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ArmedPeace_NewDV_20240719_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df<span class="sc">$</span>mean_ma5_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-68.990 -32.148 -29.729 -30.765 -27.677  -9.672 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">is.na</span>(df<span class="sc">$</span>mean_ma5_fluc_log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(df<span class="sc">$</span>mean_ma5_fluc_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ArmedPeace_NewDV_20240719_files/figure-html/unnamed-chunk-10-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Then, I do the same regression as above, except for using two-year lagged variables for RHS.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>fit2_2 <span class="ot">&lt;-</span> fixest<span class="sc">::</span><span class="fu">feols</span>(smilex_ma5_fluc_log <span class="sc">~</span> mean_gdp_lag2 <span class="sc">+</span> mean_gdppc_lag2 <span class="sc">+</span> mean_pop_lag2 <span class="sc">+</span>v2x_polyarchy_lag2 <span class="sc">+</span> PN6_lag2 <span class="sc">+</span> defense_dem_lag2 <span class="sc">+</span> defense_nodem_lag2 <span class="sc">+</span> atwar_lag2<span class="sc">+</span>civilwar_lag2 <span class="sc">|</span> year <span class="sc">+</span> gwno, <span class="at">data =</span> df<span class="sc">|&gt;</span> <span class="fu">filter</span>(year<span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2011</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 4,211 observations removed because of NA and infinite values (LHS: 2,629, RHS: 2,653).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: smilex_ma5_fluc_log
+Observations: 4,482 
+Fixed-effects: year: 50,  gwno: 150
+Standard-errors: Clustered (year) 
+                        Estimate   Std. Error   t value   Pr(&gt;|t|)    
+mean_gdp_lag2      -1.160000e-14 8.740000e-14 -0.133130 8.9464e-01    
+mean_gdppc_lag2    -4.672653e-05 1.158376e-05 -4.033796 1.9169e-04 ***
+mean_pop_lag2      -6.332906e-09 2.459753e-09 -2.574611 1.3107e-02 *  
+v2x_polyarchy_lag2 -1.734478e+00 2.903731e-01 -5.973272 2.5731e-07 ***
+PN6_lag2            3.753784e+00 9.917986e-01  3.784824 4.1987e-04 ***
+defense_dem_lag2   -1.031120e-01 1.576078e-01 -0.654231 5.1602e-01    
+defense_nodem_lag2  8.549970e-01 1.694890e-01  5.044557 6.6385e-06 ***
+atwar_lag2          9.662022e-01 2.445020e-01  3.951716 2.4881e-04 ***
+civilwar_lag2       5.851723e-01 1.363864e-01  4.290548 8.3631e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.46648     Adj. R2: 0.387596
+                Within R2: 0.031818</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>fit2_3 <span class="ot">&lt;-</span> fixest<span class="sc">::</span><span class="fu">feols</span>(milex_ma5_fluc_log <span class="sc">~</span> mean_gdp_lag2 <span class="sc">+</span> mean_gdppc_lag2 <span class="sc">+</span> mean_pop_lag2 <span class="sc">+</span>v2x_polyarchy_lag2 <span class="sc">+</span> PN6_lag2 <span class="sc">+</span> defense_dem_lag2 <span class="sc">+</span> defense_nodem_lag2 <span class="sc">+</span> atwar_lag2<span class="sc">+</span>civilwar_lag2 <span class="sc">|</span> year <span class="sc">+</span> gwno, <span class="at">data =</span> df<span class="sc">|&gt;</span> <span class="fu">filter</span>(year<span class="sc">&gt;=</span> <span class="dv">1950</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2011</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 3,039 observations removed because of NA and infinite values (LHS: 2,626, RHS: 2,653).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: milex_ma5_fluc_log
+Observations: 5,654 
+Fixed-effects: year: 48,  gwno: 162
+Standard-errors: Clustered (year) 
+                        Estimate   Std. Error   t value   Pr(&gt;|t|)    
+mean_gdp_lag2       9.920000e-17 2.430000e-15  0.040826 9.6761e-01    
+mean_gdppc_lag2    -3.926873e-05 1.003145e-05 -3.914561 2.9120e-04 ***
+mean_pop_lag2      -4.356251e-09 1.783989e-09 -2.441860 1.8429e-02 *  
+v2x_polyarchy_lag2 -5.948370e-01 3.090294e-01 -1.924855 6.0312e-02 .  
+PN6_lag2            4.336305e+00 9.910083e-01  4.375650 6.6926e-05 ***
+defense_dem_lag2    7.008251e-02 1.391743e-01  0.503559 6.1692e-01    
+defense_nodem_lag2  7.659411e-01 1.277211e-01  5.996980 2.7201e-07 ***
+atwar_lag2          6.853728e-01 2.282879e-01  3.002230 4.2828e-03 ** 
+civilwar_lag2       9.424279e-01 1.236670e-01  7.620689 9.4297e-10 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.47266     Adj. R2: 0.426604
+                Within R2: 0.027875</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>fit2_4 <span class="ot">&lt;-</span> fixest<span class="sc">::</span><span class="fu">feols</span>(mean_ma5_fluc_log <span class="sc">~</span> mean_gdp_lag2 <span class="sc">+</span> mean_gdppc_lag2 <span class="sc">+</span> mean_pop_lag2 <span class="sc">+</span>v2x_polyarchy_lag2 <span class="sc">+</span> PN6_lag2 <span class="sc">+</span> defense_dem_lag2 <span class="sc">+</span> defense_nodem_lag2 <span class="sc">+</span> atwar_lag2<span class="sc">+</span>civilwar_lag2 <span class="sc">|</span> year <span class="sc">+</span> gwno, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 9,628 observations removed because of NA values (RHS: 9,628).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2_4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: mean_ma5_fluc_log
+Observations: 6,040 
+Fixed-effects: year: 50,  gwno: 162
+Standard-errors: Clustered (year) 
+                        Estimate   Std. Error   t value   Pr(&gt;|t|)    
+mean_gdp_lag2       3.510000e-15 6.350000e-15  0.552721 5.8297e-01    
+mean_gdppc_lag2    -4.831573e-05 1.116673e-05 -4.326757 7.4283e-05 ***
+mean_pop_lag2      -7.240666e-09 1.365141e-09 -5.303971 2.7065e-06 ***
+v2x_polyarchy_lag2 -1.906987e+00 3.123325e-01 -6.105629 1.6086e-07 ***
+PN6_lag2            7.424477e-01 9.390195e-01  0.790663 4.3295e-01    
+defense_dem_lag2   -4.125120e-02 1.145799e-01 -0.360021 7.2038e-01    
+defense_nodem_lag2  6.609401e-01 1.266805e-01  5.217379 3.6557e-06 ***
+atwar_lag2          1.043477e+00 2.010320e-01  5.190602 4.0110e-06 ***
+civilwar_lag2       7.759509e-01 1.759002e-01  4.411312 5.6244e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.43764     Adj. R2: 0.486888
+                Within R2: 0.038326</code></pre>
+</div>
+</div>
+</section>
+<section id="c.f.-regression-of-military-expenditure-form-1816-to-2019" class="level1">
+<h1>(c.f.) Regression of military expenditure form 1816 to 2019</h1>
+<p>The regressions of fit1_4 and fit2-f do not use the full range of the years since some RHS variables do not exist before 1945. Here, I use only estimated military expenditure, estimated GDP and GDP per capita, and estimated population to fully use the year range.</p>
+<section id="year-moving-average-1" class="level2">
+<h2 class="anchored" data-anchor-id="year-moving-average-1">10-year moving average</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>fit3_1 <span class="ot">&lt;-</span> fixest<span class="sc">::</span><span class="fu">feols</span>(mean_ma10_fluc_log <span class="sc">~</span> mean_gdp_lag4 <span class="sc">+</span> mean_gdppc_lag4 <span class="sc">+</span> mean_pop_lag4 <span class="sc">|</span> year <span class="sc">+</span> gwno, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 752 observations removed because of NA values (RHS: 752).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit3_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: mean_ma10_fluc_log
+Observations: 14,916 
+Fixed-effects: year: 203,  gwno: 194
+Standard-errors: Clustered (year) 
+                     Estimate   Std. Error    t value  Pr(&gt;|t|)    
+mean_gdp_lag4   -2.775558e-17 5.363414e-17  -0.517498   0.60537    
+mean_gdppc_lag4 -5.868663e-05 5.772801e-06 -10.166059 &lt; 2.2e-16 ***
+mean_pop_lag4    0.000000e+00 0.000000e+00        NaN       NaN    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.94023     Adj. R2: 0.770202
+                Within R2: 0.015625</code></pre>
+</div>
+</div>
+<p>I do not know why <code>mean_pop_lag4</code> does not have a coefficient.</p>
+</section>
+<section id="year-moving-average-2" class="level2">
+<h2 class="anchored" data-anchor-id="year-moving-average-2">5-year moving average</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>fit3_2 <span class="ot">&lt;-</span> fixest<span class="sc">::</span><span class="fu">feols</span>(mean_ma5_fluc_log <span class="sc">~</span> mean_gdp_lag2 <span class="sc">+</span> mean_gdppc_lag2 <span class="sc">+</span> mean_pop_lag2 <span class="sc">|</span> year <span class="sc">+</span> gwno, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: 376 observations removed because of NA values (RHS: 376).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit3_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: mean_ma5_fluc_log
+Observations: 15,292 
+Fixed-effects: year: 204,  gwno: 194
+Standard-errors: Clustered (year) 
+                     Estimate   Std. Error   t value  Pr(&gt;|t|)    
+mean_gdp_lag2   -8.130000e-17 6.610000e-17  -1.22994   0.22014    
+mean_gdppc_lag2 -6.013970e-05 5.433430e-06 -11.06846 &lt; 2.2e-16 ***
+mean_pop_lag2    7.194079e-10 7.188634e-10   1.00076   0.31814    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 2.90657     Adj. R2: 0.770353
+                Within R2: 0.017893</code></pre>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
